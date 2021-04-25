@@ -1,6 +1,7 @@
-import { Column, CreateDateColumn, Entity, IsNull, PrimaryColumn } from "typeorm";
-import { v4 as uuid } from 'uuid';
+import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
+import { v4 as uuid } from "uuid";
 
+// criando o modelo da tabela users, especificando suas colunas e tipo de dado que será armazenado
 @Entity("users")
 class User {
   @PrimaryColumn()
@@ -9,17 +10,14 @@ class User {
   @Column()
   name: string;
 
-
   @Column()
   email: string;
-
 
   @Column()
   password: string;
 
-
-  @Column({ nullable: true })
-  public address?: string;
+  @Column()
+  address: string;
 
   @Column()
   phone: string;
@@ -27,10 +25,8 @@ class User {
   @CreateDateColumn()
   createdAt: Date;
 
-
   @Column()
   isAdm: boolean;
-
 
   constructor() {
     if (!this.id) {
@@ -41,8 +37,7 @@ class User {
       this.isAdm = false;
     }
   }
-
-
 }
 
+// exportando a classe
 export { User };
