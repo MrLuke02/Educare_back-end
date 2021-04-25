@@ -7,6 +7,7 @@ import cors from "cors";
 // Inicia uma aplicação express
 const app = express();
 
+// configurações do servidor
 app.use(cors());
 app.use(express.json());
 app.use(router);
