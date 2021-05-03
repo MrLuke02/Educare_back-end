@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import { generate } from "../auth/token.auth";
+import { createToken } from "../auth/token.auth";
 import { UserResponseDTO } from "../models/DTO/user/UserResponseDTO";
 import { UsersRepository } from "../repositories/UserRepository";
 
@@ -79,7 +79,7 @@ class UserController {
     };
 
     // criando um token de acordo com a constante payload criada a cima
-    const token = await generate(payload, res);
+    const token = await createToken(payload, res);
 
     // retornando o token criado
     return res.status(200).json({ token });
