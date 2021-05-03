@@ -26,15 +26,11 @@ class User {
   createdAt: Date;
 
   @Column()
-  isAdm: boolean;
+  isAdm: boolean = false;
 
   constructor() {
     if (!this.id) {
       this.id = uuid();
-    }
-
-    if (this.isAdm == null) {
-      this.isAdm = false;
     }
   }
 }
