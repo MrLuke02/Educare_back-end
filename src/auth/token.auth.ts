@@ -1,5 +1,6 @@
 import { Response } from "express";
 import JWT from "jsonwebtoken";
+import { SECRET_KEY } from "../env/token";
 
 // criando o metodo de geração do token, com retorno em forma de promise
 const createToken = (payload: Object, res: Response) => {
@@ -9,16 +10,16 @@ const createToken = (payload: Object, res: Response) => {
       // conteúdo do token
       payload,
       // chave secreta
-      process.env.SECRET_KEY,
+      SECRET_KEY,
       // opções/configurações, aqui no caso foi passado o algoritmo usado e o tempo de expiração
       {
-        algorithm: "HS256",
+        algorithm: "HS512",
         expiresIn: "1h",
       },
       // função para retornar o token caso ocorra tudo bem, caso de algo errado retorna um json de error
       function (err, token) {
         if (err) {
-          return res.status(400).json({ error: "Token inválido!" });
+          return res.status(401).json({ error: "Erro ao criar o token!" });
         }
         resolve(token);
       }
@@ -34,15 +35,15 @@ const verifyToken = (token: string, res: Response) => {
       // token a ser verificado
       token,
       // chave secreta
-      process.env.SECRET_KEY,
+      SECRET_KEY,
       // algoritmo que foi usado para criptografar o token
       {
-        algorithms: ["HS256"],
+        algorithms: ["HS512"],
       },
       // função para retornar o token caso ocorra tudo bem, caso de algo errado retorna um json de error
       function (err, token) {
         if (err) {
-          return res.status(400).json({ error: "Sessão expirada!" });
+          return res.status(401).json({ error: "Sessão expirada!" });
         }
         resolve(token);
       }

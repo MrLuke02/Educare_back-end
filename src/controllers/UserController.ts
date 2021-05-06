@@ -48,8 +48,8 @@ class UserController {
     // savando o usuário criado a cima
     const userSaved = await usersRepository.save(user);
 
-    // retornando o usuario salvo
-    return res.status(200).json(UserResponseDTO.responseUserDTO(userSaved));
+    // retornando o DTO do usuario salvo
+    return res.status(201).json(UserResponseDTO.responseUserDTO(userSaved));
   }
 
   // metodo assincrono para a autenticação de usuários
@@ -66,8 +66,8 @@ class UserController {
     // verificanddo se existe um usuário com o email e senha enviados
     if (!user) {
       // retornando uma resposta em json
-      return res.status(400).json({
-        error: "Nenhum usuario encontrado!",
+      return res.status(406).json({
+        error: "Nenhum usuário encontrado!",
       });
     }
 
@@ -99,7 +99,7 @@ class UserController {
     // verificanddo se existe um usuário com o id enviado
     if (!user) {
       // retornando uma resposta em json
-      return res.status(400).json({ error: "Nenhum usuário encontrado!" });
+      return res.status(406).json({ error: "Nenhum usuário encontrado!" });
     }
 
     // capturando e armazenando os dados do corpo da requisição, caso não seja passado algum dado, a constante receberá o atributo do usuário pesquisado
@@ -123,14 +123,12 @@ class UserController {
     }
 
     // verificando se o email passado e igual ao do usuário
-    const emailUser = user.email === email;
-
-    if (!emailUser) {
+    if (!(user.email === email)) {
       // pesquisando um usuário por email, caso o email passado não seja o mesmo do usuário
       const emailExists = await usersRepository.findOne({ email });
       if (emailExists) {
         // se encontrar algo retorna um json de erro
-        return res.status(400).json({ error: "Usuário já existente!" });
+        return res.status(400).json({ error: "Usuário já existe!" });
       }
     }
 
@@ -139,21 +137,21 @@ class UserController {
       name,
       email,
       password,
+      phone,
       address,
       isAdm,
-      phone,
     });
 
     // pesquisando o usuário pelo id
     user = await usersRepository.findOne({ id });
 
-    // retornando o usuário atualizado
-    return res.status(201).json(UserResponseDTO.responseUserDTO(user));
+    // retornando o DTO do usuário atualizado
+    return res.status(200).json(UserResponseDTO.responseUserDTO(user));
   }
 
   // metodo assincrono para a deleção de usuários
   async delete(req: Request, res: Response) {
-    // capturando e armazenando o id do parametro do URL
+    // capturando e armazenando o id do usuário do parametro do URL
     const { id } = req.params;
 
     // pegando o repositorio customizado/personalizado
@@ -167,7 +165,7 @@ class UserController {
     // verificanddo se existe um usuário com o id enviado
     if (!userExist) {
       // retornando uma resposta em json
-      return res.status(400).json({
+      return res.status(406).json({
         message: "Nenhum usuário encontrado!",
       });
     }
@@ -192,7 +190,7 @@ class UserController {
     // verificando se o DB possui usuários cadastrados
     if (users.length === 0) {
       // retornando uma resposta em json
-      return res.status(400).json({
+      return res.status(406).json({
         message: "Nenhum usuário encontrado!",
       });
     }
@@ -202,5 +200,5 @@ class UserController {
   }
 }
 
-// esportando a classe
+// exportando a classe
 export { UserController };

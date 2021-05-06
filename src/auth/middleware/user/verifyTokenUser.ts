@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { verifyToken } from "../token.auth";
+import { verifyToken } from "../../token.auth";
 
-// classe para a verificação de tokens do usuário
+// classe para a verificação dos tokens
 class VerifyTokenUser {
   // metodo para verificar o token enviado na rota de cadastro de usuários
   async verifyCreate(req: Request, res: Response, next: Function) {
@@ -24,7 +24,7 @@ class VerifyTokenUser {
         next();
       } else {
         // caso o token não seja de um administrador, retorna um json de error
-        return res.status(400).json({ error: "Token inválido!" });
+        return res.status(401).json({ error: "Token inválido!" });
       }
     }
   }
@@ -43,7 +43,7 @@ class VerifyTokenUser {
       next();
     } else {
       // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-      return res.status(400).json({ error: "Token inválido!" });
+      return res.status(401).json({ error: "Token inválido!" });
     }
   }
 
@@ -61,7 +61,7 @@ class VerifyTokenUser {
       next();
     } else {
       // caso o token não seja de um administrador, retorna um json de error
-      return res.status(400).json({ error: "Token inválido!" });
+      return res.status(401).json({ error: "Token inválido!" });
     }
   }
 
@@ -81,7 +81,7 @@ class VerifyTokenUser {
       next();
     } else {
       // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-      return res.status(400).json({ error: "Token inválido!" });
+      return res.status(401).json({ error: "Token inválido!" });
     }
   }
 }

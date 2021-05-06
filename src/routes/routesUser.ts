@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { VerifyTokenUser } from "../auth/middleware/verifyTokenUser";
+import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
 import { UserController } from "../controllers/UserController";
 
 // criando um objeto de UserController
@@ -11,6 +11,9 @@ const routerUser = Router();
 
 // criando a rota de cadastro de usuários
 routerUser.post("/user", verifyTokenUser.verifyCreate, userController.create);
+// criando a rota de autenticação de usuários
+routerUser.post("/auth", userController.read);
+
 // criando a rota de atualização de usuários
 routerUser.put(
   "/userUpdate",
@@ -18,8 +21,6 @@ routerUser.put(
   userController.update
 );
 
-// criando a rota de autenticação de usuários
-routerUser.get("/user", userController.read);
 // criando a rota de listagem de todos os usuários
 routerUser.get(
   "/showUsers",
