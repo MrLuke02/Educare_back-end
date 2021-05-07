@@ -10,7 +10,7 @@ const verifyTokenUser = new VerifyTokenUser();
 const routerUser = Router();
 
 // criando a rota de cadastro de usuários
-routerUser.post("/user", verifyTokenUser.verifyCreate, userController.create);
+routerUser.post("/user", userController.create);
 // criando a rota de autenticação de usuários
 routerUser.post("/auth", userController.read);
 

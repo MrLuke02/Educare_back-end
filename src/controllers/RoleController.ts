@@ -32,7 +32,9 @@ class RoleController {
     const roleSaved = await rolesRepository.save(role);
 
     // retornando o DTO da role salva
-    return res.status(201).json(RoleResponseDTO.responseRoleDTO(roleSaved));
+    return res
+      .status(201)
+      .json({ role: RoleResponseDTO.responseRoleDTO(roleSaved) });
   }
 
   // metodo assincrono para a pesquisa de roles pelo id
@@ -55,7 +57,9 @@ class RoleController {
     }
 
     // retornando o DTO da role pesquisada
-    return res.status(200).json(RoleResponseDTO.responseRoleDTO(role));
+    return res
+      .status(200)
+      .json({ role: RoleResponseDTO.responseRoleDTO(role) });
   }
 
   // metodo assincrono para a atualização dos dados das roles
@@ -99,7 +103,9 @@ class RoleController {
     role = await rolesRepository.findOne(id);
 
     // retornando o DTO da role atualizada
-    return res.status(200).json(RoleResponseDTO.responseRoleDTO(role));
+    return res
+      .status(200)
+      .json({ role: RoleResponseDTO.responseRoleDTO(role) });
   }
 
   // metodo assincrono para a deleção de roles

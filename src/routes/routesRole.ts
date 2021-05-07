@@ -2,7 +2,7 @@ import { Router } from "express";
 import { verifyTokenRole } from "../auth/middleware/role/verifyTokenRole";
 import { RoleController } from "../controllers/RoleController";
 
-// criando um objeto de UserController
+// criando um objeto de RoleController
 const roleController = new RoleController();
 
 const routerRole = Router();
