@@ -25,9 +25,6 @@ class User {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column()
-  isAdm: boolean = false;
-
   constructor() {
     if (!this.id) {
       this.id = uuid();

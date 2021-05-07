@@ -2,7 +2,10 @@ import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { createToken } from "../auth/token.auth";
 import { UserResponseDTO } from "../models/DTO/user/UserResponseDTO";
+import { RolesRepository } from "../repositories/RolesRepository";
 import { UsersRepository } from "../repositories/UserRepository";
+import { UserRoleRepository } from "../repositories/UserRoleRepository";
+import { UserRoleController } from "./UserRoleController";
 
 class UserController {
   // metodo assincrono para o cadastro de usuários
@@ -24,17 +27,6 @@ class UserController {
       });
     }
 
-    // capturando o valor passado no corpo da requisição, caso não seja passado nada, pega o valor que ja está cadastrado no usuário
-    let { isAdm } = req.body;
-
-    // capturando a variavel criada na verificação do token
-    const verifyAdm = req.res.locals.isAdm;
-
-    // se a variavel não existir isAdm recebe false
-    if (!verifyAdm) {
-      isAdm = false;
-    }
-
     // criando o usuário
     const user = usersRepository.create({
       name,
@@ -42,14 +34,33 @@ class UserController {
       password,
       phone,
       address,
-      isAdm,
     });
 
     // savando o usuário criado a cima
     const userSaved = await usersRepository.save(user);
 
-    // retornando o DTO do usuario salvo
-    return res.status(201).json(UserResponseDTO.responseUserDTO(userSaved));
+    // instanciando o UserRoleController
+    const userRoleController = new UserRoleController();
+
+    // pegando o repositorio customizado/personalizado
+    const roleRepository = getCustomRepository(RolesRepository);
+
+    // tipo padrão de usuário
+    const type = "User";
+
+    // pesquisando uma role pelo tipo
+    const role = await roleRepository.findOne({ type });
+
+    // criando o array props com o id do usuário e da role
+    const props = [userSaved.id, role.id];
+
+    // criando e salvando a userRole
+    await userRoleController.create(req, res, props);
+
+    // retornando o DTO do usuario salvo e a userRole salva
+    return res
+      .status(201)
+      .json({ user: UserResponseDTO.responseUserDTO(userSaved) });
   }
 
   // metodo assincrono para a autenticação de usuários
@@ -71,11 +82,29 @@ class UserController {
       });
     }
 
+    // pegando o repositorio customizado/personalizado
+    const userRoleRepository = getCustomRepository(UserRoleRepository);
+
+    // pesquisando userRole e role pelo id do usuário
+    const userRole_role = await userRoleRepository.find({
+      // select -> o que quero de retorno
+      // where -> condição
+      // relations -> para trazer também as informações da tabela que se relaciona
+      select: ["roleID"],
+      where: { userID: user.id },
+      relations: ["role"],
+    });
+
+    // pegando somente os tipos de roles que o usuário possui
+    const roles = userRole_role.map((userRole) => {
+      return userRole.role.type;
+    });
+
     // criando o objeto playload, que será passado para a função generate
     const payload = {
       iss: "Educare_api",
       sub: user.id,
-      isAdm: user.isAdm,
+      roles,
     };
 
     // criando um token de acordo com a constante payload criada a cima
@@ -111,17 +140,6 @@ class UserController {
       phone = user.phone,
     } = req.body;
 
-    // capturando o valor passado no corpo da requisição, caso não seja passado nada, pega o valor que ja está cadastrado no usuário
-    let { isAdm = user.isAdm } = req.body;
-
-    // capturando a variavel criada na verificação do token
-    const verifyAdm = req.res.locals.isAdm;
-
-    // se a variavel não existir isAdm recebe false
-    if (!verifyAdm) {
-      isAdm = false;
-    }
-
     // verificando se o email passado e igual ao do usuário
     if (!(user.email === email)) {
       // pesquisando um usuário por email, caso o email passado não seja o mesmo do usuário
@@ -139,14 +157,15 @@ class UserController {
       password,
       phone,
       address,
-      isAdm,
     });
 
     // pesquisando o usuário pelo id
     user = await usersRepository.findOne({ id });
 
     // retornando o DTO do usuário atualizado
-    return res.status(200).json(UserResponseDTO.responseUserDTO(user));
+    return res
+      .status(200)
+      .json({ user: UserResponseDTO.responseUserDTO(user) });
   }
 
   // metodo assincrono para a deleção de usuários
