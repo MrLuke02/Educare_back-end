@@ -13,6 +13,10 @@ class UserRoleController {
     if (Object.values(props).length !== 0) {
       // sobrescrevendo as variaveis com os valores de props
       [userID, roleID] = props;
+    } else if (!userID || !roleID) {
+      return res.status(422).json({
+        error: "Falta algum dos dados!",
+      });
     }
 
     // pegando o repositorio customizado/personalizado
@@ -24,7 +28,7 @@ class UserRoleController {
     // verificanddo se já existe a userRole
     if (userRoleExist) {
       // retornando uma resposta em json
-      return res.status(400).json({
+      return res.status(409).json({
         error: "Usuário já possui esta role!",
       });
     }
@@ -79,6 +83,12 @@ class UserRoleController {
     // capturando e armazenando o id da userRole do corpo da requisição
     const { id } = req.body;
 
+    if (!id) {
+      return res.status(422).json({
+        error: "Nenhum id foi enviado!",
+      });
+    }
+
     // pegando o repositorio customizado/personalizado
     const userRolesRepository = getCustomRepository(UserRoleRepository);
 
@@ -102,7 +112,7 @@ class UserRoleController {
       const userRoleExists = await userRolesRepository.findOne(roleID);
       if (userRoleExists) {
         // se encontrar algo retorna um json de erro
-        return res.status(400).json({ error: "UserRole já existe!" });
+        return res.status(409).json({ error: "UserRole já existe!" });
       }
     }
 
