@@ -6,12 +6,30 @@ import { RolesRepository } from "../repositories/RolesRepository";
 import { UsersRepository } from "../repositories/UserRepository";
 import { UserRoleRepository } from "../repositories/UserRoleRepository";
 import { UserRoleController } from "./UserRoleController";
+import { validationEmail, validationPassword } from "../util/user/UserUtil";
+import md5 from "md5";
 
 class UserController {
   // metodo assincrono para o cadastro de usuários
   async create(req: Request, res: Response) {
     // capturando e armazenando os dados do corpo da requisição
     const { name, email, password, phone, address } = req.body;
+
+    if (!name || !email || !password || !phone) {
+      return res.status(422).json({ error: "Algum dos dados está faltando!" });
+    }
+
+    if (!validationEmail(email)) {
+      return res.status(422).json({
+        error: "Email inválido!",
+      });
+    } else if (!validationPassword(password)) {
+      return res.status(422).json({
+        error: "Senha inválida!",
+      });
+    }
+
+    const passwordCrypted = md5(password);
 
     // pegando o repositorio customizado/personalizado
     const usersRepository = getCustomRepository(UsersRepository);
@@ -22,7 +40,7 @@ class UserController {
     // verificanddo se já existe um usuário com o email enviado
     if (userAlreadyExists) {
       // retornando uma resposta em json
-      return res.status(400).json({
+      return res.status(409).json({
         error: "Usuário já existe!",
       });
     }
@@ -31,7 +49,7 @@ class UserController {
     const user = usersRepository.create({
       name,
       email,
-      password,
+      password: passwordCrypted,
       phone,
       address,
     });
@@ -68,11 +86,16 @@ class UserController {
     // capturando e armazenando os dados do corpo da requisição
     const { email, password } = req.body;
 
+    const passwordCrypted = md5(password);
+
     // pegando o repositorio customizado/personalizado
     const usersRepository = getCustomRepository(UsersRepository);
 
     // pesquisando um usuário pelo email e senha
-    const user = await usersRepository.findOne({ email, password });
+    const user = await usersRepository.findOne({
+      email,
+      password: passwordCrypted,
+    });
 
     // verificanddo se existe um usuário com o email e senha enviados
     if (!user) {
@@ -119,6 +142,12 @@ class UserController {
     // capturando e armazenando o id do corpo da requisição
     const { id } = req.body;
 
+    if (req.body.password && !validationPassword(req.body.password)) {
+      return res.status(422).json({
+        error: "Senha inválida!",
+      });
+    }
+
     // pegando o repositorio customizado/personalizado
     const usersRepository = getCustomRepository(UsersRepository);
 
@@ -140,21 +169,29 @@ class UserController {
       phone = user.phone,
     } = req.body;
 
+    if (!validationEmail(email)) {
+      return res.status(422).json({
+        error: "Email inválido!",
+      });
+    }
+
     // verificando se o email passado e igual ao do usuário
-    if (!(user.email === email)) {
+    else if (!(user.email === email)) {
       // pesquisando um usuário por email, caso o email passado não seja o mesmo do usuário
       const emailExists = await usersRepository.findOne({ email });
       if (emailExists) {
         // se encontrar algo retorna um json de erro
-        return res.status(400).json({ error: "Usuário já existe!" });
+        return res.status(409).json({ error: "Usuário já existe!" });
       }
     }
+
+    const passwordCrypted = md5(password);
 
     // atualizando o usuário a partir do id
     await usersRepository.update(id, {
       name,
       email,
-      password,
+      password: passwordCrypted,
       phone,
       address,
     });
@@ -172,6 +209,12 @@ class UserController {
   async delete(req: Request, res: Response) {
     // capturando e armazenando o id do usuário do parametro do URL
     const { id } = req.params;
+
+    if (!id) {
+      res.status(422).json({
+        error: "Nenhum id foi enviado",
+      });
+    }
 
     // pegando o repositorio customizado/personalizado
     const usersRepository = getCustomRepository(UsersRepository);

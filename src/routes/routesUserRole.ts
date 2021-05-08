@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import { verifyTokenUserRole } from "../auth/middleware/userRole/verifyTokenUserRole";
 import { UserRoleController } from "../controllers/UserRoleController";
 
@@ -29,12 +29,24 @@ routerUserRole.get(
   userRoleController.read
 );
 
+routerUserRole.get("/userRole", (req: Request, res: Response) => {
+  return res.status(422).json({
+    error: "Nenhum id foi passado!",
+  });
+});
+
 // criando a rota de deleção de userRoles
 routerUserRole.delete(
   "/userRole/:id",
   verifyTokenUserRole,
   userRoleController.delete
 );
+
+routerUserRole.delete("/userRole", (req: Request, res: Response) => {
+  return res.status(422).json({
+    error: "Nenhum id foi passado!",
+  });
+});
 
 // exportando o router
 export { routerUserRole };

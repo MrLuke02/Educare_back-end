@@ -34,6 +34,7 @@ routerUser.delete(
   verifyTokenUser.verifyDelete,
   userController.delete
 );
+routerUser.delete("/user/", verifyTokenUser.verifyDelete);
 
 // exportando o router
 export { routerUser };

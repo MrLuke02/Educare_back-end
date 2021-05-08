@@ -5,6 +5,14 @@ import { verifyToken } from "../../token.auth";
 class VerifyTokenUser {
   // metodo para verificar o token enviado na rota de deleção de usuários
   async verifyDelete(req: Request, res: Response, next: Function) {
+    const id = req.params.id;
+
+    if (!id) {
+      return res.status(422).json({
+        error: "Nenhum id foi enviado",
+      });
+    }
+
     // armazenando o token retornado da função
     const token = await verifyToken(
       req.headers.authorization.split(" ")[1],
@@ -44,6 +52,14 @@ class VerifyTokenUser {
 
   // metodo para verificar o token enviado na rota de atualização de dados dos usuários
   async verifyUpdate(req: Request, res: Response, next: Function) {
+    const { id } = req.body;
+
+    if (!id) {
+      return res.status(422).json({
+        error: "Nenhum id foi enviado",
+      });
+    }
+
     // armazenando o token retornado da função
     const token = await verifyToken(
       req.headers.authorization.split(" ")[1],

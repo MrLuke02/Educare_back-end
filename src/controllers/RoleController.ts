@@ -9,6 +9,12 @@ class RoleController {
     // capturando e armazenando o tipo de role do corpo da requisição
     const { type } = req.body;
 
+    if (!type) {
+      return res.status(422).json({
+        error: "Nenhum tipo foi enviado",
+      });
+    }
+
     // pegando o repositorio customizado/personalizado
     const rolesRepository = getCustomRepository(RolesRepository);
 
@@ -18,7 +24,7 @@ class RoleController {
     // verificanddo se já existe uma role com o type enviado
     if (roleExist) {
       // retornando uma resposta de erro em json
-      return res.status(400).json({
+      return res.status(409).json({
         error: "Role já existe!",
       });
     }
@@ -67,6 +73,12 @@ class RoleController {
     // capturando e armazenando o id da role do corpo da requisição
     const { id } = req.body;
 
+    if (!id) {
+      return res.status(422).json({
+        error: "Nenhum id foi enviado",
+      });
+    }
+
     // pegando o repositorio customizado/personalizado
     const rolesRepository = getCustomRepository(RolesRepository);
 
@@ -90,7 +102,7 @@ class RoleController {
       const roleExists = await rolesRepository.findOne({ type });
       if (roleExists) {
         // se encontrar algo retorna um json de erro
-        return res.status(400).json({ error: "Role já existe!" });
+        return res.status(409).json({ error: "Role já existe!" });
       }
     }
 
