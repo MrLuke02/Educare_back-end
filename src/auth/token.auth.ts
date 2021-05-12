@@ -1,6 +1,7 @@
 import { Response } from "express";
 import JWT from "jsonwebtoken";
 import { SECRET_KEY } from "../env/token";
+import * as Erros from "../env/status";
 
 // criando o metodo de geração do token, com retorno em forma de promise
 const createToken = (payload: Object, res: Response) => {
@@ -19,7 +20,7 @@ const createToken = (payload: Object, res: Response) => {
       // função para retornar o token caso ocorra tudo bem, caso de algo errado retorna um json de error
       function (err, token) {
         if (err) {
-          return res.status(401).json({ error: "Erro ao criar o token!" });
+          return res.status(401).json({ Message: Erros.CREATION_ERROR_TOKEN });
         }
         resolve(token);
       }
@@ -43,7 +44,7 @@ const verifyToken = (token: string, res: Response) => {
       // função para retornar o token caso ocorra tudo bem, caso de algo errado retorna um json de error
       function (err, token) {
         if (err) {
-          return res.status(401).json({ error: "Sessão expirada!" });
+          return res.status(401).json({ Message: Erros.EXPIRED_SESSION });
         }
         resolve(token);
       }
