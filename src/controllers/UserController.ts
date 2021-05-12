@@ -8,6 +8,7 @@ import { UserRoleRepository } from "../repositories/UserRoleRepository";
 import { UserRoleController } from "./UserRoleController";
 import { validationEmail, validationPassword } from "../util/user/UserUtil";
 import md5 from "md5";
+import * as Erros from "../env/status";
 
 class UserController {
   // metodo assincrono para o cadastro de usuários
@@ -16,16 +17,16 @@ class UserController {
     const { name, email, password, phone, address } = req.body;
 
     if (!name || !email || !password || !phone) {
-      return res.status(422).json({ error: "Algum dos dados está faltando!" });
+      return res.status(422).json({ Message: Erros.REQUIRED_FIELD });
     }
 
     if (!validationEmail(email)) {
       return res.status(422).json({
-        error: "Email inválido!",
+        Message: Erros.INVALID_EMAIL,
       });
     } else if (!validationPassword(password)) {
       return res.status(422).json({
-        error: "Senha inválida!",
+        Message: Erros.INVALID_PASSWORD,
       });
     }
 
@@ -41,7 +42,7 @@ class UserController {
     if (userAlreadyExists) {
       // retornando uma resposta em json
       return res.status(409).json({
-        error: "Usuário já existe!",
+        Message: Erros.USER_ALREADY_EXIST,
       });
     }
 
@@ -101,7 +102,7 @@ class UserController {
     if (!user) {
       // retornando uma resposta em json
       return res.status(406).json({
-        error: "Nenhum usuário encontrado!",
+        Message: Erros.NOT_FOUND,
       });
     }
 
@@ -144,7 +145,7 @@ class UserController {
 
     if (req.body.password && !validationPassword(req.body.password)) {
       return res.status(422).json({
-        error: "Senha inválida!",
+        Message: Erros.INVALID_PASSWORD,
       });
     }
 
@@ -157,7 +158,7 @@ class UserController {
     // verificanddo se existe um usuário com o id enviado
     if (!user) {
       // retornando uma resposta em json
-      return res.status(406).json({ error: "Nenhum usuário encontrado!" });
+      return res.status(406).json({ Message: Erros.NOT_FOUND });
     }
 
     // capturando e armazenando os dados do corpo da requisição, caso não seja passado algum dado, a constante receberá o atributo do usuário pesquisado
@@ -171,7 +172,7 @@ class UserController {
 
     if (!validationEmail(email)) {
       return res.status(422).json({
-        error: "Email inválido!",
+        Message: Erros.INVALID_EMAIL,
       });
     }
 
@@ -181,7 +182,7 @@ class UserController {
       const emailExists = await usersRepository.findOne({ email });
       if (emailExists) {
         // se encontrar algo retorna um json de erro
-        return res.status(409).json({ error: "Usuário já existe!" });
+        return res.status(409).json({ Message: Erros.USER_ALREADY_EXIST });
       }
     }
 
@@ -212,7 +213,7 @@ class UserController {
 
     if (!id) {
       res.status(422).json({
-        error: "Nenhum id foi enviado",
+        Message: Erros.ID_NOT_FOUND,
       });
     }
 
@@ -228,7 +229,7 @@ class UserController {
     if (!userExist) {
       // retornando uma resposta em json
       return res.status(406).json({
-        message: "Nenhum usuário encontrado!",
+        Message: Erros.NOT_FOUND,
       });
     }
 
@@ -237,7 +238,7 @@ class UserController {
 
     // retornando um json de sucesso
     return res.status(200).json({
-      message: "Sucesso!",
+      Message: Erros.SUCCESS,
     });
   }
 
@@ -253,7 +254,7 @@ class UserController {
     if (users.length === 0) {
       // retornando uma resposta em json
       return res.status(406).json({
-        message: "Nenhum usuário encontrado!",
+        Message: Erros.NOT_FOUND,
       });
     }
 

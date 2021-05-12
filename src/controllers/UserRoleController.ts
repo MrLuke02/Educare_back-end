@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { UserRoleResponseDTO } from "../models/DTO/userRole/UserRoleResponseDTO";
 import { UserRoleRepository } from "../repositories/UserRoleRepository";
+import * as Erros from "../env/status";
 
 class UserRoleController {
   // metodo assincrono para a criação de user_roles
@@ -15,7 +16,7 @@ class UserRoleController {
       [userID, roleID] = props;
     } else if (!userID || !roleID) {
       return res.status(422).json({
-        error: "Falta algum dos dados!",
+        Message: Erros.REQUIRED_FIELD,
       });
     }
 
@@ -29,7 +30,7 @@ class UserRoleController {
     if (userRoleExist) {
       // retornando uma resposta em json
       return res.status(409).json({
-        error: "Usuário já possui esta role!",
+        Message: Erros.USER_ROLE,
       });
     }
 
@@ -68,7 +69,7 @@ class UserRoleController {
     if (!userRole) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        error: "Nenhuma userRole encontrada!",
+        Message: Erros.NOT_FOUND,
       });
     }
 
@@ -85,7 +86,7 @@ class UserRoleController {
 
     if (!id) {
       return res.status(422).json({
-        error: "Nenhum id foi enviado!",
+        Message: Erros.ID_NOT_FOUND,
       });
     }
 
@@ -99,7 +100,7 @@ class UserRoleController {
     if (!userRole) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        error: "Nenhuma userRole encontrada!",
+        Message: Erros.NOT_FOUND,
       });
     }
 
@@ -112,7 +113,7 @@ class UserRoleController {
       const userRoleExists = await userRolesRepository.findOne(roleID);
       if (userRoleExists) {
         // se encontrar algo retorna um json de erro
-        return res.status(409).json({ error: "UserRole já existe!" });
+        return res.status(409).json({ Message: Erros.USER_ALREADY_EXIST });
       }
     }
 
@@ -146,7 +147,7 @@ class UserRoleController {
     if (!userRole) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        error: "Nenhuma userRole encontrada!",
+        Message: Erros.NOT_FOUND,
       });
     }
 
@@ -154,7 +155,7 @@ class UserRoleController {
     await userRolesRepository.delete({ id });
 
     // retornando um json de sucesso
-    return res.status(200).json({ message: "Sucesso!" });
+    return res.status(200).json({ Message: Erros.SUCCESS });
   }
 
   // metodo assincrono para a listagem de todas as userRoles
@@ -169,7 +170,7 @@ class UserRoleController {
     if (userRoles.length === 0) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        error: "Nenhuma userRole encontrada!",
+        Message: Erros.NOT_FOUND,
       });
     }
 

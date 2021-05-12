@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { verifyToken } from "../../token.auth";
+import * as Erros from "../../../env/status";
 
 // função para a verificação dos tokens
 const verifyTokenRole = async (req: Request, res: Response, next: Function) => {
@@ -12,7 +13,7 @@ const verifyTokenRole = async (req: Request, res: Response, next: Function) => {
     next();
   } else {
     // caso o token não seja de um administrador, retorna um json de error
-    return res.status(401).json({ error: "Token inválido!" });
+    return res.status(401).json({ Message: Erros.INVALID_TOKEN });
   }
 };
 
