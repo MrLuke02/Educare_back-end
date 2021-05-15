@@ -6,14 +6,14 @@ import * as Erros from "../env/status";
 
 class UserRoleController {
   // metodo assincrono para a criação de user_roles
-  async create(req: Request, res: Response, props?: any) {
+  async create(req: Request, res: Response, propsRole?: any) {
     // capturando e armazenando os valores do corpo da requisição
     let { userID, roleID } = req.body;
 
     // verificando se o objeto props não está vazio
-    if (Object.values(props).length !== 0) {
+    if (Object.values(propsRole).length !== 0) {
       // sobrescrevendo as variaveis com os valores de props
-      [userID, roleID] = props;
+      [userID, roleID] = propsRole;
     } else if (!userID || !roleID) {
       return res.status(422).json({
         Message: Erros.REQUIRED_FIELD,
@@ -44,7 +44,7 @@ class UserRoleController {
     const userRoleSaved = await userRolesRepository.save(userRole);
 
     // verificando se o objeto props não está vazio
-    if (Object.values(props).length !== 0) {
+    if (Object.values(propsRole).length !== 0) {
       // retornando a userRole
       return userRoleSaved;
     }

@@ -19,9 +19,6 @@ class User {
   @Column()
   address: string;
 
-  @Column()
-  phone: string;
-
   @CreateDateColumn()
   createdAt: Date;
 

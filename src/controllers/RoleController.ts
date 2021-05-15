@@ -10,7 +10,9 @@ class RoleController {
     // capturando e armazenando o tipo de role do corpo da requisição
     const { type } = req.body;
 
+    // verificando se não foi passado o tipo de role
     if (!type) {
+      // retornando um json de erro personalizado
       return res.status(422).json({
         Message: Erros.REQUIRED_FIELD,
       });
@@ -74,7 +76,9 @@ class RoleController {
     // capturando e armazenando o id da role do corpo da requisição
     const { id } = req.body;
 
+    // verificando se o id da role não foi passada
     if (!id) {
+      // retornando um json de erro personalizado
       return res.status(422).json({
         Message: Erros.ID_NOT_FOUND,
       });
@@ -152,7 +156,7 @@ class RoleController {
     // pegando o repositorio customizado/personalizado
     const rolesRepository = getCustomRepository(RolesRepository);
 
-    // deletando rodas as roles do DB
+    // pesquisando todas as roles do DB
     const roles = await rolesRepository.find();
 
     // verificando se o DB possui roles cadastradas
