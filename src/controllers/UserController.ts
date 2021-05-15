@@ -2,10 +2,9 @@ import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { createToken } from "../auth/token.auth";
 import { UserResponseDTO } from "../models/DTO/user/UserResponseDTO";
-import { RolesRepository } from "../repositories/RolesRepository";
 import { UsersRepository } from "../repositories/UserRepository";
-import { UserRoleRepository } from "../repositories/UserRoleRepository";
 import { UserRoleController } from "./UserRoleController";
+import { RoleController } from "./RoleController";
 import { PhoneController } from "./PhoneController";
 import {
   validationEmail,
@@ -19,7 +18,7 @@ class UserController {
   // metodo assincrono para o cadastro de usuários
   async create(req: Request, res: Response) {
     // capturando e armazenando os dados do corpo da requisição
-    const { name, email, password, address, phoneNumber } = req.body;
+    const { name, email, password, phoneNumber } = req.body;
 
     // verificando se não foi passado um dos campos
     if (!name || !email || !password || !phoneNumber) {
@@ -68,7 +67,6 @@ class UserController {
       name,
       email,
       password: passwordCrypted,
-      address,
     });
 
     const phoneController = new PhoneController();
@@ -92,14 +90,18 @@ class UserController {
     // tipo padrão de usuário
     const type = "User";
 
-    // pegando o repositorio customizado/personalizado
-    const roleRepository = getCustomRepository(RolesRepository);
+    const roleController = new RoleController();
 
-    // pesquisando uma role pelo tipo
-    const role = await roleRepository.findOne({ type });
+    const role = await roleController.readFromType(type);
+
+    if (!role) {
+      return res.status(406).json({
+        Message: Erros.NOT_FOUND,
+      });
+    }
 
     // criando o array props com o id do usuário e da role
-    const propsRole = [userSaved.id, role.id];
+    const propsRole = [userSaved.id, role["id"]];
 
     // criando e salvando a userRole
     await userRoleController.create(req, res, propsRole);
@@ -110,6 +112,7 @@ class UserController {
 
     const userSave = UserResponseDTO.responseUserDTO(userSaved);
     userSave["phone"] = phone["phoneNumber"];
+    userSave["role"] = ["User"];
 
     // retornando o DTO do usuario salvo
     return res.status(201).json({ user: userSave });
@@ -140,18 +143,15 @@ class UserController {
       });
     }
 
-    // pegando o repositorio customizado/personalizado
-    const userRoleRepository = getCustomRepository(UserRoleRepository);
+    const userRoleController = new UserRoleController();
 
-    // pesquisando userRole e role pelo id do usuário
-    const userRole_role = await userRoleRepository.find({
-      // select -> o que quero de retorno
-      // where -> condição
-      // relations -> para trazer também as informações da tabela que se relaciona
-      select: ["roleID"],
-      where: { userID: user.id },
-      relations: ["role"],
-    });
+    const userRole_role = await userRoleController.readFromUser(user.id);
+
+    if (!userRole_role) {
+      return res.status(406).json({
+        Message: Erros.NOT_FOUND,
+      });
+    }
 
     // pegando somente os tipos de roles que o usuário possui
     const roles = userRole_role.map((userRole) => {
@@ -201,7 +201,6 @@ class UserController {
       name = user.name,
       email = user.email,
       password = user.password,
-      address = user.address,
       phoneNumber = phone["phoneNumber"],
     } = req.body;
 
@@ -242,7 +241,6 @@ class UserController {
         name,
         email,
         password: passwordCrypted,
-        address,
       });
 
       // pesquisando o usuário pelo id
