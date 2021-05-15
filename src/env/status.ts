@@ -8,6 +8,7 @@ const USER_ALREADY_EXIST = "Usuário já existe!";
 const ROLE_ALREADY_EXIST = "Role já existe!";
 const USER_ROLE = "Usuário já possui esta role!";
 const USER_ROLE_ALREADY_EXIST = "UserRole já existe!";
+const USER_ADDRESS_ALREADY_EXIST = "Usuário já possui endereço!";
 const CREATION_ERROR_TOKEN = "Erro ao criar o token!";
 const EXPIRED_SESSION = "Sessão expirada!";
 const INVALID_TOKEN = "Token invalido!";
@@ -30,4 +31,5 @@ export {
   SUCCESS,
   PHONE_ALREADY_EXIST,
   INVALID_PHONE,
+  USER_ADDRESS_ALREADY_EXIST,
 };

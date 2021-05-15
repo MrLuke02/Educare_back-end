@@ -79,6 +79,24 @@ class UserRoleController {
       .json({ userRole: UserRoleResponseDTO.responseUserRoleDTO(userRole) });
   }
 
+  async readFromUser(userID: string) {
+    // pegando o repositorio customizado/personalizado
+    const userRoleRepository = getCustomRepository(UserRoleRepository);
+
+    // pesquisando userRole e role pelo id do usuário
+    const userRole_role = await userRoleRepository.find({
+      // select -> o que quero de retorno
+      // where -> condição
+      // relations -> para trazer também as informações da tabela que se relaciona
+      select: ["roleID"],
+      where: { userID },
+      relations: ["role"],
+    });
+
+    // retornando a userRole pesquisada
+    return userRole_role;
+  }
+
   // metodo assincrono para a atualização dos dados das userRoles
   async update(req: Request, res: Response) {
     // capturando e armazenando o id da userRole do corpo da requisição

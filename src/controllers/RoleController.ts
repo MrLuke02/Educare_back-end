@@ -71,6 +71,17 @@ class RoleController {
       .json({ role: RoleResponseDTO.responseRoleDTO(role) });
   }
 
+  async readFromType(type: string) {
+    // pegando o repositorio customizado/personalizado
+    const rolesRepository = getCustomRepository(RolesRepository);
+
+    // pesquisando uma role pelo id
+    const role = await rolesRepository.findOne({ type });
+
+    // retornando o DTO da role pesquisada
+    return role;
+  }
+
   // metodo assincrono para a atualização dos dados das roles
   async update(req: Request, res: Response) {
     // capturando e armazenando o id da role do corpo da requisição

@@ -131,14 +131,8 @@ class PhoneController {
     // pesquisando um phone pelo numero
     const phoneExist = await phoneRepository.findOne({ phoneNumber });
 
-    // verificanddo se já existe um phone com o numero enviado
-    if (phoneExist) {
-      // retornando uma resposta de erro em json
-      return true;
-    }
-
     // retornando o DTO do(s) phone(s) pesquisado(s)
-    return false;
+    return phoneExist;
   }
 
   // metodo assincrono para a atualização dos dados dos phones
