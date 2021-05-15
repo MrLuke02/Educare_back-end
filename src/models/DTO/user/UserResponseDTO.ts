@@ -8,10 +8,6 @@ class UserResponseDTO {
 
   private address: string;
 
-  private phone: string;
-
-  private isAdm: boolean;
-
   // criando o cronstrutor do UserResponseDTO a ser retornado, passando para ele o usuário
   constructor(user: User) {
     // capturando todos os atributos da usuário, menos a senha, a data de criação e o id
