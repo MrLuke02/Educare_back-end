@@ -14,11 +14,13 @@ class VerifyTokenAddress {
       });
     }
 
+    let token;
     // armazenando o token retornado da função
-    const token = await verifyToken(
-      req.headers.authorization.split(" ")[1],
-      res
-    );
+    if (!req.headers.authorization) {
+      return res.status(401).json({ Message: Erros.REQUIRED_TOKEN });
+    } else {
+      token = await verifyToken(req.headers.authorization.split(" ")[1], res);
+    }
 
     // verifica se o token enviado pertence ao proprio usuário ou a um administrador
     if (
@@ -42,11 +44,13 @@ class VerifyTokenAddress {
       });
     }
 
+    let token;
     // armazenando o token retornado da função
-    const token = await verifyToken(
-      req.headers.authorization.split(" ")[1],
-      res
-    );
+    if (!req.headers.authorization) {
+      return res.status(401).json({ Message: Erros.REQUIRED_TOKEN });
+    } else {
+      token = await verifyToken(req.headers.authorization.split(" ")[1], res);
+    }
 
     // verifica se o token enviado pertence ao proprio usuário ou a um administrador
     if (

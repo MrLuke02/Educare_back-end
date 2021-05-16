@@ -160,7 +160,11 @@ class AddressController {
       });
     }
 
-    return res.status(200).json({ addresses });
+    const address = addresses.map((address) => {
+      return AddressResponseDTO.responsePhoneDTO(address);
+    });
+
+    return res.status(200).json({ addresses: address });
   }
 }
 

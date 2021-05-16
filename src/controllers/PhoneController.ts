@@ -15,7 +15,7 @@ class PhoneController {
       // sobrescrevendo as variaveis com os valores de props
       [phoneNumber, userID] = propsPhone;
       // verificando se foi enviado o id do usuário e o numero de telefone
-    } else if (!phoneNumber && !userID) {
+    } else if (!phoneNumber || !userID) {
       // retornando um json de erro perdonalizado
       return res.status(422).json({
         Message: Erros.REQUIRED_FIELD,
@@ -31,6 +31,18 @@ class PhoneController {
 
     // pegando o repositorio customizado/personalizado
     const phoneRepository = getCustomRepository(PhonesRepository);
+
+    const userAlreadyHavePhone = await phoneRepository.find({ userID });
+
+    if (userAlreadyHavePhone.length > 1) {
+      return res.status(409).json({
+        Message: Erros.USER_ALREADY_HAVE_PHONE,
+      });
+    } else if (userAlreadyHavePhone.length === 0) {
+      return res.status(409).json({
+        Message: Erros.NOT_FOUND,
+      });
+    }
 
     // pesquisando um phone pelo numero
     const phoneExist = await phoneRepository.findOne({ phoneNumber });
@@ -79,7 +91,7 @@ class PhoneController {
     const phoneRepository = getCustomRepository(PhonesRepository);
 
     // pesquisando um phone pelo id do usuário
-    const phone = await phoneRepository.findOne({ userID });
+    const phone = await phoneRepository.find({ userID });
 
     // verificando se o usuário não possui phones
     if (!phone) {
@@ -254,8 +266,12 @@ class PhoneController {
       });
     }
 
+    const phone = phones.map((phone) => {
+      return PhoneResponseDTO.responsePhoneDTO(phone);
+    });
+
     // retornando os phones encontrados no DB
-    return res.status(200).json({ phones });
+    return res.status(200).json({ phones: phone });
   }
 }
 
