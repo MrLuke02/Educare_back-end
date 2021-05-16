@@ -178,8 +178,12 @@ class RoleController {
       });
     }
 
+    const role = roles.map((role) => {
+      return RoleResponseDTO.responseRoleDTO(role);
+    });
+
     // retornando as roles encontradas no DB
-    return res.status(200).json({ roles });
+    return res.status(200).json({ roles: role });
   }
 }
 

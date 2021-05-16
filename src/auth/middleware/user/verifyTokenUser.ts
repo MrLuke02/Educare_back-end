@@ -14,11 +14,13 @@ class VerifyTokenUser {
       });
     }
 
+    let token;
     // armazenando o token retornado da função
-    const token = await verifyToken(
-      req.headers.authorization.split(" ")[1],
-      res
-    );
+    if (!req.headers.authorization) {
+      return res.status(401).json({ Message: Erros.REQUIRED_TOKEN });
+    } else {
+      token = await verifyToken(req.headers.authorization.split(" ")[1], res);
+    }
 
     // verifica se o token enviado pertence ao proprio usuário ou a um administrador
     if (
@@ -35,11 +37,13 @@ class VerifyTokenUser {
 
   // metodo para verificar o token enviado na rota de exibição de todos os usuários
   async verifyShow(req: Request, res: Response, next: Function) {
+    let token;
     // armazenando o token retornado da função
-    const token = await verifyToken(
-      req.headers.authorization.split(" ")[1],
-      res
-    );
+    if (!req.headers.authorization) {
+      return res.status(401).json({ Message: Erros.REQUIRED_TOKEN });
+    } else {
+      token = await verifyToken(req.headers.authorization.split(" ")[1], res);
+    }
 
     // verificando se o token é de um administrador
     if (token["roles"].some((role: string) => role === "ADM")) {
@@ -61,11 +65,13 @@ class VerifyTokenUser {
       });
     }
 
+    let token;
     // armazenando o token retornado da função
-    const token = await verifyToken(
-      req.headers.authorization.split(" ")[1],
-      res
-    );
+    if (!req.headers.authorization) {
+      return res.status(401).json({ Message: Erros.REQUIRED_TOKEN });
+    } else {
+      token = await verifyToken(req.headers.authorization.split(" ")[1], res);
+    }
 
     // verifica se o token enviado pertence ao proprio usuário ou a um administrador
     if (
@@ -82,11 +88,13 @@ class VerifyTokenUser {
 
   // função para a verificação dos tokens
   async verifyTokenADM(req: Request, res: Response, next: Function) {
+    let token;
     // armazenando o token retornado da função
-    const token = await verifyToken(
-      req.headers.authorization.split(" ")[1],
-      res
-    );
+    if (!req.headers.authorization) {
+      return res.status(401).json({ Message: Erros.REQUIRED_TOKEN });
+    } else {
+      token = await verifyToken(req.headers.authorization.split(" ")[1], res);
+    }
 
     // verificando se o token é de um administrador
     if (token["roles"].some((role: string) => role === "ADM")) {

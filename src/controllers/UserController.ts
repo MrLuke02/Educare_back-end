@@ -81,12 +81,6 @@ class UserController {
       });
     }
 
-    // savando o usuário criado a cima
-    const userSaved = await usersRepository.save(user);
-
-    // instanciando o UserRoleController
-    const userRoleController = new UserRoleController();
-
     // tipo padrão de usuário
     const type = "User";
 
@@ -100,8 +94,14 @@ class UserController {
       });
     }
 
+    // savando o usuário criado a cima
+    const userSaved = await usersRepository.save(user);
+
     // criando o array props com o id do usuário e da role
     const propsRole = [userSaved.id, role["id"]];
+
+    // instanciando o UserRoleController
+    const userRoleController = new UserRoleController();
 
     // criando e salvando a userRole
     await userRoleController.create(req, res, propsRole);
@@ -122,6 +122,10 @@ class UserController {
   async read(req: Request, res: Response) {
     // capturando e armazenando os dados do corpo da requisição
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(422).json({ Message: Erros.REQUIRED_FIELD });
+    }
 
     // tranformando a senha em hash
     const passwordCrypted = md5(password);
@@ -196,61 +200,63 @@ class UserController {
 
     const phone = await phoneController.readFromUser(req, res, propsPhone);
 
-    // capturando e armazenando os dados do corpo da requisição, caso não seja passado algum dado, a constante receberá o atributo do usuário pesquisado
-    const {
-      name = user.name,
-      email = user.email,
-      password = user.password,
-      phoneNumber = phone["phoneNumber"],
-    } = req.body;
+    if (phone !== res) {
+      // capturando e armazenando os dados do corpo da requisição, caso não seja passado algum dado, a constante receberá o atributo do usuário pesquisado
+      const {
+        name = user.name,
+        email = user.email,
+        password = user.password,
+        phoneNumber = phone["phoneNumber"],
+      } = req.body;
 
-    // verificando se o email é valido
-    if (!validationEmail(email)) {
-      // retornando um json de erro personalizado
-      return res.status(422).json({
-        Message: Erros.INVALID_EMAIL,
-      });
-      // verificando se a senha foi passada e se é valida
-    } else if (!validationPassword(password)) {
-      // retornando um json de erro personalizado
-      return res.status(422).json({
-        Message: Erros.INVALID_PASSWORD,
-      });
-    }
-
-    // verificando se o email passado e igual ao do usuário
-    if (!(user.email === email)) {
-      // pesquisando um usuário por email, caso o email passado não seja o mesmo do usuário
-      const emailExists = await usersRepository.findOne({ email });
-      if (emailExists) {
-        // se encontrar algo retorna um json de erro
-        return res.status(409).json({ Message: Erros.USER_ALREADY_EXIST });
+      // verificando se o email é valido
+      if (!validationEmail(email)) {
+        // retornando um json de erro personalizado
+        return res.status(422).json({
+          Message: Erros.INVALID_EMAIL,
+        });
+        // verificando se a senha foi passada e se é valida
+      } else if (!validationPassword(password)) {
+        // retornando um json de erro personalizado
+        return res.status(422).json({
+          Message: Erros.INVALID_PASSWORD,
+        });
       }
-    }
 
-    // tranformando a senha em hash
-    const passwordCrypted = md5(password);
+      // verificando se o email passado e igual ao do usuário
+      if (!(user.email === email)) {
+        // pesquisando um usuário por email, caso o email passado não seja o mesmo do usuário
+        const emailExists = await usersRepository.findOne({ email });
+        if (emailExists) {
+          // se encontrar algo retorna um json de erro
+          return res.status(409).json({ Message: Erros.USER_ALREADY_EXIST });
+        }
+      }
 
-    propsPhone = [phone["id"], phoneNumber, user.id];
+      propsPhone = [phone["id"], phoneNumber, user.id];
 
-    const phoneSaved = await phoneController.update(req, res, propsPhone);
+      const phoneSaved = await phoneController.update(req, res, propsPhone);
 
-    if (phoneSaved !== res) {
-      // atualizando o usuário a partir do id
-      await usersRepository.update(id, {
-        name,
-        email,
-        password: passwordCrypted,
-      });
+      if (phoneSaved !== res) {
+        // tranformando a senha em hash
+        const passwordCrypted = md5(password);
 
-      // pesquisando o usuário pelo id
-      user = await usersRepository.findOne({ id });
+        // atualizando o usuário a partir do id
+        await usersRepository.update(id, {
+          name,
+          email,
+          password: passwordCrypted,
+        });
 
-      const userSave = UserResponseDTO.responseUserDTO(user);
-      userSave["phone"] = phoneSaved["phoneNumber"];
+        // pesquisando o usuário pelo id
+        user = await usersRepository.findOne({ id });
 
-      // retornando o DTO do usuario salvo
-      return res.status(201).json({ user: userSave });
+        const userSave = UserResponseDTO.responseUserDTO(user);
+        userSave["phone"] = phoneSaved["phoneNumber"];
+
+        // retornando o DTO do usuario salvo
+        return res.status(201).json({ user: userSave });
+      }
     }
   }
 
@@ -258,14 +264,6 @@ class UserController {
   async delete(req: Request, res: Response) {
     // capturando e armazenando o id do usuário do parametro do URL
     const { id } = req.params;
-
-    // verificando se o id foi passado
-    if (!id) {
-      // retornando um json de erro personalizado
-      res.status(422).json({
-        Message: Erros.ID_NOT_FOUND,
-      });
-    }
 
     // pegando o repositorio customizado/personalizado
     const usersRepository = getCustomRepository(UsersRepository);
@@ -308,8 +306,49 @@ class UserController {
       });
     }
 
+    const userRoleController = new UserRoleController();
+    const phoneController = new PhoneController();
+
+    const usersDTOPromise = users.map(async (user) => {
+      const userRole_role = await userRoleController.readFromUser(user.id);
+      const propsPhone = [user.id];
+      const phones = await phoneController.readFromUser(req, res, propsPhone);
+
+      const roles = userRole_role.map((userRole) => {
+        return userRole.role.type;
+      });
+
+      const phone = [];
+
+      for (const key in phones) {
+        phone.push(phones[key]["phoneNumber"]);
+      }
+
+      if (roles.length === 0 && phone.length === 0) {
+        user["roles"] = "Nada encontrado!";
+        user["phone"] = "Nada encontrado!";
+      } else if (roles.length === 0) {
+        user["roles"] = "Nada encontrado!";
+        user["phone"] = phone;
+      } else if (phone.length === 0) {
+        user["phone"] = "Nada encontrado!";
+        user["roles"] = roles;
+      } else {
+        user["roles"] = roles;
+        user["phone"] = phone;
+      }
+
+      return UserResponseDTO.responseUserDTO(user);
+    });
+
+    const usersDTO = [];
+
+    for (const user of usersDTOPromise) {
+      usersDTO.push(await user);
+    }
+
     // retornando os usuários encontrados no DB
-    return res.status(200).json({ users });
+    return res.status(200).json({ users: usersDTO });
   }
 }
 

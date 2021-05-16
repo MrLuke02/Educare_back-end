@@ -126,12 +126,15 @@ class UserRoleController {
     const { userID = userRole.userID, roleID = userRole.roleID } = req.body;
 
     // verificando se o roleID da userRole passado e igual ao da userRole sendo editada
-    if (!(userRole.roleID === roleID)) {
+    if (!(userRole.roleID === roleID && userRole.userID === userID)) {
       // pesquisando uma userRole pelo roleID
-      const userRoleExists = await userRolesRepository.findOne(roleID);
+      const userRoleExists = await userRolesRepository.findOne({
+        userID,
+        roleID,
+      });
       if (userRoleExists) {
         // se encontrar algo retorna um json de erro
-        return res.status(409).json({ Message: Erros.USER_ALREADY_EXIST });
+        return res.status(409).json({ Message: Erros.USER_ROLE });
       }
     }
 
@@ -192,8 +195,12 @@ class UserRoleController {
       });
     }
 
+    const userRole = userRoles.map((userRole) => {
+      return UserRoleResponseDTO.responseUserRoleDTO(userRole);
+    });
+
     // retornando as userRoles encontradas no DB
-    return res.status(200).json({ userRoles });
+    return res.status(200).json({ userRoles: userRole });
   }
 }
 
