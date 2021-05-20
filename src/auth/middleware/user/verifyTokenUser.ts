@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { verifyToken } from "../../token.auth";
-import * as Erros from "../../../env/status";
+import { Erros } from "../../../env/status";
 
 // classe para a verificação dos tokens
 class VerifyTokenUser {
@@ -104,6 +104,18 @@ class VerifyTokenUser {
       // caso o token não seja de um administrador, retorna um json de error
       return res.status(401).json({ Message: Erros.INVALID_TOKEN });
     }
+  }
+
+  // função para a verificação dos tokens
+  async verifyTokenAuth(req: Request, res: Response, next: Function) {
+    // armazenando o token retornado da função
+    if (!req.headers.authorization) {
+      return res.status(401).json({ Message: Erros.REQUIRED_TOKEN });
+    } else {
+      await verifyToken(req.headers.authorization.split(" ")[1], res);
+    }
+
+    next();
   }
 }
 

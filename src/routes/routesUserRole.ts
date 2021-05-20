@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { UserRoleController } from "../controllers/UserRoleController";
-import * as Erros from "../env/status";
+import { Erros } from "../env/status";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
 
 const userRoleController = new UserRoleController();

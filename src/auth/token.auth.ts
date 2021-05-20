@@ -1,7 +1,7 @@
 import { Response } from "express";
 import JWT from "jsonwebtoken";
 import { SECRET_KEY } from "../env/token";
-import * as Erros from "../env/status";
+import { Erros } from "../env/status";
 
 // criando o metodo de geração do token, com retorno em forma de promise
 const createToken = (payload: Object, res: Response) => {

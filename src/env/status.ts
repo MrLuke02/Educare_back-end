@@ -1,39 +1,26 @@
-const NOT_FOUND = "Nada encontrado!";
-const ID_NOT_FOUND = "Campo ID não encontrado!";
-const REQUIRED_FIELD = "Dados faltando!";
-const INVALID_EMAIL = "E-mail invalido!";
-const INVALID_PASSWORD = "Senha invalida!";
-const INVALID_PHONE = "Telefone invalido!";
-const USER_ALREADY_EXIST = "Usuário já existe!";
-const ROLE_ALREADY_EXIST = "Role já existe!";
-const USER_ROLE = "Usuário já possui esta role!";
-const USER_ROLE_ALREADY_EXIST = "UserRole já existe!";
-const USER_ADDRESS_ALREADY_EXIST = "Usuário já possui endereço!";
-const USER_ALREADY_HAVE_PHONE = "Usuário já possui telefone!";
-const CREATION_ERROR_TOKEN = "Erro ao criar o token!";
-const EXPIRED_SESSION = "Sessão expirada!";
-const INVALID_TOKEN = "Token invalido!";
-const REQUIRED_TOKEN = "Token não enviado!";
-const PHONE_ALREADY_EXIST = "Telefone já existe!";
-const SUCCESS = "Sucesso!";
-
-export {
-  NOT_FOUND,
-  ID_NOT_FOUND,
-  REQUIRED_FIELD,
-  INVALID_EMAIL,
-  INVALID_PASSWORD,
-  USER_ALREADY_EXIST,
-  ROLE_ALREADY_EXIST,
-  USER_ROLE,
-  USER_ROLE_ALREADY_EXIST,
-  CREATION_ERROR_TOKEN,
-  EXPIRED_SESSION,
-  INVALID_TOKEN,
-  SUCCESS,
-  PHONE_ALREADY_EXIST,
-  INVALID_PHONE,
-  USER_ADDRESS_ALREADY_EXIST,
-  USER_ALREADY_HAVE_PHONE,
-  REQUIRED_TOKEN,
+const Erros = {
+  NOT_FOUND: "Nada encontrado!",
+  ID_NOT_FOUND: "Campo ID não encontrado!",
+  REQUIRED_FIELD: "Dados faltando!",
+  INVALID_EMAIL: "E-mail invalido!",
+  INVALID_PASSWORD: "Senha invalida!",
+  INVALID_PHONE: "Telefone invalido!",
+  USER_ALREADY_EXIST: "Usuário já existe!",
+  ROLE_ALREADY_EXIST: "Role já existe!",
+  USER_ROLE: "Usuário já possui esta role!",
+  USER_NOT_FOUND: "Usuário não encontrado!",
+  USER_ROLE_ALREADY_EXIST: "UserRole já existe!",
+  COMPANY_ROLE_ALREADY_EXIST: "Empresa já existe!",
+  USER_ADDRESS_ALREADY_EXIST: "Usuário já possui endereço!",
+  USER_ALREADY_HAVE_PHONE: "Usuário já possui telefone!",
+  CREATION_ERROR_TOKEN: "Erro ao criar o token!",
+  EXPIRED_SESSION: "Sessão expirada!",
+  INVALID_TOKEN: "Token invalido!",
+  REQUIRED_TOKEN: "Token não enviado!",
+  PHONE_ALREADY_EXIST: "Telefone já existe!",
+  CNPJ_ALREADY_EXIST: "CNPJ já existe!",
+  IE_ALREADY_EXIST: "Inscrição estadual já existe!",
+  SUCCESS: "Sucesso!",
 };
+
+export { Erros };

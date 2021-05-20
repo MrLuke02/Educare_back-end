@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { RoleController } from "../controllers/RoleController";
-import * as Erros from "../env/status";
+import { Erros } from "../env/status";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
 
 // criando um objeto de RoleController

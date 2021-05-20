@@ -12,7 +12,7 @@ import {
   validationPhone,
 } from "../util/user/UserUtil";
 import md5 from "md5";
-import * as Erros from "../env/status";
+import { Erros } from "../env/status";
 
 class UserController {
   // metodo assincrono para o cadastro de usuários
@@ -349,6 +349,24 @@ class UserController {
 
     // retornando os usuários encontrados no DB
     return res.status(200).json({ users: usersDTO });
+  }
+
+  async readFromId(id: string) {
+    // pegando o repositorio customizado/personalizado
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    // pesquisando um usuário pelo email e senha
+    const user = await usersRepository.findOne({
+      id,
+    });
+
+    // verificanddo se existe um usuário com o email e senha enviados
+    if (!user) {
+      // retornando uma resposta em json
+      return false;
+    }
+
+    return true;
   }
 }
 
