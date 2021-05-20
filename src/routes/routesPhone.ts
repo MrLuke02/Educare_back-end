@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { PhoneController } from "../controllers/PhoneController";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
-import * as Erros from "../env/status";
+import { Erros } from "../env/status";
 
 // criando um objeto de RoleController
 const phoneController = new PhoneController();

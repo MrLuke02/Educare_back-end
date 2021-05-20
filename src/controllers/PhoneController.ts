@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import * as Erros from "../env/status";
+import { Erros } from "../env/status";
 import { PhoneResponseDTO } from "../models/DTO/phone/PhoneResponseDTO";
 import { PhonesRepository } from "../repositories/PhoneRepository";
 import { validationPhone } from "../util/user/UserUtil";

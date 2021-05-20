@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { UserRoleResponseDTO } from "../models/DTO/userRole/UserRoleResponseDTO";
 import { UserRoleRepository } from "../repositories/UserRoleRepository";
-import * as Erros from "../env/status";
+import { Erros } from "../env/status";
 
 class UserRoleController {
   // metodo assincrono para a criação de user_roles
@@ -97,6 +97,17 @@ class UserRoleController {
     return userRole_role;
   }
 
+  async readFromUserRole(userID: string, roleID: string) {
+    // pegando o repositorio customizado/personalizado
+    const userRoleRepository = getCustomRepository(UserRoleRepository);
+
+    // pesquisando userRole e role pelo id do usuário
+    const userRole_role = await userRoleRepository.findOne({ userID, roleID });
+
+    // retornando a userRole pesquisada
+    return userRole_role;
+  }
+
   // metodo assincrono para a atualização dos dados das userRoles
   async update(req: Request, res: Response) {
     // capturando e armazenando o id da userRole do corpo da requisição
@@ -154,9 +165,14 @@ class UserRoleController {
   }
 
   // metodo assincrono para a deleção de userRoles
-  async delete(req: Request, res: Response) {
+  async delete(req: Request, res: Response, porpsUserRole?: any) {
     // capturando e armazenando o id da userRole do parametro do URL
-    const { id } = req.params;
+    let { id } = req.params;
+
+    if (Object.values(porpsUserRole).length !== 0) {
+      // sobrescrevendo as variaveis com os valores de props
+      [id] = porpsUserRole;
+    }
 
     // pegando o repositorio customizado/personalizado
     const userRolesRepository = getCustomRepository(UserRoleRepository);
@@ -174,6 +190,11 @@ class UserRoleController {
 
     // deletando a userRole a partir do id
     await userRolesRepository.delete({ id });
+
+    if (Object.values(porpsUserRole).length !== 0) {
+      // sobrescrevendo as variaveis com os valores de props
+      return true;
+    }
 
     // retornando um json de sucesso
     return res.status(200).json({ Message: Erros.SUCCESS });

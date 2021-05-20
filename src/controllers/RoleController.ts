@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { RoleResponseDTO } from "../models/DTO/role/RoleResponseDTO";
 import { RolesRepository } from "../repositories/RolesRepository";
-import * as Erros from "../env/status";
+import { Erros } from "../env/status";
 
 class RoleController {
   // metodo assincrono para o cadastro de roles

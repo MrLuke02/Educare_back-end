@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import { AddressController } from "../controllers/AddressController";
 import { VerifyTokenAddress } from "../auth/middleware/address/verifyTokenAddress";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
-import * as Erros from "../env/status";
+import { Erros } from "../env/status";
 
 // criando um objeto de RoleController
 const addressController = new AddressController();

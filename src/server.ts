@@ -8,6 +8,7 @@ import {
   routerUserRole,
   routerPhone,
   routerAddress,
+  routerCompany,
 } from "./routes/routes";
 
 // Inicia uma aplicação express
@@ -16,7 +17,14 @@ const app = express();
 // configurações do servidor
 app.use(cors());
 app.use(express.json());
-app.use(routerUser, routerRole, routerPhone, routerUserRole, routerAddress);
+app.use(
+  routerUser,
+  routerRole,
+  routerPhone,
+  routerUserRole,
+  routerAddress,
+  routerCompany
+);
 
 // Inicia o servidor da api na porta 3333
 app.listen(3333, () => console.log("Servidor Rodando!"));
