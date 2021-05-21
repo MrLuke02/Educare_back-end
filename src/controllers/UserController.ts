@@ -6,11 +6,7 @@ import { UsersRepository } from "../repositories/UserRepository";
 import { UserRoleController } from "./UserRoleController";
 import { RoleController } from "./RoleController";
 import { PhoneController } from "./PhoneController";
-import {
-  validationEmail,
-  validationPassword,
-  validationPhone,
-} from "../util/user/UserUtil";
+import * as validation from "../util/user/UserUtil";
 import md5 from "md5";
 import { Erros } from "../env/status";
 
@@ -27,18 +23,18 @@ class UserController {
     }
 
     // verificando se o email não é valido
-    if (!validationEmail(email)) {
+    if (!validation.validationEmail(email)) {
       // retornando um json de erro personalizado
       return res.status(422).json({
         Message: Erros.INVALID_EMAIL,
       });
       // verificando se a senha não é valida
-    } else if (!validationPassword(password)) {
+    } else if (!validation.validationPassword(password)) {
       // retornando um json de erro personalizado
       return res.status(422).json({
         Message: Erros.INVALID_PASSWORD,
       });
-    } else if (!validationPhone(phoneNumber)) {
+    } else if (!validation.validationPhone(phoneNumber)) {
       // retornando um json de erro personalizado
       return res.status(422).json({
         Message: Erros.INVALID_PHONE,
@@ -210,13 +206,13 @@ class UserController {
       } = req.body;
 
       // verificando se o email é valido
-      if (!validationEmail(email)) {
+      if (!validation.validationEmail(email)) {
         // retornando um json de erro personalizado
         return res.status(422).json({
           Message: Erros.INVALID_EMAIL,
         });
         // verificando se a senha foi passada e se é valida
-      } else if (!validationPassword(password)) {
+      } else if (!validation.validationPassword(password)) {
         // retornando um json de erro personalizado
         return res.status(422).json({
           Message: Erros.INVALID_PASSWORD,

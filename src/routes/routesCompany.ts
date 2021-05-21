@@ -16,7 +16,11 @@ routerCompany.post(
   verifyTokenCompany.verifyCreate,
   companyController.create
 );
-routerCompany.post("/api/v1/getCompany", companyController.read);
+routerCompany.post(
+  "/api/v1/getCompany",
+  verifyTokenUser.verifyTokenAuth,
+  companyController.read
+);
 
 routerCompany.get(
   "/api/v1/company/:id",

@@ -2,14 +2,7 @@ import cors from "cors";
 import express from "express";
 import "reflect-metadata";
 import "./database";
-import {
-  routerRole,
-  routerUser,
-  routerUserRole,
-  routerPhone,
-  routerAddress,
-  routerCompany,
-} from "./routes/routes";
+import * as routes from "./routes/routes";
 
 // Inicia uma aplicação express
 const app = express();
@@ -18,12 +11,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(
-  routerUser,
-  routerRole,
-  routerPhone,
-  routerUserRole,
-  routerAddress,
-  routerCompany
+  routes.routerUser,
+  routes.routerRole,
+  routes.routerPhone,
+  routes.routerUserRole,
+  routes.routerAddress,
+  routes.routerCompany,
+  routes.routerPlan
 );
 
 // Inicia o servidor da api na porta 3333

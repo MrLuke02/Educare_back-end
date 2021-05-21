@@ -32,10 +32,15 @@ routerAddress.get(
   addressController.show
 );
 // criando a rota de pesquisa da Role pelo id
-routerAddress.get("/api/v1/address/:id", addressController.read);
+routerAddress.get(
+  "/api/v1/address/:id",
+  verifyTokenUser.verifyTokenAuth,
+  addressController.read
+);
 // criando a rota de pesquisa da Role pelo id
 routerAddress.get(
   "/api/v1/addressUser/:userID",
+  verifyTokenUser.verifyTokenAuth,
   addressController.readFromUser
 );
 
