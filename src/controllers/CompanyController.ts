@@ -6,6 +6,7 @@ import { CompanyResponseDTO } from "../models/DTO/company/CompanyResponseDTO";
 import { UserController } from "./UserController";
 import { RoleController } from "./RoleController";
 import { UserRoleController } from "./UserRoleController";
+import * as validation from "../util/user/UserUtil";
 
 class CompanyController {
   async create(req: Request, res: Response) {
@@ -18,6 +19,10 @@ class CompanyController {
     } else if (!userID) {
       return res.status(422).json({
         Message: Erros.ID_NOT_FOUND,
+      });
+    } else if (!validation.validationCnpj(cnpj)) {
+      return res.status(422).json({
+        Message: Erros.INVALID_CNPJ,
       });
     }
 
@@ -180,6 +185,12 @@ class CompanyController {
       cnpj = company.cnpj,
       inscricaoEstadual = company.inscricaoEstadual,
     } = req.body;
+
+    if (!validation.validationCnpj(cnpj)) {
+      return res.status(422).json({
+        Message: Erros.INVALID_CNPJ,
+      });
+    }
 
     if (
       !(

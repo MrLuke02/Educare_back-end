@@ -4,6 +4,7 @@ import { routerUserRole } from "./routesUserRole";
 import { routerPhone } from "./routesPhone";
 import { routerAddress } from "./routesAddress";
 import { routerCompany } from "./routesCompany";
+import { routerPlan } from "./routesPlan";
 
 // importando e exportando as rotas de usuário
 export {
@@ -13,4 +14,5 @@ export {
   routerPhone,
   routerAddress,
   routerCompany,
+  routerPlan,
 };

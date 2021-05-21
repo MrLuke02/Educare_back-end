@@ -30,9 +30,17 @@ routerPhone.get(
   phoneController.show
 );
 // criando a rota de pesquisa da Role pelo id
-routerPhone.get("/api/v1/phone/:id", phoneController.readFromId);
+routerPhone.get(
+  "/api/v1/phone/:id",
+  verifyTokenUser.verifyTokenAuth,
+  phoneController.readFromId
+);
 // criando a rota de pesquisa da Role pelo id
-routerPhone.get("/api/v1/phoneUser/:userID", phoneController.readFromUser);
+routerPhone.get(
+  "/api/v1/phoneUser/:userID",
+  verifyTokenUser.verifyTokenAuth,
+  phoneController.readFromUser
+);
 
 routerPhone.get("/api/v1/phone", (req: Request, res: Response) => {
   return res.status(422).json({

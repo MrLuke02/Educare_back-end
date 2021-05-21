@@ -3,7 +3,7 @@ import { getCustomRepository } from "typeorm";
 import { Erros } from "../env/status";
 import { PhoneResponseDTO } from "../models/DTO/phone/PhoneResponseDTO";
 import { PhonesRepository } from "../repositories/PhoneRepository";
-import { validationPhone } from "../util/user/UserUtil";
+import * as validation from "../util/user/UserUtil";
 
 class PhoneController {
   // metodo assincrono para o cadastro de phones
@@ -22,7 +22,7 @@ class PhoneController {
       });
     }
 
-    if (!validationPhone(phoneNumber)) {
+    if (!validation.validationPhone(phoneNumber)) {
       // retornando um json de erro personalizado
       return res.status(422).json({
         Message: Erros.INVALID_PHONE,
@@ -180,7 +180,7 @@ class PhoneController {
     // capturando o tipo numero de telefone e o id do usuário passado no corpo da requisição, caso não seja passado nada, pega o valor que ja está cadastrado no phone
     let { phoneNumber = phone.phoneNumber, userID = phone.userID } = req.body;
 
-    if (!validationPhone(phoneNumber)) {
+    if (!validation.validationPhone(phoneNumber)) {
       // retornando um json de erro personalizado
       return res.status(422).json({
         Message: Erros.INVALID_PHONE,
