@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { verifyToken } from "../../token.auth";
 import { Erros } from "../../../env/status";
 import { CompanyController } from "../../../controllers/CompanyController";
+import { CompanyAddressController } from "../../../controllers/CompanyAddressController";
 
 // classe para a verificação dos tokens
 class VerifyTokenCompany {

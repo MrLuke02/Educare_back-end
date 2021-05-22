@@ -3,6 +3,7 @@ import { getCustomRepository } from "typeorm";
 import { Erros } from "../env/status";
 import { AddressRepository } from "../repositories/AddressRepository";
 import { AddressResponseDTO } from "../models/DTO/address/AddressResponseDTO";
+import { UserController } from "./UserController";
 
 class AddressController {
   async create(req: Request, res: Response) {
@@ -40,6 +41,16 @@ class AddressController {
       return res.status(422).json({ Message: Erros.REQUIRED_FIELD });
     }
 
+    const userController = new UserController();
+
+    const user = await userController.readFromId(userID);
+
+    if (!user) {
+      return res.status(406).json({
+        Message: Erros.NOT_FOUND,
+      });
+    }
+
     const address = addressRepository.create({
       street,
       houseNumber,
@@ -52,9 +63,11 @@ class AddressController {
       userID,
     });
 
-    addressRepository.save(address);
+    const addressSaved = await addressRepository.save(address);
 
-    return res.status(201).json(AddressResponseDTO.responsePhoneDTO(address));
+    return res
+      .status(201)
+      .json({ address: AddressResponseDTO.responseAddressDTO(addressSaved) });
   }
 
   async read(req: Request, res: Response) {
@@ -70,7 +83,9 @@ class AddressController {
       });
     }
 
-    return res.status(200).json(AddressResponseDTO.responsePhoneDTO(address));
+    return res
+      .status(200)
+      .json({ address: AddressResponseDTO.responseAddressDTO(address) });
   }
 
   async readFromUser(req: Request, res: Response) {
@@ -86,7 +101,9 @@ class AddressController {
       });
     }
 
-    return res.status(200).json(AddressResponseDTO.responsePhoneDTO(address));
+    return res
+      .status(200)
+      .json({ address: AddressResponseDTO.responseAddressDTO(address) });
   }
 
   async update(req: Request, res: Response) {
@@ -114,7 +131,24 @@ class AddressController {
       userID = address.userID,
     } = req.body;
 
-    addressRepository.update(id, {
+    const userController = new UserController();
+
+    const user = await userController.readFromId(userID);
+
+    if (!user) {
+      return res.status(406).json({
+        Message: Erros.NOT_FOUND,
+      });
+    }
+
+    if (userID !== address.userID) {
+      // retornando um json de erro personalizado
+      return res.status(422).json({
+        Message: Erros.INVALID_ID,
+      });
+    }
+
+    await addressRepository.update(id, {
       street,
       houseNumber,
       bairro,
@@ -128,7 +162,9 @@ class AddressController {
 
     address = await addressRepository.findOne(id);
 
-    return res.status(200).json(AddressResponseDTO.responsePhoneDTO(address));
+    return res
+      .status(200)
+      .json({ address: AddressResponseDTO.responseAddressDTO(address) });
   }
 
   async delete(req: Request, res: Response) {
@@ -161,7 +197,7 @@ class AddressController {
     }
 
     const address = addresses.map((address) => {
-      return AddressResponseDTO.responsePhoneDTO(address);
+      return AddressResponseDTO.responseAddressDTO(address);
     });
 
     return res.status(200).json({ addresses: address });

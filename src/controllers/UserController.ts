@@ -89,7 +89,6 @@ class UserController {
         Message: Erros.NOT_FOUND,
       });
     }
-
     // savando o usuário criado a cima
     const userSaved = await usersRepository.save(user);
 
