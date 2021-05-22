@@ -38,10 +38,6 @@ class PhoneController {
       return res.status(409).json({
         Message: Erros.USER_ALREADY_HAVE_PHONE,
       });
-    } else if (userAlreadyHavePhone.length === 0) {
-      return res.status(409).json({
-        Message: Erros.NOT_FOUND,
-      });
     }
 
     // pesquisando um phone pelo numero
