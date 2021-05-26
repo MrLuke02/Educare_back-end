@@ -2,6 +2,8 @@ import { UserRole } from "../../UserRole";
 
 // criando o UserRoleResponseDTO para retorno, como os campos que se deseja retornar
 class UserRoleResponseDTO {
+  private id: string;
+
   private userID: string;
 
   private roleID: string;
@@ -9,7 +11,7 @@ class UserRoleResponseDTO {
   // criando o cronstrutor do UserRoleResponseDTO a ser retornado, passando para ele a UserRole
   constructor(userRole: UserRole) {
     // capturando todos os atributos da UserRole, menos a data de criação e o id
-    const { createdAt, id, ...props } = userRole;
+    const { createdAt, ...props } = userRole;
     // alimentando o UserRoleResponseDTO com as propriedades da UserRole
     Object.assign(this, props);
   }

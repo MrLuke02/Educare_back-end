@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { PhoneController } from "../controllers/PhoneController";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
-import { Erros } from "../env/status";
+import { Status } from "../env/status";
 
 // criando um objeto de RoleController
 const phoneController = new PhoneController();
@@ -44,13 +44,13 @@ routerPhone.get(
 
 routerPhone.get("/api/v1/phone", (req: Request, res: Response) => {
   return res.status(422).json({
-    Message: Erros.ID_NOT_FOUND,
+    Message: Status.ID_NOT_FOUND,
   });
 });
 
 routerPhone.get("/api/v1/phoneUser", (req: Request, res: Response) => {
   return res.status(422).json({
-    Message: Erros.ID_NOT_FOUND,
+    Message: Status.ID_NOT_FOUND,
   });
 });
 
@@ -63,7 +63,7 @@ routerPhone.delete(
 
 routerPhone.delete("/api/v1/phone", (req: Request, res: Response) => {
   return res.status(422).json({
-    Message: Erros.ID_NOT_FOUND,
+    Message: Status.ID_NOT_FOUND,
   });
 });
 

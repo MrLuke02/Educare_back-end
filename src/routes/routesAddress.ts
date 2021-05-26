@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import { AddressController } from "../controllers/AddressController";
 import { VerifyTokenAddress } from "../auth/middleware/address/verifyTokenAddress";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
-import { Erros } from "../env/status";
+import { Status } from "../env/status";
 
 // criando um objeto de RoleController
 const addressController = new AddressController();
@@ -46,13 +46,13 @@ routerAddress.get(
 
 routerAddress.get("/api/v1/address", (req: Request, res: Response) => {
   return res.status(422).json({
-    Message: Erros.ID_NOT_FOUND,
+    Message: Status.ID_NOT_FOUND,
   });
 });
 
 routerAddress.get("/api/v1/addressUser", (req: Request, res: Response) => {
   return res.status(422).json({
-    Message: Erros.ID_NOT_FOUND,
+    Message: Status.ID_NOT_FOUND,
   });
 });
 
@@ -65,7 +65,7 @@ routerAddress.delete(
 
 routerAddress.delete("/api/v1/address", (req: Request, res: Response) => {
   return res.status(422).json({
-    Message: Erros.ID_NOT_FOUND,
+    Message: Status.ID_NOT_FOUND,
   });
 });
 

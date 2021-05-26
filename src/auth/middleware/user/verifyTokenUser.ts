@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { verifyToken } from "../../token.auth";
-import { Erros } from "../../../env/status";
+import { Status } from "../../../env/status";
 
 // classe para a verificação dos tokens
 class VerifyTokenUser {
@@ -10,14 +10,14 @@ class VerifyTokenUser {
 
     if (!id) {
       return res.status(422).json({
-        Message: Erros.ID_NOT_FOUND,
+        Message: Status.ID_NOT_FOUND,
       });
     }
 
     let token;
     // armazenando o token retornado da função
     if (!req.headers.authorization) {
-      return res.status(401).json({ Message: Erros.REQUIRED_TOKEN });
+      return res.status(401).json({ Message: Status.REQUIRED_TOKEN });
     } else {
       token = await verifyToken(req.headers.authorization.split(" ")[1], res);
     }
@@ -31,7 +31,7 @@ class VerifyTokenUser {
       next();
     } else {
       // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-      return res.status(401).json({ Message: Erros.INVALID_TOKEN });
+      return res.status(401).json({ Message: Status.INVALID_TOKEN });
     }
   }
 
@@ -40,7 +40,7 @@ class VerifyTokenUser {
     let token;
     // armazenando o token retornado da função
     if (!req.headers.authorization) {
-      return res.status(401).json({ Message: Erros.REQUIRED_TOKEN });
+      return res.status(401).json({ Message: Status.REQUIRED_TOKEN });
     } else {
       token = await verifyToken(req.headers.authorization.split(" ")[1], res);
     }
@@ -51,7 +51,7 @@ class VerifyTokenUser {
       next();
     } else {
       // caso o token não seja de um administrador, retorna um json de error
-      return res.status(401).json({ Message: Erros.INVALID_TOKEN });
+      return res.status(401).json({ Message: Status.INVALID_TOKEN });
     }
   }
 
@@ -61,14 +61,14 @@ class VerifyTokenUser {
 
     if (!id) {
       return res.status(422).json({
-        Message: Erros.ID_NOT_FOUND,
+        Message: Status.ID_NOT_FOUND,
       });
     }
 
     let token;
     // armazenando o token retornado da função
     if (!req.headers.authorization) {
-      return res.status(401).json({ Message: Erros.REQUIRED_TOKEN });
+      return res.status(401).json({ Message: Status.REQUIRED_TOKEN });
     } else {
       token = await verifyToken(req.headers.authorization.split(" ")[1], res);
     }
@@ -82,7 +82,7 @@ class VerifyTokenUser {
       next();
     } else {
       // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-      return res.status(401).json({ Message: Erros.INVALID_TOKEN });
+      return res.status(401).json({ Message: Status.INVALID_TOKEN });
     }
   }
 
@@ -91,7 +91,7 @@ class VerifyTokenUser {
     let token;
     // armazenando o token retornado da função
     if (!req.headers.authorization) {
-      return res.status(401).json({ Message: Erros.REQUIRED_TOKEN });
+      return res.status(401).json({ Message: Status.REQUIRED_TOKEN });
     } else {
       token = await verifyToken(req.headers.authorization.split(" ")[1], res);
     }
@@ -102,7 +102,7 @@ class VerifyTokenUser {
       next();
     } else {
       // caso o token não seja de um administrador, retorna um json de error
-      return res.status(401).json({ Message: Erros.INVALID_TOKEN });
+      return res.status(401).json({ Message: Status.INVALID_TOKEN });
     }
   }
 
@@ -110,7 +110,7 @@ class VerifyTokenUser {
   async verifyTokenAuth(req: Request, res: Response, next: Function) {
     // armazenando o token retornado da função
     if (!req.headers.authorization) {
-      return res.status(401).json({ Message: Erros.REQUIRED_TOKEN });
+      return res.status(401).json({ Message: Status.REQUIRED_TOKEN });
     } else {
       await verifyToken(req.headers.authorization.split(" ")[1], res);
     }

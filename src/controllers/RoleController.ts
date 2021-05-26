@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { RoleResponseDTO } from "../models/DTO/role/RoleResponseDTO";
 import { RolesRepository } from "../repositories/RolesRepository";
-import { Erros } from "../env/status";
+import { Status } from "../env/status";
 
 class RoleController {
   // metodo assincrono para o cadastro de roles
@@ -14,7 +14,7 @@ class RoleController {
     if (!type) {
       // retornando um json de erro personalizado
       return res.status(422).json({
-        Message: Erros.REQUIRED_FIELD,
+        Message: Status.REQUIRED_FIELD,
       });
     }
 
@@ -28,7 +28,7 @@ class RoleController {
     if (roleExist) {
       // retornando uma resposta de erro em json
       return res.status(409).json({
-        Message: Erros.ROLE_ALREADY_EXIST,
+        Message: Status.ROLE_ALREADY_EXIST,
       });
     }
 
@@ -61,7 +61,7 @@ class RoleController {
     if (!role) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -91,7 +91,7 @@ class RoleController {
     if (!id) {
       // retornando um json de erro personalizado
       return res.status(422).json({
-        Message: Erros.ID_NOT_FOUND,
+        Message: Status.ID_NOT_FOUND,
       });
     }
 
@@ -105,7 +105,7 @@ class RoleController {
     if (!role) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -118,7 +118,7 @@ class RoleController {
       const roleExists = await rolesRepository.findOne({ type });
       if (roleExists) {
         // se encontrar algo retorna um json de erro
-        return res.status(409).json({ Message: Erros.ROLE_ALREADY_EXIST });
+        return res.status(409).json({ Message: Status.ROLE_ALREADY_EXIST });
       }
     }
 
@@ -151,7 +151,7 @@ class RoleController {
     if (!role) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -159,7 +159,7 @@ class RoleController {
     await rolesRepository.delete({ id });
 
     // retornando um json de sucesso
-    return res.status(200).json({ Message: Erros.SUCCESS });
+    return res.status(200).json({ Message: Status.SUCCESS });
   }
 
   // metodo assincrono para a listagem de todas as roles
@@ -174,7 +174,7 @@ class RoleController {
     if (roles.length === 0) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 

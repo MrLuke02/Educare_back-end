@@ -1,4 +1,4 @@
-const Erros = {
+const Status = {
   NOT_FOUND: "Nada encontrado!",
   ID_NOT_FOUND: "Campo ID não encontrado!",
   REQUIRED_FIELD: "Dados faltando!",
@@ -8,6 +8,7 @@ const Erros = {
   INVALID_ID: "Id inválido!",
   USER_ALREADY_EXIST: "Usuário já existe!",
   ROLE_ALREADY_EXIST: "Role já existe!",
+  EMAIL_ALREADY_EXIST: "E-mail já existe!",
   USER_ROLE: "Usuário já possui esta role!",
   USER_NOT_FOUND: "Usuário não encontrado!",
   USER_ROLE_ALREADY_EXIST: "UserRole já existe!",
@@ -15,6 +16,7 @@ const Erros = {
   USER_ADDRESS_ALREADY_EXIST: "Usuário já possui endereço!",
   COMPANY_ADDRESS_ALREADY_EXIST: "Empresa já possui endereço!",
   USER_ALREADY_HAVE_PHONE: "Usuário já possui telefone!",
+  COMPANY_ALREADY_HAVE_PHONE: "Empresa já possui telefone!",
   CREATION_ERROR_TOKEN: "Erro ao criar o token!",
   EXPIRED_SESSION: "Sessão expirada!",
   INVALID_TOKEN: "Token invalido!",
@@ -27,4 +29,4 @@ const Erros = {
   SUCCESS: "Sucesso!",
 };
 
-export { Erros };
+export { Status };

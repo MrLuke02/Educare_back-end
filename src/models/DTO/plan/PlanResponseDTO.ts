@@ -2,6 +2,8 @@ import { Plan } from "../../Plan";
 
 // criando o UserResponseDTO para retorno, como os campos que se deseja retornar
 class PlanResponseDTO {
+  private id: string;
+
   private name: string;
 
   private description: string;
@@ -11,7 +13,7 @@ class PlanResponseDTO {
   // criando o cronstrutor do UserResponseDTO a ser retornado, passando para ele o usuário
   constructor(plan: Plan) {
     // capturando todos os atributos da usuário, menos a senha, a data de criação e o id
-    const { createdAt, id, ...props } = plan;
+    const { createdAt, ...props } = plan;
     // alimentando o UserResponseDTO com as propriedades do usuário
     Object.assign(this, props);
   }

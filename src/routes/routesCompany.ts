@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import { CompanyController } from "../controllers/CompanyController";
 import { VerifyTokenCompany } from "../auth/middleware/company/verifyTokenCompany";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
-import { Erros } from "../env/status";
+import { Status } from "../env/status";
 
 // criando um objeto de RoleController
 const companyController = new CompanyController();
@@ -29,7 +29,7 @@ routerCompany.get(
 );
 routerCompany.get("/api/v1/company/", (req: Request, res: Response) => {
   return res.status(422).json({
-    Message: Erros.ID_NOT_FOUND,
+    Message: Status.ID_NOT_FOUND,
   });
 });
 routerCompany.get(
@@ -38,11 +38,7 @@ routerCompany.get(
   companyController.show
 );
 
-routerCompany.put(
-  "/api/v1/company",
-  verifyTokenCompany.verifyUpdate,
-  companyController.update
-);
+routerCompany.put("/api/v1/company", companyController.update);
 
 routerCompany.delete(
   "/api/v1/company/:id",
@@ -51,7 +47,7 @@ routerCompany.delete(
 );
 routerCompany.delete("/api/v1/company/", (req: Request, res: Response) => {
   return res.status(422).json({
-    Message: Erros.ID_NOT_FOUND,
+    Message: Status.ID_NOT_FOUND,
   });
 });
 

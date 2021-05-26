@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import { Erros } from "../env/status";
+import { Status } from "../env/status";
 import { AddressRepository } from "../repositories/AddressRepository";
 import { AddressResponseDTO } from "../models/DTO/address/AddressResponseDTO";
 import { UserController } from "./UserController";
@@ -26,7 +26,7 @@ class AddressController {
     if (addressExist) {
       // retornando um json de erro personalizado
       return res.status(409).json({
-        Message: Erros.USER_ADDRESS_ALREADY_EXIST,
+        Message: Status.USER_ADDRESS_ALREADY_EXIST,
       });
     } else if (
       !street ||
@@ -38,7 +38,7 @@ class AddressController {
       !userID
     ) {
       // retornando um json de erro personalizado
-      return res.status(422).json({ Message: Erros.REQUIRED_FIELD });
+      return res.status(422).json({ Message: Status.REQUIRED_FIELD });
     }
 
     const userController = new UserController();
@@ -47,7 +47,7 @@ class AddressController {
 
     if (!user) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -79,7 +79,7 @@ class AddressController {
 
     if (!address) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -97,7 +97,7 @@ class AddressController {
 
     if (!address) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -115,7 +115,7 @@ class AddressController {
 
     if (!address) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -131,20 +131,10 @@ class AddressController {
       userID = address.userID,
     } = req.body;
 
-    const userController = new UserController();
-
-    const user = await userController.readFromId(userID);
-
-    if (!user) {
-      return res.status(406).json({
-        Message: Erros.NOT_FOUND,
-      });
-    }
-
     if (userID !== address.userID) {
       // retornando um json de erro personalizado
       return res.status(422).json({
-        Message: Erros.INVALID_ID,
+        Message: Status.INVALID_ID,
       });
     }
 
@@ -176,7 +166,7 @@ class AddressController {
 
     if (!address) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -192,7 +182,7 @@ class AddressController {
 
     if (addresses.length == 0) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 

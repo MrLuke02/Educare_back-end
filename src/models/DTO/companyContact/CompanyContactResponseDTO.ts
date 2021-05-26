@@ -1,38 +1,28 @@
-import { Address } from "../../Address";
+import { CompanyContact } from "../../CompanyContact";
 
 // criando o RoleResponseDTO para retorno, como os campos que se deseja retornar
-class AddressResponseDTO {
+class CompanyContactResponseDTO {
   private id: string;
 
-  private street: string;
+  private email: string;
 
-  private houseNumber: string;
-
-  private bairro: string;
-
-  private state: string;
-
-  private city: string;
-
-  private cep: string;
-
-  private referencePoint: string;
-
-  private complement: string;
+  private phone: string;
 
   // criando o cronstrutor do RoleResponseDTO a ser retornado, passando para ele a role
-  constructor(address: Address) {
+  constructor(companyContact: CompanyContact) {
     // capturando todos os atributos da role, menos a data de criação e o id
-    const { createdAt, userID, ...props } = address;
+    const { createdAt, companyID, ...props } = companyContact;
     // alimentando o RoleResponseDTO com as propriedades da role
     Object.assign(this, props);
   }
 
   // criando o metodo statico que para possa acessa-lo atravez da classe, esse metodo retorna um RoleResponseDTO com todos os seus atributos preenchidos com os dados da role
-  static responseAddressDTO(address: Address): AddressResponseDTO {
-    return new AddressResponseDTO(address);
+  static responseCompanyContactDTO(
+    companyContact: CompanyContact
+  ): CompanyContactResponseDTO {
+    return new CompanyContactResponseDTO(companyContact);
   }
 }
 
 // exportando o RoleResponseDTO
-export { AddressResponseDTO };
+export { CompanyContactResponseDTO };

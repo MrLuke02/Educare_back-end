@@ -18,7 +18,8 @@ app.use(
   routes.routerAddress,
   routes.routerCompany,
   routes.routerPlan,
-  routes.routerCompanyAddress
+  routes.routerCompanyAddress,
+  routes.routesCompanyContact
 );
 
 // Inicia o servidor da api na porta 3333

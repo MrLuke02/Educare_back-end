@@ -2,12 +2,14 @@ import { Role } from "../../Role";
 
 // criando o RoleResponseDTO para retorno, como os campos que se deseja retornar
 class RoleResponseDTO {
+  private id: string;
+
   private type: string;
 
   // criando o cronstrutor do RoleResponseDTO a ser retornado, passando para ele a role
   constructor(role: Role) {
     // capturando todos os atributos da role, menos a data de criação e o id
-    const { createdAt, id, ...props } = role;
+    const { createdAt, ...props } = role;
     // alimentando o RoleResponseDTO com as propriedades da role
     Object.assign(this, props);
   }

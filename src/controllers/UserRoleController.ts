@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { UserRoleResponseDTO } from "../models/DTO/userRole/UserRoleResponseDTO";
 import { UserRoleRepository } from "../repositories/UserRoleRepository";
-import { Erros } from "../env/status";
+import { Status } from "../env/status";
 
 class UserRoleController {
   // metodo assincrono para a criação de user_roles
@@ -16,7 +16,7 @@ class UserRoleController {
       [userID, roleID] = propsRole;
     } else if (!userID || !roleID) {
       return res.status(422).json({
-        Message: Erros.REQUIRED_FIELD,
+        Message: Status.REQUIRED_FIELD,
       });
     }
 
@@ -30,7 +30,7 @@ class UserRoleController {
     if (userRoleExist) {
       // retornando uma resposta em json
       return res.status(409).json({
-        Message: Erros.USER_ROLE,
+        Message: Status.USER_ROLE,
       });
     }
 
@@ -69,7 +69,7 @@ class UserRoleController {
     if (!userRole) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -115,7 +115,7 @@ class UserRoleController {
 
     if (!id) {
       return res.status(422).json({
-        Message: Erros.ID_NOT_FOUND,
+        Message: Status.ID_NOT_FOUND,
       });
     }
 
@@ -129,7 +129,7 @@ class UserRoleController {
     if (!userRole) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -145,8 +145,10 @@ class UserRoleController {
       });
       if (userRoleExists) {
         // se encontrar algo retorna um json de erro
-        return res.status(409).json({ Message: Erros.USER_ROLE });
+        return res.status(409).json({ Message: Status.USER_ROLE });
       }
+    } else if (userRole.userID !== userID) {
+      return res.status(422).json({ Message: Status.INVALID_ID });
     }
 
     // atualizando a userRole a partir do id
@@ -184,7 +186,7 @@ class UserRoleController {
     if (!userRole) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -197,7 +199,7 @@ class UserRoleController {
     }
 
     // retornando um json de sucesso
-    return res.status(200).json({ Message: Erros.SUCCESS });
+    return res.status(200).json({ Message: Status.SUCCESS });
   }
 
   // metodo assincrono para a listagem de todas as userRoles
@@ -212,7 +214,7 @@ class UserRoleController {
     if (userRoles.length === 0) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 

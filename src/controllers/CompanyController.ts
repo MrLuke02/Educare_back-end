@@ -1,29 +1,36 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import { Erros } from "../env/status";
+import { Status } from "../env/status";
 import { CompaniesRepository } from "../repositories/CompanyRepository";
 import { CompanyResponseDTO } from "../models/DTO/company/CompanyResponseDTO";
 import { UserController } from "./UserController";
 import { RoleController } from "./RoleController";
 import { UserRoleController } from "./UserRoleController";
 import * as validation from "../util/user/UserUtil";
+import { CompanyContactController } from "./CompanyContactController";
+import { CompanyContactResponseDTO } from "../models/DTO/companyContact/CompanyContactResponseDTO";
 
 class CompanyController {
   async create(req: Request, res: Response) {
-    const { companyName, cnpj, inscricaoEstadual, userID } = req.body;
+    const { companyName, cnpj, inscricaoEstadual, email, phone, userID } =
+      req.body;
 
-    if (!companyName || !cnpj || !inscricaoEstadual) {
+    if (!companyName || !cnpj || !inscricaoEstadual || !email || !phone) {
       return res.status(422).json({
-        Message: Erros.REQUIRED_FIELD,
+        Message: Status.REQUIRED_FIELD,
       });
     } else if (!userID) {
       return res.status(422).json({
-        Message: Erros.ID_NOT_FOUND,
+        Message: Status.ID_NOT_FOUND,
       });
     } else if (!validation.validationCnpj(cnpj)) {
       return res.status(422).json({
-        Message: Erros.INVALID_CNPJ,
+        Message: Status.INVALID_CNPJ,
       });
+    } else if (!validation.validationEmail(email)) {
+      return res.status(422).json({ Message: Status.INVALID_EMAIL });
+    } else if (!validation.validationPhone(phone)) {
+      return res.status(422).json({ Message: Status.INVALID_PHONE });
     }
 
     const userController = new UserController();
@@ -32,7 +39,7 @@ class CompanyController {
 
     if (!user) {
       return res.status(406).json({
-        Message: Erros.USER_NOT_FOUND,
+        Message: Status.USER_NOT_FOUND,
       });
     }
 
@@ -46,11 +53,11 @@ class CompanyController {
 
     if (cnpjAlreadyExist) {
       return res.status(409).json({
-        Message: Erros.CNPJ_ALREADY_EXIST,
+        Message: Status.CNPJ_ALREADY_EXIST,
       });
     } else if (ieAlreadyExist) {
       return res.status(409).json({
-        Message: Erros.IE_ALREADY_EXIST,
+        Message: Status.IE_ALREADY_EXIST,
       });
     }
 
@@ -70,7 +77,17 @@ class CompanyController {
 
     if (!role) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
+      });
+    }
+
+    const companyContactController = new CompanyContactController();
+
+    const phoneExist = await companyContactController.readFromPhone(phone);
+
+    if (phoneExist) {
+      return res.status(409).json({
+        Message: Status.PHONE_ALREADY_EXIST,
       });
     }
 
@@ -88,9 +105,17 @@ class CompanyController {
       await userRoleController.create(req, res, propsRole);
     }
 
-    return res
-      .status(201)
-      .json({ company: CompanyResponseDTO.responseCompanyDTO(companySaved) });
+    const companyContact = await companyContactController.createFromController(
+      email,
+      phone,
+      companySaved.id
+    );
+
+    const companyDTO = CompanyResponseDTO.responseCompanyDTO(companySaved);
+    companyDTO["contact"] =
+      CompanyContactResponseDTO.responseCompanyContactDTO(companyContact);
+
+    return res.status(201).json({ company: companyDTO });
   }
 
   async read(req: Request, res: Response) {
@@ -98,7 +123,7 @@ class CompanyController {
 
     if (!cnpj || !inscricaoEstadual) {
       return res.status(422).json({
-        Message: Erros.REQUIRED_FIELD,
+        Message: Status.REQUIRED_FIELD,
       });
     }
 
@@ -111,7 +136,7 @@ class CompanyController {
 
     if (!company) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -129,7 +154,7 @@ class CompanyController {
       // verificando se foi enviado o id do usuário e o numero de telefone
     } else if (!id) {
       return res.status(406).json({
-        Message: Erros.ID_NOT_FOUND,
+        Message: Status.ID_NOT_FOUND,
       });
     }
 
@@ -139,7 +164,7 @@ class CompanyController {
 
     if (!company) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -161,7 +186,7 @@ class CompanyController {
     if (!id) {
       // retornando um json de erro personalizado
       return res.status(422).json({
-        Message: Erros.ID_NOT_FOUND,
+        Message: Status.ID_NOT_FOUND,
       });
     }
 
@@ -175,7 +200,17 @@ class CompanyController {
     if (!company) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
+      });
+    }
+
+    const companyContactController = new CompanyContactController();
+
+    let companyContact = await companyContactController.readFromCompany(id);
+
+    if (!companyContact) {
+      return res.status(406).json({
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -184,30 +219,68 @@ class CompanyController {
       companyName = company.companyName,
       cnpj = company.cnpj,
       inscricaoEstadual = company.inscricaoEstadual,
+      email = companyContact.email,
+      phone = companyContact.phone,
     } = req.body;
 
     if (!validation.validationCnpj(cnpj)) {
       return res.status(422).json({
-        Message: Erros.INVALID_CNPJ,
+        Message: Status.INVALID_CNPJ,
       });
+    } else if (!validation.validationEmail(email)) {
+      return res.status(422).json({ Message: Status.INVALID_EMAIL });
+    } else if (!validation.validationPhone(phone)) {
+      return res.status(422).json({ Message: Status.INVALID_PHONE });
     }
 
-    if (
-      !(
-        company.cnpj === cnpj && company.inscricaoEstadual === inscricaoEstadual
-      )
-    ) {
+    if (email !== companyContact.email) {
+      const emailExist = await companyContactController.readFromEmail(email);
+
+      if (emailExist) {
+        return res.status(409).json({
+          Message: Status.EMAIL_ALREADY_EXIST,
+        });
+      }
+    }
+
+    if (phone !== companyContact.phone) {
+      const phoneExist = await companyContactController.readFromPhone(phone);
+
+      if (phoneExist) {
+        return res.status(409).json({
+          Message: Status.PHONE_ALREADY_EXIST,
+        });
+      }
+    }
+
+    if (company.cnpj !== cnpj) {
       // pesquisando uma userRole pelo roleID
-      const companyExists = await companyRepository.findOne({
-        cnpj,
+      const cnpjExists = await companyRepository.findOne({ cnpj });
+      if (cnpjExists) {
+        // se encontrar algo retorna um json de erro
+        return res.status(409).json({ Message: Status.CNPJ_ALREADY_EXIST });
+      }
+    }
+
+    if (company.inscricaoEstadual !== inscricaoEstadual) {
+      const inscricaoEstadualExists = await companyRepository.findOne({
         inscricaoEstadual,
       });
-      if (companyExists) {
+      if (inscricaoEstadualExists) {
         // se encontrar algo retorna um json de erro
-        return res
-          .status(409)
-          .json({ Message: Erros.COMPANY_ROLE_ALREADY_EXIST });
+        return res.status(409).json({ Message: Status.IE_ALREADY_EXIST });
       }
+    }
+
+    companyContact = await companyContactController.updateFromController(
+      companyContact.id,
+      email,
+      phone,
+      company.id
+    );
+
+    if (!companyContact) {
+      return res.status(422).json({ Message: Status.INVALID_ID });
     }
 
     // atualizando a role a partir do id
@@ -219,6 +292,8 @@ class CompanyController {
 
     // pesquisando a role pelo id
     company = await companyRepository.findOne(id);
+    company["contact"] =
+      CompanyContactResponseDTO.responseCompanyContactDTO(companyContact);
 
     // retornando o DTO da role atualizada
     return res
@@ -235,7 +310,7 @@ class CompanyController {
 
     if (!company) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -254,7 +329,7 @@ class CompanyController {
 
       if (!role) {
         return res.status(406).json({
-          Message: Erros.NOT_FOUND,
+          Message: Status.NOT_FOUND,
         });
       }
 
@@ -265,7 +340,7 @@ class CompanyController {
 
       if (!userRole) {
         return res.status(406).json({
-          Message: Erros.NOT_FOUND,
+          Message: Status.NOT_FOUND,
         });
       }
 
@@ -278,10 +353,10 @@ class CompanyController {
       );
 
       if (userRoleDeleted !== res) {
-        return res.status(200).json({ Message: Erros.SUCCESS });
+        return res.status(200).json({ Message: Status.SUCCESS });
       }
     } else {
-      return res.status(200).json({ Message: Erros.SUCCESS });
+      return res.status(200).json({ Message: Status.SUCCESS });
     }
   }
 
@@ -292,7 +367,7 @@ class CompanyController {
 
     if (companies.length === 0) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
