@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import { Erros } from "../env/status";
+import { Status } from "../env/status";
 import { PlansRepository } from "../repositories/PlanRepository";
 import { PlanResponseDTO } from "../models/DTO/plan/PlanResponseDTO";
 
@@ -10,11 +10,11 @@ class PlanController {
 
     if (!name || !description || !value) {
       return res.status(422).json({
-        Message: Erros.REQUIRED_FIELD,
+        Message: Status.REQUIRED_FIELD,
       });
     } else if (typeof value === "string") {
       return res.status(422).json({
-        Message: Erros.INVALID_DATA,
+        Message: Status.INVALID_DATA,
       });
     }
 
@@ -42,7 +42,7 @@ class PlanController {
 
     if (!plan) {
       return res.status(409).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -59,7 +59,7 @@ class PlanController {
     if (!id) {
       // retornando um json de erro personalizado
       return res.status(422).json({
-        Message: Erros.ID_NOT_FOUND,
+        Message: Status.ID_NOT_FOUND,
       });
     }
 
@@ -73,7 +73,7 @@ class PlanController {
     if (!plan) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -109,13 +109,13 @@ class PlanController {
 
     if (!plan) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
     await plansRepository.delete(id);
 
-    return res.status(200).json({ Message: Erros.SUCCESS });
+    return res.status(200).json({ Message: Status.SUCCESS });
   }
 
   async show(req: Request, res: Response) {
@@ -125,7 +125,7 @@ class PlanController {
 
     if (plans.length === 0) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 

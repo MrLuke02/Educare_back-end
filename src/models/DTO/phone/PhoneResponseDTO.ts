@@ -2,12 +2,14 @@ import { Phone } from "../../Phone";
 
 // criando o RoleResponseDTO para retorno, como os campos que se deseja retornar
 class PhoneResponseDTO {
+  private id: string;
+
   private phoneNumber: string;
 
   // criando o cronstrutor do RoleResponseDTO a ser retornado, passando para ele a role
   constructor(phone: Phone) {
     // capturando todos os atributos da role, menos a data de criação e o id
-    const { createdAt, id, userID, ...props } = phone;
+    const { createdAt, userID, ...props } = phone;
     // alimentando o RoleResponseDTO com as propriedades da role
     Object.assign(this, props);
   }

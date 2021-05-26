@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { UserRoleController } from "../controllers/UserRoleController";
-import { Erros } from "../env/status";
+import { Status } from "../env/status";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
 
 const userRoleController = new UserRoleController();
@@ -37,7 +37,7 @@ routerUserRole.get(
 
 routerUserRole.get("/api/v1/userRole", (req: Request, res: Response) => {
   return res.status(422).json({
-    Message: Erros.ID_NOT_FOUND,
+    Message: Status.ID_NOT_FOUND,
   });
 });
 
@@ -50,7 +50,7 @@ routerUserRole.delete(
 
 routerUserRole.delete("/api/v1/userRole", (req: Request, res: Response) => {
   return res.status(422).json({
-    Message: Erros.ID_NOT_FOUND,
+    Message: Status.ID_NOT_FOUND,
   });
 });
 

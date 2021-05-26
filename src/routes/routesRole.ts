@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { RoleController } from "../controllers/RoleController";
-import { Erros } from "../env/status";
+import { Status } from "../env/status";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
 
 // criando um objeto de RoleController
@@ -38,7 +38,7 @@ routerRole.get(
 
 routerRole.get("/api/v1/role", (req: Request, res: Response) => {
   return res.status(422).json({
-    Message: Erros.ID_NOT_FOUND,
+    Message: Status.ID_NOT_FOUND,
   });
 });
 
@@ -51,7 +51,7 @@ routerRole.delete(
 
 routerRole.delete("/api/v1/role", (req: Request, res: Response) => {
   return res.status(422).json({
-    Message: Erros.ID_NOT_FOUND,
+    Message: Status.ID_NOT_FOUND,
   });
 });
 

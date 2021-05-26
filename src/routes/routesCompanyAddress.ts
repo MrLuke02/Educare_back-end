@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import { CompanyAddressController } from "../controllers/CompanyAddressController";
 import { VerifyTokenCompanyAddress } from "../auth/middleware/companyAddress/verifyTokenCompanyAddress";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
-import { Erros } from "../env/status";
+import { Status } from "../env/status";
 
 // criando um objeto de RoleController
 const companyAddressController = new CompanyAddressController();
@@ -48,7 +48,7 @@ routerCompanyAddress.get(
   "/api/v1/companyAddress",
   (req: Request, res: Response) => {
     return res.status(422).json({
-      Message: Erros.ID_NOT_FOUND,
+      Message: Status.ID_NOT_FOUND,
     });
   }
 );
@@ -57,7 +57,7 @@ routerCompanyAddress.get(
   "/api/v1/companyAddressCompany",
   (req: Request, res: Response) => {
     return res.status(422).json({
-      Message: Erros.ID_NOT_FOUND,
+      Message: Status.ID_NOT_FOUND,
     });
   }
 );
@@ -73,7 +73,7 @@ routerCompanyAddress.delete(
   "/api/v1/companyAddress",
   (req: Request, res: Response) => {
     return res.status(422).json({
-      Message: Erros.ID_NOT_FOUND,
+      Message: Status.ID_NOT_FOUND,
     });
   }
 );

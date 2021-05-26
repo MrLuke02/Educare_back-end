@@ -8,7 +8,7 @@ import { RoleController } from "./RoleController";
 import { PhoneController } from "./PhoneController";
 import * as validation from "../util/user/UserUtil";
 import md5 from "md5";
-import { Erros } from "../env/status";
+import { Status } from "../env/status";
 
 class UserController {
   // metodo assincrono para o cadastro de usuários
@@ -19,25 +19,25 @@ class UserController {
     // verificando se não foi passado um dos campos
     if (!name || !email || !password || !phoneNumber) {
       // retornando um json de erro personalizado
-      return res.status(422).json({ Message: Erros.REQUIRED_FIELD });
+      return res.status(422).json({ Message: Status.REQUIRED_FIELD });
     }
 
     // verificando se o email não é valido
     if (!validation.validationEmail(email)) {
       // retornando um json de erro personalizado
       return res.status(422).json({
-        Message: Erros.INVALID_EMAIL,
+        Message: Status.INVALID_EMAIL,
       });
       // verificando se a senha não é valida
     } else if (!validation.validationPassword(password)) {
       // retornando um json de erro personalizado
       return res.status(422).json({
-        Message: Erros.INVALID_PASSWORD,
+        Message: Status.INVALID_PASSWORD,
       });
     } else if (!validation.validationPhone(phoneNumber)) {
       // retornando um json de erro personalizado
       return res.status(422).json({
-        Message: Erros.INVALID_PHONE,
+        Message: Status.INVALID_PHONE,
       });
     }
 
@@ -54,7 +54,7 @@ class UserController {
     if (userAlreadyExists) {
       // retornando uma resposta em json
       return res.status(409).json({
-        Message: Erros.USER_ALREADY_EXIST,
+        Message: Status.USER_ALREADY_EXIST,
       });
     }
 
@@ -73,7 +73,7 @@ class UserController {
     if (phoneExist) {
       // retornando uma resposta de erro em json
       return res.status(409).json({
-        Message: Erros.PHONE_ALREADY_EXIST,
+        Message: Status.PHONE_ALREADY_EXIST,
       });
     }
 
@@ -86,7 +86,7 @@ class UserController {
 
     if (!role) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
     // savando o usuário criado a cima
@@ -119,7 +119,7 @@ class UserController {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(422).json({ Message: Erros.REQUIRED_FIELD });
+      return res.status(422).json({ Message: Status.REQUIRED_FIELD });
     }
 
     // tranformando a senha em hash
@@ -138,7 +138,7 @@ class UserController {
     if (!user) {
       // retornando uma resposta em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -148,7 +148,7 @@ class UserController {
 
     if (!userRole_role) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -186,7 +186,7 @@ class UserController {
     // verificanddo se existe um usuário com o id enviado
     if (!user) {
       // retornando uma resposta em json
-      return res.status(406).json({ Message: Erros.NOT_FOUND });
+      return res.status(406).json({ Message: Status.NOT_FOUND });
     }
 
     const phoneController = new PhoneController();
@@ -208,13 +208,13 @@ class UserController {
       if (!validation.validationEmail(email)) {
         // retornando um json de erro personalizado
         return res.status(422).json({
-          Message: Erros.INVALID_EMAIL,
+          Message: Status.INVALID_EMAIL,
         });
         // verificando se a senha foi passada e se é valida
       } else if (!validation.validationPassword(password)) {
         // retornando um json de erro personalizado
         return res.status(422).json({
-          Message: Erros.INVALID_PASSWORD,
+          Message: Status.INVALID_PASSWORD,
         });
       }
 
@@ -224,7 +224,7 @@ class UserController {
         const emailExists = await usersRepository.findOne({ email });
         if (emailExists) {
           // se encontrar algo retorna um json de erro
-          return res.status(409).json({ Message: Erros.USER_ALREADY_EXIST });
+          return res.status(409).json({ Message: Status.USER_ALREADY_EXIST });
         }
       }
 
@@ -272,7 +272,7 @@ class UserController {
     if (!userExist) {
       // retornando uma resposta em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -281,7 +281,7 @@ class UserController {
 
     // retornando um json de sucesso
     return res.status(200).json({
-      Message: Erros.SUCCESS,
+      Message: Status.SUCCESS,
     });
   }
 
@@ -297,7 +297,7 @@ class UserController {
     if (users.length === 0) {
       // retornando uma resposta em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 

@@ -3,31 +3,33 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryColumn,
-  ManyToOne,
+  OneToOne,
   JoinColumn,
 } from "typeorm";
 import { v4 as uuid } from "uuid";
-import { User } from "./User";
+import { Company } from "./Company";
 
-// criando o modelo da tabela phones, especificando suas colunas e tipo de dado que será armazenado
-@Entity("phones")
-class Phone {
+@Entity("companyContacts")
+class CompanyContact {
   @PrimaryColumn()
   id: string;
 
   @Column()
-  phoneNumber: string;
+  email: string;
+
+  @Column()
+  phone: string;
 
   @CreateDateColumn()
   createdAt: Date;
 
   @Column()
-  userID: string;
+  companyID: string;
 
   // criando o relacionamento de um para um com a tabela User
-  @ManyToOne(() => User)
-  @JoinColumn({ name: "userID" })
-  user: User;
+  @OneToOne(() => Company)
+  @JoinColumn({ name: "companyID" })
+  company: Company;
 
   constructor() {
     if (!this.id) {
@@ -36,5 +38,4 @@ class Phone {
   }
 }
 
-// exportando a classe
-export { Phone };
+export { CompanyContact };

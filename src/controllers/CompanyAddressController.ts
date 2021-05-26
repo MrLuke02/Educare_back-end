@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import { Erros } from "../env/status";
+import { Status } from "../env/status";
 import { CompanyAddressRepository } from "../repositories/CompanyAddressRepository";
 import { CompanyAddressResponseDTO } from "../models/DTO/companyAddress/CompanyAddressResponseDTO";
 import { CompanyController } from "./CompanyController";
@@ -37,7 +37,7 @@ class CompanyAddressController {
       if (companyAddressExist) {
         // retornando um json de erro personalizado
         return res.status(409).json({
-          Message: Erros.COMPANY_ADDRESS_ALREADY_EXIST,
+          Message: Status.COMPANY_ADDRESS_ALREADY_EXIST,
         });
       } else if (
         !street ||
@@ -49,7 +49,7 @@ class CompanyAddressController {
         !companyID
       ) {
         // retornando um json de erro personalizado
-        return res.status(422).json({ Message: Erros.REQUIRED_FIELD });
+        return res.status(422).json({ Message: Status.REQUIRED_FIELD });
       }
 
       const companyAddress = companyAddressRepository.create({
@@ -94,7 +94,7 @@ class CompanyAddressController {
 
     if (!companyAddress) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -123,7 +123,7 @@ class CompanyAddressController {
 
     if (!companyAddress) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -144,7 +144,7 @@ class CompanyAddressController {
 
     if (!companyAddress) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -160,39 +160,31 @@ class CompanyAddressController {
       companyID = companyAddress.companyID,
     } = req.body;
 
-    const companyController = new CompanyController();
-
-    const propsCompany = [companyID];
-
-    const company = await companyController.readFromID(req, res, propsCompany);
-
-    if (company !== res) {
-      if (companyID !== companyAddress.companyID) {
-        // retornando um json de erro personalizado
-        return res.status(422).json({
-          Message: Erros.INVALID_ID,
-        });
-      }
-
-      companyAddressRepository.update(id, {
-        street,
-        houseNumber,
-        bairro,
-        state,
-        city,
-        cep,
-        referencePoint,
-        complement,
-        companyID,
-      });
-
-      companyAddress = await companyAddressRepository.findOne(id);
-
-      return res.status(200).json({
-        companyAddress:
-          CompanyAddressResponseDTO.responseCompanyAddressDTO(companyAddress),
+    if (companyID !== companyAddress.companyID) {
+      // retornando um json de erro personalizado
+      return res.status(422).json({
+        Message: Status.INVALID_ID,
       });
     }
+
+    companyAddressRepository.update(id, {
+      street,
+      houseNumber,
+      bairro,
+      state,
+      city,
+      cep,
+      referencePoint,
+      complement,
+      companyID,
+    });
+
+    companyAddress = await companyAddressRepository.findOne(id);
+
+    return res.status(200).json({
+      companyAddress:
+        CompanyAddressResponseDTO.responseCompanyAddressDTO(companyAddress),
+    });
   }
 
   async delete(req: Request, res: Response) {
@@ -206,7 +198,7 @@ class CompanyAddressController {
 
     if (!companyAddress) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -222,7 +214,7 @@ class CompanyAddressController {
 
     if (companyAddresses.length == 0) {
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 

@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import { Erros } from "../env/status";
+import { Status } from "../env/status";
 import { PhoneResponseDTO } from "../models/DTO/phone/PhoneResponseDTO";
 import { PhonesRepository } from "../repositories/PhoneRepository";
 import * as validation from "../util/user/UserUtil";
+import { UserController } from "./UserController";
 
 class PhoneController {
   // metodo assincrono para o cadastro de phones
@@ -18,27 +19,19 @@ class PhoneController {
     } else if (!phoneNumber || !userID) {
       // retornando um json de erro perdonalizado
       return res.status(422).json({
-        Message: Erros.REQUIRED_FIELD,
+        Message: Status.REQUIRED_FIELD,
       });
     }
 
     if (!validation.validationPhone(phoneNumber)) {
       // retornando um json de erro personalizado
       return res.status(422).json({
-        Message: Erros.INVALID_PHONE,
+        Message: Status.INVALID_PHONE,
       });
     }
 
     // pegando o repositorio customizado/personalizado
     const phoneRepository = getCustomRepository(PhonesRepository);
-
-    const userAlreadyHavePhone = await phoneRepository.find({ userID });
-
-    if (userAlreadyHavePhone.length > 1) {
-      return res.status(409).json({
-        Message: Erros.USER_ALREADY_HAVE_PHONE,
-      });
-    }
 
     // pesquisando um phone pelo numero
     const phoneExist = await phoneRepository.findOne({ phoneNumber });
@@ -47,7 +40,25 @@ class PhoneController {
     if (phoneExist) {
       // retornando uma resposta de erro em json
       return res.status(409).json({
-        Message: Erros.PHONE_ALREADY_EXIST,
+        Message: Status.PHONE_ALREADY_EXIST,
+      });
+    }
+
+    const userController = new UserController();
+
+    const user = await userController.readFromId(userID);
+
+    if (!user) {
+      return res.status(406).json({
+        Message: Status.NOT_FOUND,
+      });
+    }
+
+    const userAlreadyHavePhone = await phoneRepository.find({ userID });
+
+    if (userAlreadyHavePhone.length > 1) {
+      return res.status(409).json({
+        Message: Status.USER_ALREADY_HAVE_PHONE,
       });
     }
 
@@ -93,7 +104,7 @@ class PhoneController {
     if (!phone) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -122,7 +133,7 @@ class PhoneController {
     if (!phone) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -155,7 +166,7 @@ class PhoneController {
     } else if (!id) {
       // retornando uma resposta de erro em json
       return res.status(422).json({
-        Message: Erros.ID_NOT_FOUND,
+        Message: Status.ID_NOT_FOUND,
       });
     }
 
@@ -169,7 +180,7 @@ class PhoneController {
     if (!phone) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -179,7 +190,7 @@ class PhoneController {
     if (!validation.validationPhone(phoneNumber)) {
       // retornando um json de erro personalizado
       return res.status(422).json({
-        Message: Erros.INVALID_PHONE,
+        Message: Status.INVALID_PHONE,
       });
     }
 
@@ -190,13 +201,15 @@ class PhoneController {
     }
 
     // verificando se o numero de telefone passado e igual ao do phone sendo editado
-    if (!(phone.phoneNumber === phoneNumber)) {
+    if (phone.phoneNumber !== phoneNumber) {
       // pesquisando um phone pelo numero
       const phoneExist = await phoneRepository.findOne({ phoneNumber });
       if (phoneExist) {
         // se encontrar algo retorna um json de erro
-        return res.status(409).json({ Message: Erros.PHONE_ALREADY_EXIST });
+        return res.status(409).json({ Message: Status.PHONE_ALREADY_EXIST });
       }
+    } else if (userID !== phone.userID) {
+      return res.status(422).json({ Message: Status.INVALID_ID });
     }
 
     // atualizando o phone a partir do id
@@ -235,7 +248,7 @@ class PhoneController {
     if (!phone) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
@@ -243,7 +256,7 @@ class PhoneController {
     await phoneRepository.delete({ id });
 
     // retornando um json de sucesso
-    return res.status(200).json({ Message: Erros.SUCCESS });
+    return res.status(200).json({ Message: Status.SUCCESS });
   }
 
   // metodo assincrono para a listagem de todos os phones
@@ -258,7 +271,7 @@ class PhoneController {
     if (phones.length === 0) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
-        Message: Erros.NOT_FOUND,
+        Message: Status.NOT_FOUND,
       });
     }
 
