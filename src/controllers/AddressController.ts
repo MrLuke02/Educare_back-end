@@ -88,24 +88,6 @@ class AddressController {
       .json({ address: AddressResponseDTO.responseAddressDTO(address) });
   }
 
-  async readFromUser(req: Request, res: Response) {
-    const { userID } = req.params;
-
-    const addressRepository = getCustomRepository(AddressRepository);
-
-    const address = await addressRepository.findOne({ userID });
-
-    if (!address) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
-    }
-
-    return res
-      .status(200)
-      .json({ address: AddressResponseDTO.responseAddressDTO(address) });
-  }
-
   async update(req: Request, res: Response) {
     const { id } = req.body;
 

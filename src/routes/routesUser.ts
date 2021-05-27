@@ -1,6 +1,7 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
 import { UserController } from "../controllers/UserController";
+import { Status } from "../env/status";
 
 // criando um objeto de UserController
 const userController = new UserController();
@@ -27,6 +28,31 @@ routerUser.get(
   verifyTokenUser.verifyShow,
   userController.showUsers
 );
+// criando a rota de pesquisa da Role pelo id
+routerUser.get(
+  "/api/v1/userAddress/:userID",
+  userController.readAddressFromUser
+);
+routerUser.get("/api/v1/userPhones/:userID", userController.readPhoneFromUser);
+routerUser.get("/api/v1/userAll/:userID", userController.readAllFromUser);
+
+routerUser.get("/api/v1/userAddress", (req: Request, res: Response) => {
+  return res.status(422).json({
+    Message: Status.ID_NOT_FOUND,
+  });
+});
+
+routerUser.get("/api/v1/userPhones", (req: Request, res: Response) => {
+  return res.status(422).json({
+    Message: Status.ID_NOT_FOUND,
+  });
+});
+
+routerUser.get("/api/v1/userAll", (req: Request, res: Response) => {
+  return res.status(422).json({
+    Message: Status.ID_NOT_FOUND,
+  });
+});
 
 // criando a rota de deleção de usuários
 routerUser.delete(
