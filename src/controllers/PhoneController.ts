@@ -8,15 +8,11 @@ import { UserController } from "./UserController";
 
 class PhoneController {
   // metodo assincrono para o cadastro de phones
-  async create(req: Request, res: Response, propsPhone?: any) {
+  async create(req: Request, res: Response) {
     // capturando e armazenando o numero de telefone e o id do usuário do corpo da requisição
-    let { phoneNumber, userID } = req.body;
+    const { phoneNumber, userID } = req.body;
 
-    if (Object.values(propsPhone).length !== 0) {
-      // sobrescrevendo as variaveis com os valores de props
-      [phoneNumber, userID] = propsPhone;
-      // verificando se foi enviado o id do usuário e o numero de telefone
-    } else if (!phoneNumber || !userID) {
+    if (!phoneNumber || !userID) {
       // retornando um json de erro perdonalizado
       return res.status(422).json({
         Message: Status.REQUIRED_FIELD,
@@ -71,51 +67,39 @@ class PhoneController {
     // salvando o phone
     const phoneSaved = await phoneRepository.save(phone);
 
-    // verificando se o objeto props não está vazio
-    if (Object.values(propsPhone).length !== 0) {
-      // retornando a userRole
-      return phoneSaved;
-    }
-
     // retornando a userRole
     return res.status(201).json({
       phone: PhoneResponseDTO.responsePhoneDTO(phoneSaved),
     });
   }
 
+  async createFromController(phoneNumber: string, userID: string) {
+    // pegando o repositorio customizado/personalizado
+    const phoneRepository = getCustomRepository(PhonesRepository);
+
+    // criando o phone
+    const phone = phoneRepository.create({
+      phoneNumber,
+      userID,
+    });
+
+    // salvando o phone
+    const phoneSaved = await phoneRepository.save(phone);
+
+    // retornando a userRole
+    return phoneSaved;
+  }
+
   // metodo assincrono para a pesquisa de phones pelo id do usuário
-  async readFromUser(req: Request, res: Response, propsPhone?: any) {
-    // capturando e armazenando o id do usuário do parametro da URL
-    let { userID } = req.params;
-
-    if (Object.values(propsPhone).length !== 0) {
-      // sobrescrevendo as variaveis com os valores de props
-      [userID] = propsPhone;
-      // verificando se foi enviado o id do usuário e o numero de telefone
-    }
-
+  async readFromUser(userID: string) {
     // pegando o repositorio customizado/personalizado
     const phoneRepository = getCustomRepository(PhonesRepository);
 
     // pesquisando um phone pelo id do usuário
     const phone = await phoneRepository.find({ userID });
 
-    // verificando se o usuário não possui phones
-    if (!phone) {
-      // retornando uma resposta de erro em json
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
-    }
-
-    // verificando se o objeto props não está vazio
-    if (Object.values(propsPhone).length !== 0) {
-      // retornando a userRole
-      return phone;
-    }
-
     // retornando o DTO do(s) phone(s) pesquisado(s)
-    return res.status(200).json({ phone });
+    return phone;
   }
 
   // metodo assincrono para a pesquisa de phones pelo id
@@ -155,15 +139,11 @@ class PhoneController {
   }
 
   // metodo assincrono para a atualização dos dados dos phones
-  async update(req: Request, res: Response, propsPhone?: any) {
+  async update(req: Request, res: Response) {
     // capturando e armazenando o id do phone do corpo da requisição
-    let { id } = req.body;
+    const { id } = req.body;
 
-    if (Object.values(propsPhone).length !== 0) {
-      // sobrescrevendo as variaveis com os valores de props
-      [id] = propsPhone;
-      // verificando se o id foi enviado
-    } else if (!id) {
+    if (!id) {
       // retornando uma resposta de erro em json
       return res.status(422).json({
         Message: Status.ID_NOT_FOUND,
@@ -185,19 +165,13 @@ class PhoneController {
     }
 
     // capturando o tipo numero de telefone e o id do usuário passado no corpo da requisição, caso não seja passado nada, pega o valor que ja está cadastrado no phone
-    let { phoneNumber = phone.phoneNumber, userID = phone.userID } = req.body;
+    const { phoneNumber = phone.phoneNumber } = req.body;
 
     if (!validation.validationPhone(phoneNumber)) {
       // retornando um json de erro personalizado
       return res.status(422).json({
         Message: Status.INVALID_PHONE,
       });
-    }
-
-    if (Object.values(propsPhone).length !== 0) {
-      // sobrescrevendo as variaveis com os valores de props
-      [id, phoneNumber, userID] = propsPhone;
-      // verificando se foi enviado o id do usuário e o numero de telefone
     }
 
     // verificando se o numero de telefone passado e igual ao do phone sendo editado
@@ -208,55 +182,20 @@ class PhoneController {
         // se encontrar algo retorna um json de erro
         return res.status(409).json({ Message: Status.PHONE_ALREADY_EXIST });
       }
-    } else if (userID !== phone.userID) {
-      return res.status(422).json({ Message: Status.INVALID_ID });
     }
 
     // atualizando o phone a partir do id
     await phoneRepository.update(id, {
       phoneNumber,
-      userID,
     });
 
     // pesquisando o phone pelo id
     phone = await phoneRepository.findOne(id);
 
-    // verificando se o objeto props não está vazio
-    if (Object.values(propsPhone).length !== 0) {
-      // retornando a userRole
-      return phone;
-    }
-
     // retornando o DTO do phone atualizado
     return res
       .status(200)
       .json({ phone: PhoneResponseDTO.responsePhoneDTO(phone) });
-  }
-
-  // metodo assincrono para a deleção de phones
-  async delete(req: Request, res: Response) {
-    // capturando e armazenando o id do phone do parametro da URL
-    const { id } = req.params;
-
-    // pegando o repositorio customizado/personalizado
-    const phoneRepository = getCustomRepository(PhonesRepository);
-
-    // pesquisando um phone pelo id
-    const phone = await phoneRepository.findOne({ id });
-
-    // verificando se o phone não existe
-    if (!phone) {
-      // retornando uma resposta de erro em json
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
-    }
-
-    // deletando o phone a partir do id
-    await phoneRepository.delete({ id });
-
-    // retornando um json de sucesso
-    return res.status(200).json({ Message: Status.SUCCESS });
   }
 
   // metodo assincrono para a listagem de todos os phones
@@ -281,6 +220,30 @@ class PhoneController {
 
     // retornando os phones encontrados no DB
     return res.status(200).json({ phones: phone });
+  }
+
+  async delete(req: Request, res: Response) {
+    // capturando e armazenando o id do phone do parametro da URL
+    const { id } = req.params;
+
+    // pegando o repositorio customizado/personalizado
+    const phoneRepository = getCustomRepository(PhonesRepository);
+
+    // pesquisando um phone pelo id
+    const phone = await phoneRepository.findOne({ id });
+
+    // verificando se o phone não existe
+    if (!phone) {
+      // retornando uma resposta de erro em json
+      return res.status(406).json({
+        Message: Status.NOT_FOUND,
+      });
+    }
+
+    await phoneRepository.delete(id);
+
+    // retornando o DTO do phone pesquisado
+    return res.status(200).json({ Message: Status.SUCCESS });
   }
 }
 

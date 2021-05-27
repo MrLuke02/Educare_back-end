@@ -101,12 +101,13 @@ class UserController {
     // criando e salvando a userRole
     await userRoleController.create(req, res, propsRole);
 
-    const propsPhone = [phoneNumber, user.id];
-
-    const phone = await phoneController.create(req, res, propsPhone);
+    const phone = await phoneController.createFromController(
+      phoneNumber,
+      user.id
+    );
 
     const userSave = UserResponseDTO.responseUserDTO(userSaved);
-    userSave["phone"] = phone["phoneNumber"];
+    userSave["phone"] = phone.phoneNumber;
     userSave["role"] = ["User"];
 
     // retornando o DTO do usuario salvo
@@ -189,70 +190,54 @@ class UserController {
       return res.status(406).json({ Message: Status.NOT_FOUND });
     }
 
-    const phoneController = new PhoneController();
+    // capturando e armazenando os dados do corpo da requisição, caso não seja passado algum dado, a constante receberá o atributo do usuário pesquisado
+    const {
+      name = user.name,
+      email = user.email,
+      password = user.password,
+    } = req.body;
 
-    let propsPhone = [user.id];
+    // verificando se o email é valido
+    if (!validation.validationEmail(email)) {
+      // retornando um json de erro personalizado
+      return res.status(422).json({
+        Message: Status.INVALID_EMAIL,
+      });
+      // verificando se a senha foi passada e se é valida
+    } else if (!validation.validationPassword(password)) {
+      // retornando um json de erro personalizado
+      return res.status(422).json({
+        Message: Status.INVALID_PASSWORD,
+      });
+    }
 
-    const phone = await phoneController.readFromUser(req, res, propsPhone);
-
-    if (phone !== res) {
-      // capturando e armazenando os dados do corpo da requisição, caso não seja passado algum dado, a constante receberá o atributo do usuário pesquisado
-      const {
-        name = user.name,
-        email = user.email,
-        password = user.password,
-        phoneNumber = phone["phoneNumber"],
-      } = req.body;
-
-      // verificando se o email é valido
-      if (!validation.validationEmail(email)) {
-        // retornando um json de erro personalizado
-        return res.status(422).json({
-          Message: Status.INVALID_EMAIL,
-        });
-        // verificando se a senha foi passada e se é valida
-      } else if (!validation.validationPassword(password)) {
-        // retornando um json de erro personalizado
-        return res.status(422).json({
-          Message: Status.INVALID_PASSWORD,
-        });
-      }
-
-      // verificando se o email passado e igual ao do usuário
-      if (!(user.email === email)) {
-        // pesquisando um usuário por email, caso o email passado não seja o mesmo do usuário
-        const emailExists = await usersRepository.findOne({ email });
-        if (emailExists) {
-          // se encontrar algo retorna um json de erro
-          return res.status(409).json({ Message: Status.USER_ALREADY_EXIST });
-        }
-      }
-
-      propsPhone = [phone["id"], phoneNumber, user.id];
-
-      const phoneSaved = await phoneController.update(req, res, propsPhone);
-
-      if (phoneSaved !== res) {
-        // tranformando a senha em hash
-        const passwordCrypted = md5(password);
-
-        // atualizando o usuário a partir do id
-        await usersRepository.update(id, {
-          name,
-          email,
-          password: passwordCrypted,
-        });
-
-        // pesquisando o usuário pelo id
-        user = await usersRepository.findOne({ id });
-
-        const userSave = UserResponseDTO.responseUserDTO(user);
-        userSave["phone"] = phoneSaved["phoneNumber"];
-
-        // retornando o DTO do usuario salvo
-        return res.status(201).json({ user: userSave });
+    // verificando se o email passado e igual ao do usuário
+    if (!(user.email === email)) {
+      // pesquisando um usuário por email, caso o email passado não seja o mesmo do usuário
+      const emailExists = await usersRepository.findOne({ email });
+      if (emailExists) {
+        // se encontrar algo retorna um json de erro
+        return res.status(409).json({ Message: Status.USER_ALREADY_EXIST });
       }
     }
+
+    // tranformando a senha em hash
+    const passwordCrypted = md5(password);
+
+    // atualizando o usuário a partir do id
+    await usersRepository.update(id, {
+      name,
+      email,
+      password: passwordCrypted,
+    });
+
+    // pesquisando o usuário pelo id
+    user = await usersRepository.findOne({ id });
+
+    const userSave = UserResponseDTO.responseUserDTO(user);
+
+    // retornando o DTO do usuario salvo
+    return res.status(201).json({ user: userSave });
   }
 
   // metodo assincrono para a deleção de usuários
@@ -306,8 +291,7 @@ class UserController {
 
     const usersDTOPromise = users.map(async (user) => {
       const userRole_role = await userRoleController.readFromUser(user.id);
-      const propsPhone = [user.id];
-      const phones = await phoneController.readFromUser(req, res, propsPhone);
+      const phones = await phoneController.readFromUser(user.id);
 
       const roles = userRole_role.map((userRole) => {
         return userRole.role.type;
@@ -355,13 +339,7 @@ class UserController {
       id,
     });
 
-    // verificanddo se existe um usuário com o email e senha enviados
-    if (!user) {
-      // retornando uma resposta em json
-      return false;
-    }
-
-    return true;
+    return user;
   }
 }
 
