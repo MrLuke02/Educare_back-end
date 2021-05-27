@@ -35,20 +35,8 @@ routerPhone.get(
   verifyTokenUser.verifyTokenAuth,
   phoneController.readFromId
 );
-// criando a rota de pesquisa da Role pelo id
-routerPhone.get(
-  "/api/v1/phoneUser/:userID",
-  verifyTokenUser.verifyTokenAuth,
-  phoneController.readFromUser
-);
 
 routerPhone.get("/api/v1/phone", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
-});
-
-routerPhone.get("/api/v1/phoneUser", (req: Request, res: Response) => {
   return res.status(422).json({
     Message: Status.ID_NOT_FOUND,
   });
