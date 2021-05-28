@@ -9,6 +9,10 @@ import { PhoneController } from "./PhoneController";
 import * as validation from "../util/user/UserUtil";
 import md5 from "md5";
 import { Status } from "../env/status";
+import { AddressRepository } from "../repositories/AddressRepository";
+import { AddressResponseDTO } from "../models/DTO/address/AddressResponseDTO";
+import { PhonesRepository } from "../repositories/PhoneRepository";
+import { PhoneResponseDTO } from "../models/DTO/phone/PhoneResponseDTO";
 
 class UserController {
   // metodo assincrono para o cadastro de usuários
@@ -340,6 +344,89 @@ class UserController {
     });
 
     return user;
+  }
+
+  async readAddressFromUser(req: Request, res: Response) {
+    const { userID } = req.params;
+
+    const addressRepository = getCustomRepository(AddressRepository);
+
+    const address = await addressRepository.findOne({ userID });
+
+    if (!address) {
+      return res.status(406).json({
+        Message: Status.NOT_FOUND,
+      });
+    }
+
+    return res
+      .status(200)
+      .json({ address: AddressResponseDTO.responseAddressDTO(address) });
+  }
+
+  async readPhoneFromUser(req: Request, res: Response) {
+    const { userID } = req.params;
+
+    const phoneRepository = getCustomRepository(PhonesRepository);
+
+    const phones = await phoneRepository.find({ userID });
+
+    if (phones.length === 0) {
+      return res.status(406).json({
+        Message: Status.NOT_FOUND,
+      });
+    }
+
+    const phonesDTO = phones.map((phone) => {
+      return PhoneResponseDTO.responsePhoneDTO(phone);
+    });
+
+    return res.status(200).json({ phones: phonesDTO });
+  }
+
+  async readAllFromUser(req: Request, res: Response) {
+    const { userID } = req.params;
+
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const user = await usersRepository.findOne({ id: userID });
+
+    if (!user) {
+      return res.status(406).json({
+        Message: Status.NOT_FOUND,
+      });
+    }
+
+    const phoneRepository = getCustomRepository(PhonesRepository);
+
+    let phones: any;
+
+    phones = await phoneRepository.find({ userID });
+
+    if (phones.length === 0) {
+      phones.push(Status.NOT_FOUND);
+    } else {
+      phones = phones.map((phone) => {
+        return PhoneResponseDTO.responsePhoneDTO(phone);
+      });
+    }
+
+    const addressRepository = getCustomRepository(AddressRepository);
+
+    let address: any;
+
+    address = await addressRepository.findOne({ userID });
+
+    if (!address) {
+      address.push(Status.NOT_FOUND);
+    } else {
+      address = AddressResponseDTO.responseAddressDTO(address);
+    }
+
+    user["phoneNumber"] = phones;
+    user["address"] = address;
+
+    return res.status(200).json({ user });
   }
 }
 

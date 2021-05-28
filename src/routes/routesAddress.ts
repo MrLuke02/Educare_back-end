@@ -37,20 +37,8 @@ routerAddress.get(
   verifyTokenUser.verifyTokenAuth,
   addressController.read
 );
-// criando a rota de pesquisa da Role pelo id
-routerAddress.get(
-  "/api/v1/addressUser/:userID",
-  verifyTokenUser.verifyTokenAuth,
-  addressController.readFromUser
-);
 
 routerAddress.get("/api/v1/address", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
-});
-
-routerAddress.get("/api/v1/addressUser", (req: Request, res: Response) => {
   return res.status(422).json({
     Message: Status.ID_NOT_FOUND,
   });
