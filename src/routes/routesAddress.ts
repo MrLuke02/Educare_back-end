@@ -1,12 +1,10 @@
 import { Request, Response, Router } from "express";
-import { AddressController } from "../controllers/AddressController";
-import { VerifyTokenAddress } from "../auth/middleware/address/verifyTokenAddress";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
+import { AddressController } from "../controllers/AddressController";
 import { Status } from "../env/status";
 
 // criando um objeto de RoleController
 const addressController = new AddressController();
-const verifyTokenAddress = new VerifyTokenAddress();
 const verifyTokenUser = new VerifyTokenUser();
 
 const routerAddress = Router();
@@ -14,14 +12,14 @@ const routerAddress = Router();
 // criando a rota de cadastro de Roles
 routerAddress.post(
   "/api/v1/address",
-  verifyTokenAddress.verifyCreate,
+  verifyTokenUser.verifyADMUser,
   addressController.create
 );
 
 // criando a rota de atualização de Roles
 routerAddress.put(
   "/api/v1/address",
-  verifyTokenAddress.verifyUpdate,
+  verifyTokenUser.verifyADMUserByAddressID,
   addressController.update
 );
 
@@ -34,10 +32,9 @@ routerAddress.get(
 // criando a rota de pesquisa da Role pelo id
 routerAddress.get(
   "/api/v1/address/:id",
-  verifyTokenUser.verifyTokenAuth,
+  verifyTokenUser.verifyTokenADM,
   addressController.read
 );
-
 routerAddress.get("/api/v1/address", (req: Request, res: Response) => {
   return res.status(422).json({
     Message: Status.ID_NOT_FOUND,
@@ -47,15 +44,14 @@ routerAddress.get("/api/v1/address", (req: Request, res: Response) => {
 // criando a rota de deleção de Roles
 routerAddress.delete(
   "/api/v1/address/:id",
-  verifyTokenUser.verifyTokenADM,
+  verifyTokenUser.verifyADMUserByAddressID,
   addressController.delete
 );
 
-routerAddress.delete("/api/v1/address", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
-});
+routerAddress.delete(
+  "/api/v1/address",
+  verifyTokenUser.verifyADMUserByAddressID
+);
 
 // exportando o router
 export { routerAddress };

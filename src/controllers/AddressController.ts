@@ -75,7 +75,7 @@ class AddressController {
 
     const addressRepository = getCustomRepository(AddressRepository);
 
-    const address = await addressRepository.findOne(id);
+    const address = await addressRepository.findOne({ id });
 
     if (!address) {
       return res.status(406).json({
@@ -86,6 +86,14 @@ class AddressController {
     return res
       .status(200)
       .json({ address: AddressResponseDTO.responseAddressDTO(address) });
+  }
+
+  async readFromID(addressID: string) {
+    const addressRepository = getCustomRepository(AddressRepository);
+
+    const address = await addressRepository.findOne({ id: addressID });
+
+    return address;
   }
 
   async update(req: Request, res: Response) {
