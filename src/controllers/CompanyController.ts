@@ -223,6 +223,53 @@ class CompanyController {
     return company;
   }
 
+  async readAllFromCompany(req: Request, res: Response) {
+    const { companyID } = req.params;
+
+    const companyRepository = getCustomRepository(CompaniesRepository);
+
+    const company = await companyRepository.findOne({ id: companyID });
+
+    if (!company) {
+      return res.status(406).json({
+        Message: Status.NOT_FOUND,
+      });
+    }
+
+    const companyAddressRepository = getCustomRepository(
+      CompanyAddressRepository
+    );
+
+    const companyContactRepository = getCustomRepository(
+      CompanyContactRepository
+    );
+
+    const companyAddress = await companyAddressRepository.findOne({
+      companyID,
+    });
+    const companyContact = await companyContactRepository.findOne({
+      companyID,
+    });
+
+    const companyDTO = CompanyResponseDTO.responseCompanyDTO(company);
+
+    if (companyAddress) {
+      companyDTO["Address"] =
+        CompanyAddressResponseDTO.responseCompanyAddressDTO(companyAddress);
+    } else {
+      companyDTO["Address"] = Status.NOT_FOUND;
+    }
+
+    if (companyContact) {
+      companyDTO["Contact"] =
+        CompanyContactResponseDTO.responseCompanyContactDTO(companyContact);
+    } else {
+      companyDTO["Contact"] = Status.NOT_FOUND;
+    }
+
+    return res.status(200).json({ company: companyDTO });
+  }
+
   async readFromAddress(addressID: string) {
     const companyAddressRepository = getCustomRepository(
       CompanyAddressRepository
@@ -232,9 +279,9 @@ class CompanyController {
       // select -> o que quero de retorno
       // where -> condição
       // relations -> para trazer também as informações da tabela que se relaciona
+      select: ["id"],
       where: { id: addressID },
       relations: ["company"],
-      select: ["companyID"],
     });
 
     const company = companyAddress_company.map((company) => {
