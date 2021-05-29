@@ -96,7 +96,7 @@ class UserRoleController {
       // select -> o que quero de retorno
       // where -> condição
       // relations -> para trazer também as informações da tabela que se relaciona
-      select: ["roleID"],
+      select: ["id"],
       where: { userID },
       relations: ["role"],
     });

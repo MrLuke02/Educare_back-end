@@ -34,6 +34,10 @@ routerUser.get(
   userController.readAddressFromUser
 );
 routerUser.get("/api/v1/userPhones/:userID", userController.readPhoneFromUser);
+routerUser.get(
+  "/api/v1/userCompany/:userID",
+  userController.readCompanyFromUser
+);
 routerUser.get("/api/v1/userAll/:userID", userController.readAllFromUser);
 
 routerUser.get("/api/v1/userAddress", (req: Request, res: Response) => {
@@ -43,6 +47,11 @@ routerUser.get("/api/v1/userAddress", (req: Request, res: Response) => {
 });
 
 routerUser.get("/api/v1/userPhones", (req: Request, res: Response) => {
+  return res.status(422).json({
+    Message: Status.ID_NOT_FOUND,
+  });
+});
+routerUser.get("/api/v1/userCompany", (req: Request, res: Response) => {
   return res.status(422).json({
     Message: Status.ID_NOT_FOUND,
   });

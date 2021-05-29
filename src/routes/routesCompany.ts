@@ -33,6 +33,16 @@ routerCompany.get("/api/v1/company/", (req: Request, res: Response) => {
   });
 });
 
+routerCompany.get(
+  "/api/v1/companyAll/:companyID",
+  companyController.readAllFromCompany
+);
+routerCompany.get("/api/v1/companyAll/", (req: Request, res: Response) => {
+  return res.status(422).json({
+    Message: Status.ID_NOT_FOUND,
+  });
+});
+
 // criando a rota de pesquisa da Role pelo id
 routerCompany.get(
   "/api/v1/companyAddress/:companyID",

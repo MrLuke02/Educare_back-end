@@ -1,18 +1,24 @@
 import { Request, Response } from "express";
+import md5 from "md5";
 import { getCustomRepository } from "typeorm";
 import { createToken } from "../auth/token.auth";
-import { UserResponseDTO } from "../models/DTO/user/UserResponseDTO";
-import { UsersRepository } from "../repositories/UserRepository";
-import { UserRoleController } from "./UserRoleController";
-import { RoleController } from "./RoleController";
-import { PhoneController } from "./PhoneController";
-import * as validation from "../util/user/UserUtil";
-import md5 from "md5";
 import { Status } from "../env/status";
-import { AddressRepository } from "../repositories/AddressRepository";
 import { AddressResponseDTO } from "../models/DTO/address/AddressResponseDTO";
-import { PhonesRepository } from "../repositories/PhoneRepository";
+import { CompanyResponseDTO } from "../models/DTO/company/CompanyResponseDTO";
+import { CompanyAddressResponseDTO } from "../models/DTO/companyAddress/CompanyAddressResponseDTO";
+import { CompanyContactResponseDTO } from "../models/DTO/companyContact/CompanyContactResponseDTO";
 import { PhoneResponseDTO } from "../models/DTO/phone/PhoneResponseDTO";
+import { UserResponseDTO } from "../models/DTO/user/UserResponseDTO";
+import { AddressRepository } from "../repositories/AddressRepository";
+import { CompanyAddressRepository } from "../repositories/CompanyAddressRepository";
+import { CompanyContactRepository } from "../repositories/CompanyContactRepository";
+import { CompaniesRepository } from "../repositories/CompanyRepository";
+import { PhonesRepository } from "../repositories/PhoneRepository";
+import { UsersRepository } from "../repositories/UserRepository";
+import * as validation from "../util/user/UserUtil";
+import { PhoneController } from "./PhoneController";
+import { RoleController } from "./RoleController";
+import { UserRoleController } from "./UserRoleController";
 
 class UserController {
   // metodo assincrono para o cadastro de usuários
@@ -381,6 +387,54 @@ class UserController {
     return res.status(200).json({ phones: phonesDTO });
   }
 
+  async readCompanyFromUser(req: Request, res: Response) {
+    const { userID } = req.params;
+
+    const companyRepository = getCustomRepository(CompaniesRepository);
+
+    const company = await companyRepository.findOne({ userID });
+
+    if (!company) {
+      return res.status(406).json({
+        Message: Status.NOT_FOUND,
+      });
+    }
+
+    const companyAddressRepository = getCustomRepository(
+      CompanyAddressRepository
+    );
+
+    const companyContactRepository = getCustomRepository(
+      CompanyContactRepository
+    );
+
+    const companyAddress = await companyAddressRepository.findOne({
+      companyID: company["id"],
+    });
+
+    const companyContact = await companyContactRepository.findOne({
+      companyID: company["id"],
+    });
+
+    const companyDTO = CompanyResponseDTO.responseCompanyDTO(company);
+
+    if (companyAddress) {
+      companyDTO["Address"] =
+        CompanyAddressResponseDTO.responseCompanyAddressDTO(companyAddress);
+    } else {
+      companyDTO["Address"] = Status.NOT_FOUND;
+    }
+
+    if (companyContact) {
+      companyDTO["Contact"] =
+        CompanyContactResponseDTO.responseCompanyContactDTO(companyContact);
+    } else {
+      companyDTO["Contact"] = Status.NOT_FOUND;
+    }
+
+    return res.status(200).json({ company: companyDTO });
+  }
+
   async readAllFromUser(req: Request, res: Response) {
     const { userID } = req.params;
 
@@ -394,34 +448,85 @@ class UserController {
       });
     }
 
+    const userRoleController = new UserRoleController();
+
+    const userRoles = await userRoleController.readFromUser(userID);
+
+    if (!userRoles) {
+      user["roles"] = [Status.NOT_FOUND];
+    } else {
+      const roles = userRoles.map((roles) => {
+        return roles.role.type;
+      });
+      user["roles"] = roles;
+    }
+
     const phoneRepository = getCustomRepository(PhonesRepository);
 
-    let phones: any;
-
-    phones = await phoneRepository.find({ userID });
+    const phones = await phoneRepository.find({ userID });
 
     if (phones.length === 0) {
-      phones.push(Status.NOT_FOUND);
+      user["phoneNumber"] = Status.NOT_FOUND;
     } else {
-      phones = phones.map((phone) => {
+      const phonesDto = phones.map((phone) => {
         return PhoneResponseDTO.responsePhoneDTO(phone);
       });
+      user["phoneNumber"] = phonesDto;
     }
 
     const addressRepository = getCustomRepository(AddressRepository);
 
-    let address: any;
-
-    address = await addressRepository.findOne({ userID });
+    const address = await addressRepository.findOne({ userID });
 
     if (!address) {
-      address.push(Status.NOT_FOUND);
+      user["address"] = Status.NOT_FOUND;
     } else {
-      address = AddressResponseDTO.responseAddressDTO(address);
+      user["address"] = AddressResponseDTO.responseAddressDTO(address);
     }
 
-    user["phoneNumber"] = phones;
-    user["address"] = address;
+    // company
+
+    const companyRepository = getCustomRepository(CompaniesRepository);
+
+    const company = await companyRepository.findOne({ userID });
+
+    if (!company) {
+      user["company"] = Status.NOT_FOUND;
+    } else {
+      const companyAddressRepository = getCustomRepository(
+        CompanyAddressRepository
+      );
+
+      const companyContactRepository = getCustomRepository(
+        CompanyContactRepository
+      );
+
+      const companyAddress = await companyAddressRepository.findOne({
+        companyID: company["id"],
+      });
+
+      const companyContact = await companyContactRepository.findOne({
+        companyID: company["id"],
+      });
+
+      const companyDTO = CompanyResponseDTO.responseCompanyDTO(company);
+
+      if (companyAddress) {
+        companyDTO["companyAddress"] =
+          CompanyAddressResponseDTO.responseCompanyAddressDTO(companyAddress);
+      } else {
+        companyDTO["companyAddress"] = Status.NOT_FOUND;
+      }
+
+      if (companyContact) {
+        companyDTO["companyContact"] =
+          CompanyContactResponseDTO.responseCompanyContactDTO(companyContact);
+      } else {
+        companyDTO["companyContact"] = Status.NOT_FOUND;
+      }
+
+      user["company"] = companyDTO;
+    }
 
     return res.status(200).json({ user });
   }
