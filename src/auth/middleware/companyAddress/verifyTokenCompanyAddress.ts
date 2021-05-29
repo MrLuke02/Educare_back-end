@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { verifyToken } from "../../token.auth";
 import { Status } from "../../../env/status";
 import { CompanyController } from "../../../controllers/CompanyController";
-import { CompanyAddressController } from "../../../controllers/CompanyAddressController";
 
 // classe para a verificação dos tokens
 class VerifyTokenCompanyAddress {
@@ -25,30 +24,32 @@ class VerifyTokenCompanyAddress {
 
     const companyController = new CompanyController();
 
-    const propsCompany = [companyID];
+    const companyExists = await companyController.readCompanyFromID(companyID);
 
-    const company = await companyController.readFromID(req, res, propsCompany);
+    if (!companyExists) {
+      return res.status(422).json({
+        Message: Status.INVALID_ID,
+      });
+    }
 
-    if (company !== res) {
-      // verifica se o token enviado pertence ao proprio usuário ou a um administrador
-      if (
-        (token["sub"] == company["userID"] &&
-          token["roles"].some((role: string) => role === "Company")) ||
-        token["roles"].some((role: string) => role === "ADM")
-      ) {
-        // avança para o proximo middleware
-        next();
-      } else {
-        // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-        return res.status(401).json({ Message: Status.INVALID_TOKEN });
-      }
+    // verifica se o token enviado pertence ao proprio usuário ou a um administrador
+    if (
+      (token["sub"] == companyExists["userID"] &&
+        token["roles"].some((role: string) => role === "Company")) ||
+      token["roles"].some((role: string) => role === "ADM")
+    ) {
+      // avança para o proximo middleware
+      next();
+    } else {
+      // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
+      return res.status(401).json({ Message: Status.INVALID_TOKEN });
     }
   }
 
   async verifyUpdate(req: Request, res: Response, next: Function) {
-    const { id, companyID } = req.body;
+    const { id } = req.body;
 
-    if (!id || !companyID) {
+    if (!id) {
       return res.status(422).json({
         Message: Status.ID_NOT_FOUND,
       });
@@ -64,23 +65,25 @@ class VerifyTokenCompanyAddress {
 
     const companyController = new CompanyController();
 
-    const propsCompany = [companyID];
+    const company = await companyController.readFromAddress(id);
 
-    const company = await companyController.readFromID(req, res, propsCompany);
+    if (!company) {
+      return res.status(422).json({
+        Message: Status.INVALID_ID,
+      });
+    }
 
-    if (company !== res) {
-      // verifica se o token enviado pertence ao proprio usuário ou a um administrador
-      if (
-        (token["sub"] == company["userID"] &&
-          token["roles"].some((role: string) => role === "Company")) ||
-        token["roles"].some((role: string) => role === "ADM")
-      ) {
-        // avança para o proximo middleware
-        next();
-      } else {
-        // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-        return res.status(401).json({ Message: Status.INVALID_TOKEN });
-      }
+    // verifica se o token enviado pertence ao proprio usuário ou a um administrador
+    if (
+      (token["sub"] == company["userID"] &&
+        token["roles"].some((role: string) => role === "Company")) ||
+      token["roles"].some((role: string) => role === "ADM")
+    ) {
+      // avança para o proximo middleware
+      next();
+    } else {
+      // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
+      return res.status(401).json({ Message: Status.INVALID_TOKEN });
     }
   }
 
@@ -93,52 +96,35 @@ class VerifyTokenCompanyAddress {
       });
     }
 
-    const companyAddressController = new CompanyAddressController();
+    const companyController = new CompanyController();
 
-    const propsCompnayAddress = [id];
+    const company = await companyController.readFromAddress(id);
 
-    const companyAddress = await companyAddressController.read(
-      req,
-      res,
-      propsCompnayAddress
-    );
+    if (!company) {
+      return res.status(422).json({
+        Message: Status.INVALID_ID,
+      });
+    }
 
-    if (companyAddress !== res) {
-      const companyController = new CompanyController();
+    let token;
+    // armazenando o token retornado da função
+    if (!req.headers.authorization) {
+      return res.status(401).json({ Message: Status.REQUIRED_TOKEN });
+    } else {
+      token = await verifyToken(req.headers.authorization.split(" ")[1], res);
+    }
 
-      const propsCompany = [companyAddress["companyID"]];
-
-      const company = await companyController.readFromID(
-        req,
-        res,
-        propsCompany
-      );
-
-      if (company !== res) {
-        let token;
-        // armazenando o token retornado da função
-        if (!req.headers.authorization) {
-          return res.status(401).json({ Message: Status.REQUIRED_TOKEN });
-        } else {
-          token = await verifyToken(
-            req.headers.authorization.split(" ")[1],
-            res
-          );
-        }
-
-        // verifica se o token enviado pertence ao proprio usuário ou a um administrador
-        if (
-          (token["sub"] == company["userID"] &&
-            token["roles"].some((role: string) => role === "Company")) ||
-          token["roles"].some((role: string) => role === "ADM")
-        ) {
-          // avança para o proximo middleware
-          next();
-        } else {
-          // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-          return res.status(401).json({ Message: Status.INVALID_TOKEN });
-        }
-      }
+    // verifica se o token enviado pertence ao proprio usuário ou a um administrador
+    if (
+      (token["sub"] == company["userID"] &&
+        token["roles"].some((role: string) => role === "Company")) ||
+      token["roles"].some((role: string) => role === "ADM")
+    ) {
+      // avança para o proximo middleware
+      next();
+    } else {
+      // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
+      return res.status(401).json({ Message: Status.INVALID_TOKEN });
     }
   }
 }

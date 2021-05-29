@@ -6,15 +6,11 @@ import { Status } from "../env/status";
 
 class UserRoleController {
   // metodo assincrono para a criação de user_roles
-  async create(req: Request, res: Response, propsRole?: any) {
+  async create(req: Request, res: Response) {
     // capturando e armazenando os valores do corpo da requisição
-    let { userID, roleID } = req.body;
+    const { userID, roleID } = req.body;
 
-    // verificando se o objeto props não está vazio
-    if (Object.values(propsRole).length !== 0) {
-      // sobrescrevendo as variaveis com os valores de props
-      [userID, roleID] = propsRole;
-    } else if (!userID || !roleID) {
+    if (!userID || !roleID) {
       return res.status(422).json({
         Message: Status.REQUIRED_FIELD,
       });
@@ -43,15 +39,27 @@ class UserRoleController {
     // salvando a userRole
     const userRoleSaved = await userRolesRepository.save(userRole);
 
-    // verificando se o objeto props não está vazio
-    if (Object.values(propsRole).length !== 0) {
-      // retornando a userRole
-      return userRoleSaved;
-    }
     // retornando a userRole
     return res.status(201).json({
       userRole: UserRoleResponseDTO.responseUserRoleDTO(userRoleSaved),
     });
+  }
+
+  async createFromController(userID: string, roleID: string) {
+    // pegando o repositorio customizado/personalizado
+    const userRolesRepository = getCustomRepository(UserRoleRepository);
+
+    // criando a userRole
+    const userRole = userRolesRepository.create({
+      userID,
+      roleID,
+    });
+
+    // salvando a userRole
+    const userRoleSaved = await userRolesRepository.save(userRole);
+
+    // retornando a userRole
+    return userRoleSaved;
   }
 
   // metodo assincrono para a pesquisa de userRoles pelo id
@@ -200,6 +208,14 @@ class UserRoleController {
 
     // retornando um json de sucesso
     return res.status(200).json({ Message: Status.SUCCESS });
+  }
+
+  async deleteFromController(userRoleID: string) {
+    // pegando o repositorio customizado/personalizado
+    const userRolesRepository = getCustomRepository(UserRoleRepository);
+
+    // deletando a userRole a partir do id
+    await userRolesRepository.delete({ id: userRoleID });
   }
 
   // metodo assincrono para a listagem de todas as userRoles

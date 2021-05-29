@@ -96,14 +96,11 @@ class UserController {
     // savando o usuário criado a cima
     const userSaved = await usersRepository.save(user);
 
-    // criando o array props com o id do usuário e da role
-    const propsRole = [userSaved.id, role["id"]];
-
     // instanciando o UserRoleController
     const userRoleController = new UserRoleController();
 
     // criando e salvando a userRole
-    await userRoleController.create(req, res, propsRole);
+    await userRoleController.createFromController(userSaved.id, role["id"]);
 
     const phone = await phoneController.createFromController(
       phoneNumber,

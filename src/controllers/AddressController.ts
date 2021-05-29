@@ -110,15 +110,7 @@ class AddressController {
       cep = address.cep,
       referencePoint = address.referencePoint,
       complement = address.complement,
-      userID = address.userID,
     } = req.body;
-
-    if (userID !== address.userID) {
-      // retornando um json de erro personalizado
-      return res.status(422).json({
-        Message: Status.INVALID_ID,
-      });
-    }
 
     await addressRepository.update(id, {
       street,
@@ -129,7 +121,6 @@ class AddressController {
       cep,
       referencePoint,
       complement,
-      userID,
     });
 
     address = await addressRepository.findOne(id);

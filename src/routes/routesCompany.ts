@@ -32,6 +32,30 @@ routerCompany.get("/api/v1/company/", (req: Request, res: Response) => {
     Message: Status.ID_NOT_FOUND,
   });
 });
+
+// criando a rota de pesquisa da Role pelo id
+routerCompany.get(
+  "/api/v1/companyAddress/:companyID",
+  verifyTokenUser.verifyTokenAuth,
+  companyController.readCompanyAddress
+);
+routerCompany.get("/api/v1/companyAddress/", (req: Request, res: Response) => {
+  return res.status(422).json({
+    Message: Status.ID_NOT_FOUND,
+  });
+});
+
+routerCompany.get(
+  "/api/v1/companyContact/:companyID",
+  verifyTokenUser.verifyTokenAuth,
+  companyController.readCompanyContact
+);
+routerCompany.get("/api/v1/companyContact/", (req: Request, res: Response) => {
+  return res.status(422).json({
+    Message: Status.ID_NOT_FOUND,
+  });
+});
+
 routerCompany.get(
   "/api/v1/showCompanies",
   verifyTokenUser.verifyTokenAuth,
