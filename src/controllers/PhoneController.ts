@@ -103,7 +103,7 @@ class PhoneController {
   }
 
   // metodo assincrono para a pesquisa de phones pelo id
-  async readFromId(req: Request, res: Response) {
+  async read(req: Request, res: Response) {
     // capturando e armazenando o id do phone do parametro da URL
     const { id } = req.params;
 
@@ -125,6 +125,17 @@ class PhoneController {
     return res
       .status(200)
       .json({ phone: PhoneResponseDTO.responsePhoneDTO(phone) });
+  }
+
+  async readFromId(phoneID: string) {
+    // pegando o repositorio customizado/personalizado
+    const phoneRepository = getCustomRepository(PhonesRepository);
+
+    // pesquisando um phone pelo id
+    const phone = await phoneRepository.findOne({ id: phoneID });
+
+    // retornando o DTO do phone pesquisado
+    return phone;
   }
 
   async readFromNumber(phoneNumber: string) {

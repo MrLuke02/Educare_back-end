@@ -12,14 +12,14 @@ const routerPhone = Router();
 // criando a rota de cadastro de Roles
 routerPhone.post(
   "/api/v1/phone",
-  verifyTokenUser.verifyTokenADM,
+  verifyTokenUser.verifyADMUser,
   phoneController.create
 );
 
 // criando a rota de atualização de Roles
 routerPhone.put(
   "/api/v1/phone",
-  verifyTokenUser.verifyTokenADM,
+  verifyTokenUser.verifyADMUserByPhoneID,
   phoneController.update
 );
 
@@ -32,8 +32,8 @@ routerPhone.get(
 // criando a rota de pesquisa da Role pelo id
 routerPhone.get(
   "/api/v1/phone/:id",
-  verifyTokenUser.verifyTokenAuth,
-  phoneController.readFromId
+  verifyTokenUser.verifyTokenADM,
+  phoneController.read
 );
 
 routerPhone.get("/api/v1/phone", (req: Request, res: Response) => {
@@ -45,15 +45,11 @@ routerPhone.get("/api/v1/phone", (req: Request, res: Response) => {
 // criando a rota de deleção de Roles
 routerPhone.delete(
   "/api/v1/phone/:id",
-  verifyTokenUser.verifyTokenADM,
+  verifyTokenUser.verifyADMUserByPhoneID,
   phoneController.delete
 );
 
-routerPhone.delete("/api/v1/phone", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
-});
+routerPhone.delete("/api/v1/phone", verifyTokenUser.verifyADMUserByPhoneID);
 
 // exportando o router
 export { routerPhone };

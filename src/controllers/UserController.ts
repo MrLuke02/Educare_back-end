@@ -183,13 +183,13 @@ class UserController {
   // metodo assincrono para a atualização de usuários
   async update(req: Request, res: Response) {
     // capturando e armazenando o id do corpo da requisição
-    const { id } = req.body;
+    const { userID } = req.body;
 
     // pegando o repositorio customizado/personalizado
     const usersRepository = getCustomRepository(UsersRepository);
 
     // pesquisando um usuário pelo id
-    let user = await usersRepository.findOne({ id });
+    let user = await usersRepository.findOne({ id: userID });
 
     // verificanddo se existe um usuário com o id enviado
     if (!user) {
@@ -232,14 +232,14 @@ class UserController {
     const passwordCrypted = md5(password);
 
     // atualizando o usuário a partir do id
-    await usersRepository.update(id, {
+    await usersRepository.update(userID, {
       name,
       email,
       password: passwordCrypted,
     });
 
     // pesquisando o usuário pelo id
-    user = await usersRepository.findOne({ id });
+    user = await usersRepository.findOne({ id: userID });
 
     const userSave = UserResponseDTO.responseUserDTO(user);
 
@@ -250,14 +250,14 @@ class UserController {
   // metodo assincrono para a deleção de usuários
   async delete(req: Request, res: Response) {
     // capturando e armazenando o id do usuário do parametro do URL
-    const { id } = req.params;
+    const { userID } = req.params;
 
     // pegando o repositorio customizado/personalizado
     const usersRepository = getCustomRepository(UsersRepository);
 
     // pesquisando o usuário pelo id
     const userExist = await usersRepository.findOne({
-      id,
+      id: userID,
     });
 
     // verificanddo se existe um usuário com o id enviado
@@ -269,7 +269,7 @@ class UserController {
     }
 
     // deletando o usuário a partir do id
-    usersRepository.delete({ id });
+    usersRepository.delete({ id: userID });
 
     // retornando um json de sucesso
     return res.status(200).json({
