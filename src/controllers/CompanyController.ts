@@ -9,6 +9,9 @@ import { UserRoleController } from "./UserRoleController";
 import * as validation from "../util/user/UserUtil";
 import { CompanyContactController } from "./CompanyContactController";
 import { CompanyContactResponseDTO } from "../models/DTO/companyContact/CompanyContactResponseDTO";
+import { CompanyAddressRepository } from "../repositories/CompanyAddressRepository";
+import { CompanyAddressResponseDTO } from "../models/DTO/companyAddress/CompanyAddressResponseDTO";
+import { CompanyContactRepository } from "../repositories/CompanyContactRepository";
 
 class CompanyController {
   async create(req: Request, res: Response) {
@@ -98,11 +101,8 @@ class CompanyController {
     const userRole = await userRoleController.readFromUserRole(userID, role.id);
 
     if (!userRole) {
-      // criando o array props com o id do usuário e da role
-      const propsRole = [userID, role["id"]];
-
       // criando e salvando a userRole
-      await userRoleController.create(req, res, propsRole);
+      await userRoleController.createFromController(userID, role["id"]);
     }
 
     const companyContact = await companyContactController.createFromController(
@@ -145,14 +145,10 @@ class CompanyController {
       .json({ company: CompanyResponseDTO.responseCompanyDTO(company) });
   }
 
-  async readFromID(req: Request, res: Response, propsCompany?: any) {
+  async readFromID(req: Request, res: Response) {
     let { id } = req.params;
 
-    if (Object.values(propsCompany).length !== 0) {
-      // sobrescrevendo as variaveis com os valores de props
-      [id] = propsCompany;
-      // verificando se foi enviado o id do usuário e o numero de telefone
-    } else if (!id) {
+    if (!id) {
       return res.status(406).json({
         Message: Status.ID_NOT_FOUND,
       });
@@ -168,15 +164,84 @@ class CompanyController {
       });
     }
 
-    // verificando se o objeto props não está vazio
-    if (Object.values(propsCompany).length !== 0) {
-      // retornando a userRole
-      return company;
-    }
-
     return res
       .status(200)
       .json({ company: CompanyResponseDTO.responseCompanyDTO(company) });
+  }
+
+  async readCompanyAddress(req: Request, res: Response) {
+    const { companyID } = req.params;
+
+    const companyAddressRepository = getCustomRepository(
+      CompanyAddressRepository
+    );
+
+    const companyAddress = await companyAddressRepository.findOne({
+      companyID,
+    });
+
+    if (!companyAddress) {
+      return res.status(406).json({
+        Message: Status.NOT_FOUND,
+      });
+    }
+
+    return res.status(200).json({
+      companyAddress:
+        CompanyAddressResponseDTO.responseCompanyAddressDTO(companyAddress),
+    });
+  }
+
+  async readCompanyContact(req: Request, res: Response) {
+    const { companyID } = req.params;
+
+    const companyContactRepository = getCustomRepository(
+      CompanyContactRepository
+    );
+
+    const companyContact = await companyContactRepository.findOne({
+      companyID,
+    });
+
+    if (!companyContact) {
+      return res.status(406).json({
+        Message: Status.NOT_FOUND,
+      });
+    }
+
+    return res.status(200).json({
+      companyContact:
+        CompanyContactResponseDTO.responseCompanyContactDTO(companyContact),
+    });
+  }
+
+  async readCompanyFromID(companyID: string) {
+    const companyRepository = getCustomRepository(CompaniesRepository);
+
+    const company = await companyRepository.findOne({ id: companyID });
+
+    return company;
+  }
+
+  async readFromAddress(addressID: string) {
+    const companyAddressRepository = getCustomRepository(
+      CompanyAddressRepository
+    );
+
+    const companyAddress_company = await companyAddressRepository.find({
+      // select -> o que quero de retorno
+      // where -> condição
+      // relations -> para trazer também as informações da tabela que se relaciona
+      where: { id: addressID },
+      relations: ["company"],
+      select: ["companyID"],
+    });
+
+    const company = companyAddress_company.map((company) => {
+      return company.company;
+    });
+
+    return company[0];
   }
 
   async update(req: Request, res: Response) {
@@ -344,17 +409,9 @@ class CompanyController {
         });
       }
 
-      const propsUserRole = [userRole.id];
+      await userRoleController.deleteFromController(userRole.id);
 
-      const userRoleDeleted = await userRoleController.delete(
-        req,
-        res,
-        propsUserRole
-      );
-
-      if (userRoleDeleted !== res) {
-        return res.status(200).json({ Message: Status.SUCCESS });
-      }
+      return res.status(200).json({ Message: Status.SUCCESS });
     } else {
       return res.status(200).json({ Message: Status.SUCCESS });
     }

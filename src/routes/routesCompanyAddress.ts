@@ -37,24 +37,9 @@ routerCompanyAddress.get(
   verifyTokenUser.verifyTokenADM,
   companyAddressController.read
 );
-// criando a rota de pesquisa da Role pelo id
-routerCompanyAddress.get(
-  "/api/v1/companyAddressCompany/:companyID",
-  verifyTokenUser.verifyTokenAuth,
-  companyAddressController.readFromCompany
-);
 
 routerCompanyAddress.get(
   "/api/v1/companyAddress",
-  (req: Request, res: Response) => {
-    return res.status(422).json({
-      Message: Status.ID_NOT_FOUND,
-    });
-  }
-);
-
-routerCompanyAddress.get(
-  "/api/v1/companyAddressCompany",
   (req: Request, res: Response) => {
     return res.status(422).json({
       Message: Status.ID_NOT_FOUND,

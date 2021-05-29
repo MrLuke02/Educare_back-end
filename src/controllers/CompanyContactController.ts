@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Status } from "../env/status";
-import { CompanyContactRepository } from "../repositories/CompanyContactRepository";
 import { CompanyController } from "./CompanyController";
 import * as validation from "../util/user/UserUtil";
 import { CompanyContactResponseDTO } from "../models/DTO/companyContact/CompanyContactResponseDTO";
+import { CompanyContactRepository } from "../repositories/CompanyContactRepository";
 
 class CompanyContactController {
   async create(req: Request, res: Response) {
@@ -40,42 +40,40 @@ class CompanyContactController {
 
     const companyController = new CompanyController();
 
-    const propsCompany = [companyID];
+    const companyExists = await companyController.readCompanyFromID(companyID);
 
-    const companyExists = await companyController.readFromID(
-      req,
-      res,
-      propsCompany
-    );
-
-    if (companyExists !== res) {
-      const companyAlreadyHavePhone = await companyContactRepository.findOne({
-        companyID,
-      });
-
-      if (companyAlreadyHavePhone) {
-        return res.status(409).json({
-          Message: Status.COMPANY_ALREADY_HAVE_PHONE,
-        });
-      }
-
-      const companyContact = companyContactRepository.create({
-        email,
-        phone,
-        companyID,
-      });
-
-      const companyContactSaved = await companyContactRepository.save(
-        companyContact
-      );
-
-      return res.status(201).json({
-        companyContact:
-          CompanyContactResponseDTO.responseCompanyContactDTO(
-            companyContactSaved
-          ),
+    if (!companyExists) {
+      return res.status(422).json({
+        Message: Status.INVALID_ID,
       });
     }
+
+    const companyAlreadyHavePhone = await companyContactRepository.findOne({
+      companyID,
+    });
+
+    if (companyAlreadyHavePhone) {
+      return res.status(409).json({
+        Message: Status.COMPANY_ALREADY_HAVE_PHONE,
+      });
+    }
+
+    const companyContact = companyContactRepository.create({
+      email,
+      phone,
+      companyID,
+    });
+
+    const companyContactSaved = await companyContactRepository.save(
+      companyContact
+    );
+
+    return res.status(201).json({
+      companyContact:
+        CompanyContactResponseDTO.responseCompanyContactDTO(
+          companyContactSaved
+        ),
+    });
   }
 
   async createFromController(email: string, phone: string, companyID: string) {
@@ -182,11 +180,8 @@ class CompanyContactController {
       });
     }
 
-    const {
-      email = companyContact.email,
-      phone = companyContact.phone,
-      companyID = companyContact.companyID,
-    } = req.body;
+    const { email = companyContact.email, phone = companyContact.phone } =
+      req.body;
 
     if (email !== companyContact.email) {
       const emailExist = await companyContactRepository.findOne(email);
@@ -206,9 +201,7 @@ class CompanyContactController {
         });
       }
     }
-    if (companyID !== companyContact.companyID) {
-      return res.status(422).json({ Message: Status.INVALID_ID });
-    } else if (!validation.validationEmail(email)) {
+    if (!validation.validationEmail(email)) {
       return res.status(422).json({ Message: Status.INVALID_EMAIL });
     } else if (!validation.validationPhone(phone)) {
       return res.status(422).json({ Message: Status.INVALID_PHONE });
@@ -217,7 +210,6 @@ class CompanyContactController {
     await companyContactRepository.update(id, {
       email,
       phone,
-      companyID,
     });
 
     companyContact = await companyContactRepository.findOne(id);
