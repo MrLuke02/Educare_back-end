@@ -146,9 +146,9 @@ class CompanyController {
   }
 
   async readFromID(req: Request, res: Response) {
-    let { id } = req.params;
+    let { companyID } = req.params;
 
-    if (!id) {
+    if (!companyID) {
       return res.status(406).json({
         Message: Status.ID_NOT_FOUND,
       });
@@ -156,7 +156,7 @@ class CompanyController {
 
     const companyRepository = getCustomRepository(CompaniesRepository);
 
-    const company = await companyRepository.findOne({ id });
+    const company = await companyRepository.findOne({ id: companyID });
 
     if (!company) {
       return res.status(406).json({
@@ -270,32 +270,11 @@ class CompanyController {
     return res.status(200).json({ company: companyDTO });
   }
 
-  async readFromAddress(addressID: string) {
-    const companyAddressRepository = getCustomRepository(
-      CompanyAddressRepository
-    );
-
-    const companyAddress_company = await companyAddressRepository.find({
-      // select -> o que quero de retorno
-      // where -> condição
-      // relations -> para trazer também as informações da tabela que se relaciona
-      select: ["id"],
-      where: { id: addressID },
-      relations: ["company"],
-    });
-
-    const company = companyAddress_company.map((company) => {
-      return company.company;
-    });
-
-    return company[0];
-  }
-
   async update(req: Request, res: Response) {
-    const { id } = req.body;
+    const { companyID } = req.body;
 
     // verificando se o id da role não foi passada
-    if (!id) {
+    if (!companyID) {
       // retornando um json de erro personalizado
       return res.status(422).json({
         Message: Status.ID_NOT_FOUND,
@@ -306,7 +285,7 @@ class CompanyController {
     const companyRepository = getCustomRepository(CompaniesRepository);
 
     // pesquisando uma role pelo id
-    let company = await companyRepository.findOne(id);
+    let company = await companyRepository.findOne({ id: companyID });
 
     // verificando se a role não existe
     if (!company) {
@@ -318,7 +297,9 @@ class CompanyController {
 
     const companyContactController = new CompanyContactController();
 
-    let companyContact = await companyContactController.readFromCompany(id);
+    let companyContact = await companyContactController.readFromCompany(
+      companyID
+    );
 
     if (!companyContact) {
       return res.status(406).json({
@@ -396,14 +377,14 @@ class CompanyController {
     }
 
     // atualizando a role a partir do id
-    await companyRepository.update(id, {
+    await companyRepository.update(companyID, {
       companyName,
       cnpj,
       inscricaoEstadual,
     });
 
     // pesquisando a role pelo id
-    company = await companyRepository.findOne(id);
+    company = await companyRepository.findOne({ id: companyID });
     company["contact"] =
       CompanyContactResponseDTO.responseCompanyContactDTO(companyContact);
 
@@ -414,11 +395,11 @@ class CompanyController {
   }
 
   async delete(req: Request, res: Response) {
-    const { id } = req.params;
+    const { comapanyID } = req.params;
 
     const companyRepository = getCustomRepository(CompaniesRepository);
 
-    const company = await companyRepository.findOne({ id });
+    const company = await companyRepository.findOne({ id: comapanyID });
 
     if (!company) {
       return res.status(406).json({
@@ -428,7 +409,7 @@ class CompanyController {
 
     const userID = company.userID;
 
-    await companyRepository.delete({ id });
+    await companyRepository.delete({ id: comapanyID });
 
     const userHaveCompany = await companyRepository.findOne({ userID });
 

@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
-import { CompanyController } from "../controllers/CompanyController";
 import { VerifyTokenCompany } from "../auth/middleware/company/verifyTokenCompany";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
+import { CompanyController } from "../controllers/CompanyController";
 import { Status } from "../env/status";
 
 // criando um objeto de RoleController
@@ -13,7 +13,7 @@ const routerCompany = Router();
 
 routerCompany.post(
   "/api/v1/company",
-  verifyTokenCompany.verifyCreate,
+  verifyTokenUser.verifyTokenADM,
   companyController.create
 );
 routerCompany.post(
@@ -23,21 +23,18 @@ routerCompany.post(
 );
 
 routerCompany.get(
-  "/api/v1/company/:id",
-  verifyTokenUser.verifyTokenADM,
+  "/api/v1/company/:companyID",
+  verifyTokenCompany.verifyADMCompany,
   companyController.readFromID
 );
-routerCompany.get("/api/v1/company/", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
-});
+routerCompany.get("/api/v1/company", verifyTokenCompany.verifyADMCompany);
 
 routerCompany.get(
   "/api/v1/companyAll/:companyID",
+  verifyTokenUser.verifyTokenAuth,
   companyController.readAllFromCompany
 );
-routerCompany.get("/api/v1/companyAll/", (req: Request, res: Response) => {
+routerCompany.get("/api/v1/companyAll", (req: Request, res: Response) => {
   return res.status(422).json({
     Message: Status.ID_NOT_FOUND,
   });
@@ -46,25 +43,23 @@ routerCompany.get("/api/v1/companyAll/", (req: Request, res: Response) => {
 // criando a rota de pesquisa da Role pelo id
 routerCompany.get(
   "/api/v1/companyAddress/:companyID",
-  verifyTokenUser.verifyTokenAuth,
+  verifyTokenCompany.verifyADMCompany,
   companyController.readCompanyAddress
 );
-routerCompany.get("/api/v1/companyAddress/", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
-});
+routerCompany.get(
+  "/api/v1/companyAddress",
+  verifyTokenCompany.verifyADMCompany
+);
 
 routerCompany.get(
   "/api/v1/companyContact/:companyID",
-  verifyTokenUser.verifyTokenAuth,
+  verifyTokenCompany.verifyADMCompany,
   companyController.readCompanyContact
 );
-routerCompany.get("/api/v1/companyContact/", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
-});
+routerCompany.get(
+  "/api/v1/companyContact",
+  verifyTokenCompany.verifyADMCompany
+);
 
 routerCompany.get(
   "/api/v1/showCompanies",
@@ -72,17 +67,17 @@ routerCompany.get(
   companyController.show
 );
 
-routerCompany.put("/api/v1/company", companyController.update);
+routerCompany.put(
+  "/api/v1/company",
+  verifyTokenCompany.verifyADMCompany,
+  companyController.update
+);
 
 routerCompany.delete(
-  "/api/v1/company/:id",
-  verifyTokenCompany.verifyDelete,
+  "/api/v1/company/:companyID",
+  verifyTokenCompany.verifyADMCompany,
   companyController.delete
 );
-routerCompany.delete("/api/v1/company/", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
-});
+routerCompany.delete("/api/v1/company", verifyTokenCompany.verifyADMCompany);
 
 export { routerCompany };
