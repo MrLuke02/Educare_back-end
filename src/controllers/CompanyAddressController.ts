@@ -100,6 +100,27 @@ class CompanyAddressController {
     });
   }
 
+  async readFromAddress(addressID: string) {
+    const companyAddressRepository = getCustomRepository(
+      CompanyAddressRepository
+    );
+
+    const companyAddress_company = await companyAddressRepository.find({
+      // select -> o que quero de retorno
+      // where -> condição
+      // relations -> para trazer também as informações da tabela que se relaciona
+      select: ["id"],
+      where: { id: addressID },
+      relations: ["company"],
+    });
+
+    const company = companyAddress_company.map((company) => {
+      return company.company;
+    });
+
+    return company[0];
+  }
+
   async update(req: Request, res: Response) {
     const { id } = req.body;
 

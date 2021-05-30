@@ -137,6 +137,27 @@ class CompanyContactController {
     return emailExist;
   }
 
+  async readFromContact(contactID: string) {
+    const companyContactRepository = getCustomRepository(
+      CompanyContactRepository
+    );
+
+    const companyAddress_company = await companyContactRepository.find({
+      // select -> o que quero de retorno
+      // where -> condição
+      // relations -> para trazer também as informações da tabela que se relaciona
+      select: ["id"],
+      where: { id: contactID },
+      relations: ["company"],
+    });
+
+    const company = companyAddress_company.map((company) => {
+      return company.company;
+    });
+
+    return company[0];
+  }
+
   async read(req: Request, res: Response) {
     const { id } = req.params;
 
