@@ -22,7 +22,7 @@ tags:
 - name: user
   description: "Operações do Usuário no Sistema, permite a criação, login, atualizaç\
     ão e pesquisa."
-- name: address
+- name: userAddress
   description: "Permite o cadastro, edição, pesquisa e exclusão de endereço"
 - name: phone
   description: "Permite o cadastro, edição, pesquisa e exclusão de telefone"
@@ -34,6 +34,12 @@ tags:
   description: "Permite o cadastro, edição, pesquisa e exclusão dos contatos da empresa"
 - name: plan
   description: "Permite o cadastro, edição, pesquisa e exclusão dos planos."
+- name: role
+  description: "Permite o cadastro, edição, pesquisa e exclusão das Roles."
+  
+- name: userRole
+  description: "Permite o cadastro, edição, pesquisa e exclusão das Roles do Usuario."
+  
 paths:
   /api/v1/user:
     put:
@@ -47,7 +53,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewUser'
+              $ref: '#/components/schemas/user'
         required: true
       responses:
         "200":
@@ -55,7 +61,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NewUser'
+                properties:
+                  user:
+                    type: object
+                    allOf:
+                      - $ref: '#/components/schemas/NewUser'
+                 
         "400":
           description: Usuário já existe!
         "406":
@@ -63,6 +74,7 @@ paths:
       security:
       - bearerAuth: []
       x-swagger-router-controller: User
+      
     post:
       tags:
       - user
@@ -74,7 +86,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewUser'
+              $ref: '#/components/schemas/NewUserAll'
         required: true
       responses:
         "201":
@@ -82,10 +94,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NewUser'
+                properties:
+                  user:
+                    type: object
+                    allOf:
+                      - $ref: '#/components/schemas/NewUser'
+                    properties:
+                      phoneNumber:
+                        type: string
+                      role:
+                        type: array
+                        items:
+                          type: string
+                          
+                          
         "400":
           description: Usuario já Existe!
       x-swagger-router-controller: User
+      
   /api/v1/auth:
     post:
       tags:
@@ -98,7 +124,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewUser'
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                  format: uuid
         required: true
       responses:
         "200":
@@ -106,7 +137,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NewUser'
+                properties:
+                  token:
+                    type: string
         "406":
           description: Nenhum Usuario Encontrado!
       x-swagger-router-controller: User
@@ -123,9 +156,156 @@ paths:
           content:
             application/json:
               schema:
+                properties:
+                  user:
+                    type: array
+                    items:
+                      allOf:
+                       - $ref: '#/components/schemas/NewUser'
+                      properties:
+                        phoneNumber:
+                          type: array
+                          items:
+                            type: string
+                        rota:
+                          type: array
+                          items:
+                            type: string
+                    
+                x-content-type: application/json
+        "406":
+          description: Nenhum Usuario Encontrado!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: User
+      
+  /api/v1/userAddress{userID}:
+    get:
+      tags:
+      - user
+      summary: "Permite a pesquisa, a partir do ID do usuario, das informações do\
+        \ endereço  | role:[ADM | USER]"
+      description: Isso só pode ser feito com o Usuario Conectado do tipo ADM
+      operationId: apiV1AddressuserIDGET
+      parameters:
+      - name: userID
+        in: path
+        description: O ID do usuario em que deseja pesquisar o endereço
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Sucesso!
+          content:
+            application/json:
+              schema:
+                properties:
+                  userAddress:
+                    type: array
+                    items:
+                      allOf:
+                       - $ref: '#/components/schemas/NewUserAddress'
+                x-content-type: application/json
+        "406":
+          description: Nenhum Endereço Encontrado!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: User
+      
+  /api/v1/userAll{userID}:
+    get:
+      tags:
+      - user
+      summary: "Permite a pesquisa, a partir do ID do usuario, de todas as informações do usuario, como por exemplo: Suas informações pessoais, endereço, telefone e empresa cadastrada  | role:[ADM | USER]"
+      description: Isso só pode ser feito com o Usuario Conectado do tipo ADM ou User
+      operationId: userAllID
+      parameters:
+      - name: userID
+        in: path
+        description: O ID do usuario em que deseja pesquisar todas as informações
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Sucesso!
+          content:
+            application/json:
+              schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/user'
+                  allOf:
+                  - $ref: '#/components/schemas/user'  
+                  properties:
+                    address:
+                      type: object
+                      allOf:
+                      - $ref: '#/components/schemas/NewUserAddress'
+                    phone:
+                      type: array
+                      items:
+                       $ref: '#/components/schemas/NewPhone'
+                    Company:
+                      type: array
+                      items:
+                        allOf:
+                         - $ref: '#/components/schemas/NewCompany'
+                        properties:
+                          companyAddress:
+                            type: object
+                            allOf:
+                            - $ref: '#/components/schemas/NewCompany_Address'
+                          contact:
+                            type: object
+                            allOf:
+                             - $ref: '#/components/schemas/NewCompany_Contact'
+              
+                x-content-type: application/json
+        "406":
+          description: Nenhum Endereço Encontrado!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: User
+      
+      
+      
+  /api/v1/userPhone{userID}:
+    get:
+      tags:
+      - user
+      summary: "Permite a pesquisa, a partir do ID do usuario, do telefone  | role:[ADM\
+        \ | USER]"
+      description: Isso só pode ser feito com o Usuario
+      operationId: apiV1PhoneuserIDGET
+      parameters:
+      - name: userID
+        in: path
+        description: O ID do telefone que deseja pesquisar
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Sucesso!
+          content:
+            application/json:
+              schema:
+                properties:
+                  userPhone:
+                    type: array
+                    items:
+                      allOf:
+                       - $ref: '#/components/schemas/NewPhone'
                 x-content-type: application/json
         "406":
           description: Nenhum Usuario Encontrado!
@@ -160,7 +340,7 @@ paths:
   /api/v1/address:
     put:
       tags:
-      - address
+      - userAddress
       summary: "Permite a edição de informações do endereço aos usuarios do sistema\
         \ | role:[ADM | USER]"
       description: Isso só pode ser feito com o Usuario Conectado
@@ -169,7 +349,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/address'
+              $ref: '#/components/schemas/userAddress'
         required: true
       responses:
         "200":
@@ -177,7 +357,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/address'
+                $ref: '#/components/schemas/userAddress'
         "400":
           description: endereço já existe!
         "406":
@@ -187,7 +367,7 @@ paths:
       x-swagger-router-controller: Address
     post:
       tags:
-      - address
+      - userAddress
       summary: "Permite o cadastro de endereço no sistema a partir dos dados, rua,\
         \ numero,cidade,cep,complemento, bairro e ponto de referencia. | role:[ADM\
         \ | USER]"
@@ -197,23 +377,68 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewAddress'
+              $ref: '#/components/schemas/NewUserAddress'
       responses:
         "201":
           description: Sucesso!
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NewAddress'
+                $ref: '#/components/schemas/NewUserAddress'
         "400":
           description: Usuario já Existe!
       security:
       - bearerAuth: []
       x-swagger-router-controller: Address
+  /api/v1/userCompany{userID}:
+    get:
+      tags:
+      - user
+      summary: "Permite a pesquisa, a partir do ID do usuario, as informaçoes da empresa relacionada a ele  |\
+        \ role:[ADM | USER]"
+      description: Isso só pode ser feito com o Usuario
+      operationId: userCompanyID
+      parameters:
+      - name: userID
+        in: path
+        description: O ID do do Usuario em a empresa pertence
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Sucesso!
+          content:
+            application/json:
+              schema:
+                properties:
+                  Company:
+                    type: array
+                    items:
+                      allOf:
+                       - $ref: '#/components/schemas/NewCompany'
+                      properties:
+                        companyAddress:
+                          type: object
+                          allOf:
+                          - $ref: '#/components/schemas/NewCompany_Address'
+                        contact:
+                          type: object
+                          allOf:
+                           - $ref: '#/components/schemas/NewCompany_Contact'
+                x-content-type: application/json
+        "406":
+          description: Nenhum Endereço Encontrado!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: User
   /api/v1/showAddresses:
     get:
       tags:
-      - address
+      - userAddress
       summary: "Permite o acesso a lista de usuarios do Sistema | role:[ADM]"
       description: Lista de Endereço
       operationId: apiV1ShowAddressesGET
@@ -225,7 +450,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/address'
+                  $ref: '#/components/schemas/NewUserAddress'
                 x-content-type: application/json
         "406":
           description: Nenhum Usuario Encontrado!
@@ -235,7 +460,7 @@ paths:
   /api/v1/address{id}:
     get:
       tags:
-      - address
+      - userAddress
       summary: "Permite a pesquisa, a partir do ID, das informações do endereço  |\
         \ role:[ADM | USER]"
       description: Isso só pode ser feito com o Usuario
@@ -258,50 +483,20 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/address'
+                  $ref: '#/components/schemas/NewUserAddress'
                 x-content-type: application/json
         "406":
-          description: Nenhum Usuario Encontrado!
+          description: Nenhum Endereço Encontrado!
       security:
       - bearerAuth: []
-      x-swagger-router-controller: Address
-  /api/v1/address{userID}:
-    get:
-      tags:
-      - address
-      summary: "Permite a pesquisa, a partir do ID do usuario, das informações do\
-        \ endereço  | role:[ADM | USER]"
-      description: Isso só pode ser feito com o Usuario Conectado do tipo ADM
-      operationId: apiV1AddressuserIDGET
-      parameters:
-      - name: userID
-        in: path
-        description: O ID do endereço que deseja pesquisar
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: uuid
-      responses:
-        "200":
-          description: Sucesso!
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/address'
-                x-content-type: application/json
-        "406":
-          description: Nenhum Usuario Encontrado!
-      security:
-      - bearerAuth: []
-      x-swagger-router-controller: Address
+      x-swagger-router-controller: User
+    
+
+
   /api/v1/address/{id}:
     delete:
       tags:
-      - address
+      - userAddress
       summary: "Permite a Exclusão do endereço a partir do id | role:[ADM | USER]"
       description: Isso só pode ser feito com o Usuario Conectado
       operationId: deleteAddress
@@ -430,39 +625,7 @@ paths:
       security:
       - bearerAuth: []
       x-swagger-router-controller: Phone
-  /api/v1/phone{userID}:
-    get:
-      tags:
-      - phone
-      summary: "Permite a pesquisa, a partir do ID do usuario, do telefone  | role:[ADM\
-        \ | USER]"
-      description: Isso só pode ser feito com o Usuario
-      operationId: apiV1PhoneuserIDGET
-      parameters:
-      - name: userID
-        in: path
-        description: O ID do telefone que deseja pesquisar
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: uuid
-      responses:
-        "200":
-          description: Sucesso!
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/phone'
-                x-content-type: application/json
-        "406":
-          description: Nenhum Usuario Encontrado!
-      security:
-      - bearerAuth: []
-      x-swagger-router-controller: Phone
+
   /api/v1/phone/{id}:
     delete:
       tags:
@@ -516,6 +679,7 @@ paths:
       security:
       - bearerAuth: []
       x-swagger-router-controller: Company
+      
     post:
       tags:
       - company
@@ -594,11 +758,90 @@ paths:
                   $ref: '#/components/schemas/company'
                 x-content-type: application/json
         "406":
-          description: Nenhum telefone Encontrado!
+          description: Nenhum empresa Encontrado!
       security:
       - bearerAuth: []
       x-swagger-router-controller: Company
-  /api/v1/showCompany:
+
+  /api/v1/companyAll{companyID}:
+    get:
+      tags:
+      - company
+      summary: "Permite a pesquisa de todas as informações da Empresa, a partir do ID | role:[ADM]"
+      description: Isso só pode ser feito com o Usuario
+      operationId: companyAllID
+      parameters:
+      - name: companyID
+        in: path
+        description: O ID do telefone que deseja pesquisar
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Sucesso!
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                   - $ref: '#/components/schemas/company'
+                  properties:
+                    address:
+                      type: object
+                      allOf:
+                       - $ref: '#/components/schemas/Company_address'
+                    contact:
+                      type: object
+                      allOf:
+                       - $ref: '#/components/schemas/Company_Contact'
+                        
+                 
+                    
+                x-content-type: application/json
+        "406":
+          description: Nenhum empresa Encontrado!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: Company   
+      
+  /api/v1/companyAddress{companyID}:
+    get:
+      tags:
+      - company
+      summary: "Permite a pesquisa, a partir do ID  da empresa, do endereço  | role:[ADM]"
+      description: Isso só pode ser feito com o Usuario
+      operationId: apiV1CompanyAddresscompanyIDGET
+      parameters:
+      - name: companyID
+        in: path
+        description: O ID da empresa em que pertence o id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Sucesso!
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NewCompany_Address'
+                x-content-type: application/json
+        "406":
+          description: Nenhum Usuario Encontrado!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: CompanyAddress
+  /api/v1/showCompanies:
     get:
       tags:
       - company
@@ -613,7 +856,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/user'
+                  $ref: '#/components/schemas/NewCompany'
                 x-content-type: application/json
         "406":
           description: Nenhum Usuario Encontrado!
@@ -731,38 +974,7 @@ paths:
       security:
       - bearerAuth: []
       x-swagger-router-controller: CompanyAddress
-  /api/v1/companyAddress{companyID}:
-    get:
-      tags:
-      - company_address
-      summary: "Permite a pesquisa, a partir do ID  da empresa, do endereço  | role:[ADM]"
-      description: Isso só pode ser feito com o Usuario
-      operationId: apiV1CompanyAddresscompanyIDGET
-      parameters:
-      - name: companyID
-        in: path
-        description: O ID do telefone que deseja pesquisar
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: uuid
-      responses:
-        "200":
-          description: Sucesso!
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/NewCompany_Address'
-                x-content-type: application/json
-        "406":
-          description: Nenhum Usuario Encontrado!
-      security:
-      - bearerAuth: []
-      x-swagger-router-controller: CompanyAddress
+
   /api/v1/showCompanyAddress:
     get:
       tags:
@@ -785,6 +997,38 @@ paths:
       security:
       - bearerAuth: []
       x-swagger-router-controller: CompanyAddress
+  /api/v1/companyContact{companyID}:
+    get:
+      tags:
+      - company
+      summary: "Permite a pesquisa, a partir do ID da empresa, os contatos  | role:[ADM]"
+      description: Isso só pode ser feito com o Usuario
+      operationId: apiV1CompanyContactcompanyAddressIDGET
+      parameters:
+      - name: companyID
+        in: path
+        description: O ID da empresa em  que o contato pertence
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Sucesso!
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NewCompany_Contact'
+                x-content-type: application/json
+        "406":
+          description: Nenhum Contato Encontrado!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: company
   /api/v1/companyContact:
     put:
       tags:
@@ -838,6 +1082,7 @@ paths:
       security:
       - bearerAuth: []
       x-swagger-router-controller: CompanyContact
+      
   /api/v1/companyContact/{companyContactID}:
     delete:
       tags:
@@ -863,6 +1108,7 @@ paths:
       security:
       - bearerAuth: []
       x-swagger-router-controller: CompanyContact
+      
   /api/v1/companyContact{companyContactID}:
     get:
       tags:
@@ -895,39 +1141,8 @@ paths:
       security:
       - bearerAuth: []
       x-swagger-router-controller: CompanyContact
-  /api/v1/companyContact{companyAddressID}:
-    get:
-      tags:
-      - company_contact
-      summary: "Permite a pesquisa, a partir do ID da empresa, os contatos  | role:[ADM]"
-      description: Isso só pode ser feito com o Usuario
-      operationId: apiV1CompanyContactcompanyAddressIDGET
-      parameters:
-      - name: companyAddressID
-        in: path
-        description: O ID da empresa em  que o contato pertence
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: uuid
-      responses:
-        "200":
-          description: Sucesso!
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/NewCompany_Contact'
-                x-content-type: application/json
-        "406":
-          description: Nenhum Usuario Encontrado!
-      security:
-      - bearerAuth: []
-      x-swagger-router-controller: CompanyContact
-  /api/v1/showCompanyContact:
+
+  /api/v1/showCompaniesContact:
     get:
       tags:
       - company_contact
@@ -949,6 +1164,7 @@ paths:
       security:
       - bearerAuth: []
       x-swagger-router-controller: CompanyContact
+      
   /api/v1/plan:
     put:
       tags:
@@ -1023,7 +1239,7 @@ paths:
       security:
       - bearerAuth: []
       x-swagger-router-controller: Plan
-  /api/v1/plan{planID}:
+  '/api/v1/plan/{planID}':
     get:
       tags:
       - plan
@@ -1055,7 +1271,7 @@ paths:
       security:
       - bearerAuth: []
       x-swagger-router-controller: Plan
-  /api/v1/plan/{planID}:
+  
     delete:
       tags:
       - plan
@@ -1080,21 +1296,310 @@ paths:
       security:
       - bearerAuth: []
       x-swagger-router-controller: Plan
+
+
+
+
+  /api/v1/role:
+    put:
+      tags:
+      - role
+      summary: "Permite a edição das roles ao ADM do sistema role:[ADM]"
+      description: Isso só pode ser feito com o Usuario Conectado
+      operationId: updateRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/role'
+        required: true
+      responses:
+        "200":
+          description: Sucesso!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/role'
+        "400":
+          description: Role já existe!
+        "406":
+          description: Role Não Encontrado!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: Plan
+      
+    post:
+      tags:
+      - role
+      summary: "Permite a criação de roles no sistema | role:[ADM ]"
+      description: Criação de um nova Role no sistema
+      operationId: createRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewRole'
+        required: true
+      responses:
+        "201":
+          description: Sucesso!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewRole'
+        "400":
+          description: Role já existe!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: role
+      
+  /api/v1/showRoles:
+    get:
+      tags:
+      - role
+      summary: "Permite o acesso a lista de roles | role:[ADM]"
+      description: "Passa nada Paramentro, retona"
+      operationId: listRole
+      responses:
+        "200":
+          description: Sucesso!
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NewRole'
+                x-content-type: application/json
+        "406":
+          description: Nenhum Role Encontrado!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: Plan
+      
+  '/api/v1/role/{roleID}':
+    get:
+      tags:
+      - role
+      summary: "Permite a pesquisa, a partir do ID , das roles  | role:[ADM]"
+      description: Isso só pode ser feito com o Usuario conectado
+      operationId: pesquisaRoleID
+      parameters:
+      - name: roleID
+        in: path
+        description: O ID da role 
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Sucesso!
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/role'
+                x-content-type: application/json
+        "406":
+          description: Nenhum role Encontrado!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: Plan
+      
+    delete:
+      tags:
+      - role
+      summary: "Permite a Exclusão de roles a partir do id | role:[ADM]"
+      description: Isso só pode ser feito com o Usuario Conectado
+      operationId: deleteRole
+      parameters:
+      - name: roleID
+        in: path
+        description: O ID que precisa ser excluído
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Sucesso!
+        "406":
+          description: Nenhum Role Encontrado!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: role
+      
+      
+      
+      
+      
+
+  /api/v1/userRole:
+    put:
+      tags:
+      - userRole
+      summary: "Permite a edição das roles ao ADM do sistema role:[ADM]"
+      description: Isso só pode ser feito com o Usuario Conectado
+      operationId: updateUserRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userRole'
+        required: true
+      responses:
+        "200":
+          description: Sucesso!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userRole'
+        "400":
+          description: Role já existe!
+        "406":
+          description: Role Não Encontrado!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: Plan
+      
+    post:
+      tags:
+      - userRole
+      summary: "Permite a criação de roles no sistema | role:[ADM ]"
+      description: Criação de um nova Role no sistema
+      operationId: createUserRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewRole'
+        required: true
+      responses:
+        "201":
+          description: Sucesso!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewRole'
+        "400":
+          description: Role já existe!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: role
+      
+  /api/v1/showUserRoles:
+    get:
+      tags:
+      - userRole
+      summary: "Permite o acesso a lista de roles | role:[ADM]"
+      description: "Passa nada Paramentro, retona"
+      operationId: listUserRole
+      responses:
+        "200":
+          description: Sucesso!
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NewRole'
+                x-content-type: application/json
+        "406":
+          description: Nenhum Role Encontrado!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: Plan
+      
+  '/api/v1/userRole/{userRoleID}':
+    get:
+      tags:
+      - userRole
+      summary: "Permite a pesquisa, a partir do ID , das roles  | role:[ADM]"
+      description: Isso só pode ser feito com o Usuario conectado
+      operationId: pesquisaUserRoleID
+      parameters:
+      - name: userRoleID
+        in: path
+        description: O ID da role 
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Sucesso!
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/role'
+                x-content-type: application/json
+        "406":
+          description: Nenhum role Encontrado!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: Plan
+      
+    delete:
+      tags:
+      - userRole
+      summary: "Permite a Exclusão de roles a partir do id | role:[ADM]"
+      description: Isso só pode ser feito com o Usuario Conectado
+      operationId: deleteUserRole
+      parameters:
+      - name: userRoleID
+        in: path
+        description: O ID que precisa ser excluído
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Sucesso!
+        "406":
+          description: Nenhum Role Encontrado!
+      security:
+      - bearerAuth: []
+      x-swagger-router-controller: role
+      
+      
 components:
   schemas:
     user:
       type: object
       allOf:
-      - $ref: '#/components/schemas/NewUser'
+      - $ref: '#/components/schemas/NewUserAll'
       - required:
         - userID
         properties:
           userID:
             type: string
             format: uuid
+            
     NewUser:
       required:
-      - address
+      - userID
+      - email
+      - name
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+        userID:
+          type: string
+          format: uuid
+
+          
+    NewUserAll:
+      required:
       - email
       - name
       - password
@@ -1108,54 +1613,46 @@ components:
           type: string
         phoneNumber:
           type: string
-      example:
-        password: password
-        phoneNumber: phoneNumber
-        name: name
-        email: email
+        
+
     phone:
       required:
       - id
       - userID
       type: object
       properties:
+        userID:
+          type: string
+          format: uuid
+      allOf:
+      - $ref: '#/components/schemas/NewPhone'
+      
+    NewPhone:
+      required:
+      - phoneNumber
+      - phoneID
+      properties:
+        phoneNumber:
+          type: string
         phoneID:
           type: string
           format: uuid
-        userID:
-          type: string
-          format: uuid
-      example:
-        phoneID: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-        userID: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-      allOf:
-      - $ref: '#/components/schemas/NewPhone'
-    NewPhone:
+        
+    userAddress:
       required:
-      - number
-      properties:
-        number:
-          type: string
-      example:
-        number: number
-    address:
-      required:
-      - id
       - userID
       type: object
       properties:
-        addressID:
-          type: string
-          format: uuid
+
         userID:
           type: string
           format: uuid
-      example:
-        userID: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-        addressID: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+
       allOf:
-      - $ref: '#/components/schemas/NewAddress'
-    NewAddress:
+      - $ref: '#/components/schemas/NewUserAddress'
+      
+      
+    NewUserAddress:
       required:
       - bairro
       - cep
@@ -1163,6 +1660,10 @@ components:
       - number
       - state
       - street
+      - referencePoint
+      - houseNumber
+      - complement
+      - addressID
       properties:
         city:
           type: string
@@ -1180,49 +1681,43 @@ components:
           type: string
         complement:
           type: string
-      example:
-        city: city
-        street: street
-        bairro: bairro
-        houseNumber: houseNumber
-        state: state
-        complement: complement
-        cep: cep
-        referencePoint: referencePoint
+        addressID:
+          type: string
+          format: uuid
+
+
+        
+        
     company:
       required:
-      - id
       - userID
       type: object
       properties:
-        companyID:
-          type: string
-          format: uuid
         userID:
           type: string
           format: uuid
-      example:
-        companyID: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-        userID: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       allOf:
       - $ref: '#/components/schemas/NewCompany'
+      
+      
     NewCompany:
       required:
       - IE
       - address
       - cnpj
-      - name
+      - companyName
+      - companyID
       properties:
-        name:
+        companyName:
           type: string
         cnpj:
           type: string
         IE:
           type: string
-      example:
-        name: name
-        cnpj: cnpj
-        IE: IE
+        companyID:
+          type: string
+          format: uuid
+        
     Company_Contact:
       required:
       - companyID
@@ -1235,37 +1730,35 @@ components:
         contactID:
           type: string
           format: uuid
-      example:
-        companyID: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-        contactID: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       allOf:
       - $ref: '#/components/schemas/NewCompany_Contact'
+      
     NewCompany_Contact:
       required:
       - email
       - number
+      - contactID
       properties:
         number:
           type: string
         email:
           type: string
-      example:
-        number: number
-        email: email
+        contactID:
+          type: string
+          format: uuid
+
+        
     Company_address:
       required:
-      - companyAddressID
-      - userID
+      - companyID
       type: object
       properties:
         companyID:
           type: string
           format: uuid
-        companyAddressID:
-          type: string
-          format: uuid
       allOf:
       - $ref: '#/components/schemas/NewCompany_Address'
+      
     NewCompany_Address:
       required:
       - bairro
@@ -1274,6 +1767,7 @@ components:
       - number
       - state
       - street
+      - companyAddressID
       properties:
         city:
           type: string
@@ -1291,27 +1785,20 @@ components:
           type: string
         complement:
           type: string
-      example:
-        city: city
-        street: street
-        bairro: bairro
-        houseNumber: houseNumber
-        state: state
-        complement: complement
-        cep: cep
-        referencePoint: referencePoint
+        companyAddressID:
+          type: string
+          format: uuid
+
     plan:
       required:
       - companyID
       - planID
       properties:
-        companyID:
-          type: string
-          format: uuid
         planID:
           type: string
       allOf:
       - $ref: '#/components/schemas/NewPlan'
+      
     NewPlan:
       required:
       - description
@@ -1324,10 +1811,53 @@ components:
           type: string
         value:
           type: number
-      example:
-        name: name
-        description: description
-        value: 0.8008281904610115
+    role:
+      required: 
+      - tipo
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+      allOf:
+        - $ref: '#/components/schemas/NewRole'
+          
+    NewRole:
+      required: 
+      - tipo
+      properties:
+        tipo:
+          type: string
+          
+          
+          
+    userRole:
+      required: 
+      - ID
+      properties:
+        ID:
+          type: string
+          format: uuid
+      allOf:
+        - $ref: '#/components/schemas/NewUserRole'
+          
+    NewUserRole:
+      required: 
+      - userID
+      - roleID
+      properties:
+        userID:
+          type: string
+          format: uuid
+        roleID:
+          type: string
+          format: uuid
+          
+  
+    
+          
+    
+
   securitySchemes:
     bearerAuth:
       type: http
