@@ -5,7 +5,6 @@ node_modules
 .vscode
 npm-debug.log*
 .eslintcache
-dist/log*
 
 # Cypress
 test/e2e/screenshots
