@@ -53,7 +53,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/user'
+              allOf:
+              - $ref: '#/components/schemas/NewUser'
+              properties:
+                password:
+                  type: string
+             
         required: true
       responses:
         "200":
@@ -239,15 +244,16 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  allOf:
-                  - $ref: '#/components/schemas/user'  
                   properties:
-                    address:
+                    User:
                       type: object
                       allOf:
-                      - $ref: '#/components/schemas/NewUserAddress'
+                       - $ref: '#/components/schemas/user'  
+                      properties:
+                        address:
+                          type: object
+                          allOf:
+                           - $ref: '#/components/schemas/NewUserAddress'
                     phone:
                       type: array
                       items:
@@ -267,7 +273,7 @@ paths:
                             allOf:
                              - $ref: '#/components/schemas/NewCompany_Contact'
               
-                x-content-type: application/json
+                      x-content-type: application/json
         "406":
           description: Nenhum Endereço Encontrado!
       security:
@@ -349,7 +355,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/userAddress'
+              $ref: '#/components/schemas/NewUserAddress'
         required: true
       responses:
         "200":
@@ -357,7 +363,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/userAddress'
+                properties:
+                  address:
+                    allOf:
+                    - $ref: '#/components/schemas/NewUserAddress'
         "400":
           description: endereço já existe!
         "406":
@@ -377,14 +386,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewUserAddress'
+              $ref: '#/components/schemas/userAddress'
       responses:
         "201":
           description: Sucesso!
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NewUserAddress'
+                properties:
+                  address:
+                    allOf:
+                    - $ref: '#/components/schemas/NewUserAddress'
         "400":
           description: Usuario já Existe!
       security:
@@ -448,9 +460,11 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/NewUserAddress'
+                properties:
+                  addresses:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NewUserAddress'
                 x-content-type: application/json
         "406":
           description: Nenhum Usuario Encontrado!
@@ -481,9 +495,11 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/NewUserAddress'
+                properties:
+                  address:
+                    type: object
+                    allOf:
+                      - $ref: '#/components/schemas/NewUserAddress'
                 x-content-type: application/json
         "406":
           description: Nenhum Endereço Encontrado!
@@ -538,7 +554,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NewPhone'
+                properties:
+                  phone:
+                    type: object
+                    allOf:
+                    - $ref: '#/components/schemas/NewPhone'
         "400":
           description: endereço já existe!
         "406":
@@ -557,7 +577,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewPhone'
+              $ref: '#/components/schemas/phone'
         required: true
       responses:
         "201":
@@ -565,7 +585,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NewPhone'
+                properties:
+                  phone:
+                    type: object
+                    allOf:
+                    - $ref: '#/components/schemas/NewPhone'
         "400":
           description: Usuario já Existe!
       security:
@@ -584,10 +608,12 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/phone'
-                x-content-type: application/json
+                properties:
+                  phone:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NewPhone'
+                    x-content-type: application/json
         "406":
           description: Nenhum Usuario Encontrado!
       security:
@@ -616,9 +642,11 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/phone'
+                properties:
+                  phone:
+                    type: object
+                    allOf:
+                    - $ref: '#/components/schemas/NewPhone'
                 x-content-type: application/json
         "406":
           description: Nenhum telefone Encontrado!
@@ -663,7 +691,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewCompany'
+              allOf:
+                - $ref: '#/components/schemas/NewCompany'
+              properties:
+                email:
+                  type: string
+                phone:
+                  type: string
         required: true
       responses:
         "200":
@@ -671,7 +705,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NewCompany'
+                properties:
+                  company:
+                    type: object
+                    allOf:
+                    - $ref: '#/components/schemas/NewCompany'
+                    properties:
+                      contact:
+                        type: object
+                        allOf:
+                        - $ref: '#/components/schemas/NewCompany_Contact'
         "400":
           description: Usuário já existe!
         "406":
@@ -691,7 +734,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewCompany'
+              allOf:
+                - $ref: '#/components/schemas/company'
+              properties:
+                email:
+                  type: string
+
+                phone:
+                  type: string
         required: true
       responses:
         "201":
@@ -699,7 +749,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NewCompany'
+                properties:
+                  company:
+                    type: object
+                    allOf:
+                    - $ref: '#/components/schemas/NewCompany'
+                    properties:
+                      contact:
+                        type: object
+                        allOf:
+                        - $ref: '#/components/schemas/NewCompany_Contact'
         "400":
           description: Empresa Cadastrada!
       security:
@@ -753,9 +812,11 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/company'
+                properties:
+                  Company:
+                    type: object
+                    allOf:
+                     - $ref: '#/components/schemas/NewCompany'
                 x-content-type: application/json
         "406":
           description: Nenhum empresa Encontrado!
@@ -786,23 +847,24 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  allOf:
-                   - $ref: '#/components/schemas/company'
                   properties:
-                    address:
+                    company:
                       type: object
                       allOf:
-                       - $ref: '#/components/schemas/Company_address'
+                       - $ref: '#/components/schemas/NewCompany' 
+                      properties:
+                        address:
+                          type: object
+                          allOf:
+                          - $ref: '#/components/schemas/NewCompany_Address'
                     contact:
                       type: object
                       allOf:
-                       - $ref: '#/components/schemas/Company_Contact'
+                       - $ref: '#/components/schemas/NewCompany_Contact'
                         
                  
                     
-                x-content-type: application/json
+                  x-content-type: application/json
         "406":
           description: Nenhum empresa Encontrado!
       security:
@@ -832,10 +894,12 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/NewCompany_Address'
-                x-content-type: application/json
+               properties:
+                CompanyAddress:
+                  type: object
+                  allOf:
+                    - $ref: '#/components/schemas/NewCompany_Address'
+                  x-content-type: application/json
         "406":
           description: Nenhum Usuario Encontrado!
       security:
@@ -854,9 +918,11 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/NewCompany'
+                properties:
+                 Companies: 
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/NewCompany'
                 x-content-type: application/json
         "406":
           description: Nenhum Usuario Encontrado!
@@ -1020,9 +1086,11 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/NewCompany_Contact'
+                properties:
+                  CompanyContact:
+                    type: object
+                    allOf:
+                    - $ref: '#/components/schemas/NewCompany_Contact'
                 x-content-type: application/json
         "406":
           description: Nenhum Contato Encontrado!
@@ -1049,7 +1117,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NewCompany_Contact'
+                properties:
+                  CompanyContact:
+                    type: object
+                    allOf:
+                    - $ref: '#/components/schemas/NewCompany_Contact'
         "400":
           description: Usuário já existe!
         "406":
@@ -1068,7 +1140,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewCompany_Address'
+              $ref: '#/components/schemas/Company_Contact'
         required: true
       responses:
         "201":
@@ -1076,7 +1148,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NewCompany_Address'
+                properties:
+                  CompanyContact:
+                    type: object
+                    allOf:
+                    - $ref: '#/components/schemas/NewCompany_Contact'
         "400":
           description: Empresa Cadastrada!
       security:
@@ -1132,9 +1208,11 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Company_Contact'
+                properties:
+                  CompanyContact:
+                    type: object
+                    allOf:
+                    - $ref: '#/components/schemas/NewCompany_Contact'
                 x-content-type: application/json
         "406":
           description: Nenhum Usuario Encontrado!
@@ -1142,7 +1220,7 @@ paths:
       - bearerAuth: []
       x-swagger-router-controller: CompanyContact
 
-  /api/v1/showCompaniesContact:
+  /api/v1/showCompaniesContacts:
     get:
       tags:
       - company_contact
@@ -1155,9 +1233,11 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/NewCompany_Contact'
+                properties:
+                  CompaniesContacts:
+                    type: array
+                    items:
+                     $ref: '#/components/schemas/NewCompany_Contact'
                 x-content-type: application/json
         "406":
           description: Nenhum endereço Encontrado!
@@ -1617,15 +1697,15 @@ components:
 
     phone:
       required:
-      - id
       - userID
+      - phoneNumber
       type: object
       properties:
         userID:
           type: string
           format: uuid
-      allOf:
-      - $ref: '#/components/schemas/NewPhone'
+        phoneNumber:
+          type: string
       
     NewPhone:
       required:
@@ -1641,15 +1721,35 @@ components:
     userAddress:
       required:
       - userID
+      - bairro
+      - cep
+      - city
+      - number
+      - state
+      - street
+      - referencePoint
+      - houseNumber
       type: object
       properties:
-
         userID:
           type: string
           format: uuid
-
-      allOf:
-      - $ref: '#/components/schemas/NewUserAddress'
+        city:
+          type: string
+        street:
+          type: string
+        bairro:
+          type: string
+        houseNumber:
+          type: string
+        state:
+          type: string
+        cep:
+          type: string
+        referencePoint:
+          type: string
+        complement:
+          type: string
       
       
     NewUserAddress:
@@ -1662,7 +1762,6 @@ components:
       - street
       - referencePoint
       - houseNumber
-      - complement
       - addressID
       properties:
         city:
@@ -1691,13 +1790,21 @@ components:
     company:
       required:
       - userID
+      - IE
+      - address
+      - cnpj
+      - companyName
       type: object
       properties:
         userID:
           type: string
           format: uuid
-      allOf:
-      - $ref: '#/components/schemas/NewCompany'
+        companyName:
+          type: string
+        cnpj:
+          type: string
+        IE:
+          type: string
       
       
     NewCompany:
@@ -1720,18 +1827,19 @@ components:
         
     Company_Contact:
       required:
+      - email
+      - number      
       - companyID
-      - contactID
       type: object
       properties:
         companyID:
           type: string
           format: uuid
-        contactID:
+        number:
           type: string
-          format: uuid
-      allOf:
-      - $ref: '#/components/schemas/NewCompany_Contact'
+        email:
+          type: string
+
       
     NewCompany_Contact:
       required:
