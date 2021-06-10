@@ -15,10 +15,10 @@ import { CompanyContactRepository } from "../repositories/CompanyContactReposito
 
 class CompanyController {
   async create(req: Request, res: Response) {
-    const { companyName, cnpj, inscricaoEstadual, email, phone, userID } =
+    const { companyName, cnpj, companyCategory, email, phone, userID } =
       req.body;
 
-    if (!companyName || !cnpj || !inscricaoEstadual || !email || !phone) {
+    if (!companyName || !cnpj || !companyCategory || !email || !phone) {
       return res.status(422).json({
         Message: Status.REQUIRED_FIELD,
       });
@@ -50,24 +50,16 @@ class CompanyController {
 
     const cnpjAlreadyExist = await companyRepository.findOne({ cnpj });
 
-    const ieAlreadyExist = await companyRepository.findOne({
-      inscricaoEstadual,
-    });
-
     if (cnpjAlreadyExist) {
       return res.status(409).json({
         Message: Status.CNPJ_ALREADY_EXIST,
-      });
-    } else if (ieAlreadyExist) {
-      return res.status(409).json({
-        Message: Status.IE_ALREADY_EXIST,
       });
     }
 
     const company = companyRepository.create({
       companyName,
       cnpj,
-      inscricaoEstadual,
+      companyCategory,
       userID,
     });
 
@@ -119,9 +111,9 @@ class CompanyController {
   }
 
   async read(req: Request, res: Response) {
-    const { cnpj, inscricaoEstadual } = req.body;
+    const { cnpj } = req.params;
 
-    if (!cnpj || !inscricaoEstadual) {
+    if (!cnpj) {
       return res.status(422).json({
         Message: Status.REQUIRED_FIELD,
       });
@@ -131,7 +123,6 @@ class CompanyController {
 
     const company = await companyRepository.findOne({
       cnpj,
-      inscricaoEstadual,
     });
 
     if (!company) {
@@ -143,6 +134,34 @@ class CompanyController {
     return res
       .status(200)
       .json({ company: CompanyResponseDTO.responseCompanyDTO(company) });
+  }
+
+  async readFromCategory(req: Request, res: Response) {
+    const { companyCategory } = req.params;
+
+    if (!companyCategory) {
+      return res.status(422).json({
+        Message: Status.REQUIRED_FIELD,
+      });
+    }
+
+    const companyRepository = getCustomRepository(CompaniesRepository);
+
+    const companies = await companyRepository.find({
+      companyCategory,
+    });
+
+    if (companies.length === 0) {
+      return res.status(406).json({
+        Message: Status.NOT_FOUND,
+      });
+    }
+
+    const companiesDTO = companies.map((company) => {
+      return CompanyResponseDTO.responseCompanyDTO(company);
+    });
+
+    return res.status(200).json({ companies: companiesDTO });
   }
 
   async readFromID(req: Request, res: Response) {
@@ -311,7 +330,7 @@ class CompanyController {
     const {
       companyName = company.companyName,
       cnpj = company.cnpj,
-      inscricaoEstadual = company.inscricaoEstadual,
+      companyCategory = company.companyCategory,
       email = companyContact.email,
       phone = companyContact.phone,
     } = req.body;
@@ -355,16 +374,6 @@ class CompanyController {
       }
     }
 
-    if (company.inscricaoEstadual !== inscricaoEstadual) {
-      const inscricaoEstadualExists = await companyRepository.findOne({
-        inscricaoEstadual,
-      });
-      if (inscricaoEstadualExists) {
-        // se encontrar algo retorna um json de erro
-        return res.status(409).json({ Message: Status.IE_ALREADY_EXIST });
-      }
-    }
-
     companyContact = await companyContactController.updateFromController(
       companyContact.id,
       email,
@@ -380,7 +389,7 @@ class CompanyController {
     await companyRepository.update(companyID, {
       companyName,
       cnpj,
-      inscricaoEstadual,
+      companyCategory,
     });
 
     // pesquisando a role pelo id

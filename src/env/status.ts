@@ -23,7 +23,6 @@ const Status = {
   REQUIRED_TOKEN: "Token não enviado!",
   PHONE_ALREADY_EXIST: "Telefone já existe!",
   CNPJ_ALREADY_EXIST: "CNPJ já existe!",
-  IE_ALREADY_EXIST: "Inscrição estadual já existe!",
   INVALID_DATA: "Dados Invalidos!",
   INVALID_CNPJ: "CNPJ invalido!",
   SUCCESS: "Sucesso!",

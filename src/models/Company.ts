@@ -21,7 +21,7 @@ class Company {
   cnpj: string;
 
   @Column()
-  inscricaoEstadual: string;
+  companyCategory: string;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -7,53 +7,53 @@ import { Status } from "../env/status";
 const planController = new PlanController();
 const verifyTokenUser = new VerifyTokenUser();
 
-const routerPlan = Router();
+const routerCategory = Router();
 
 // criando a rota de cadastro de Roles
-routerPlan.post(
-  "/api/v1/plan",
+routerCategory.post(
+  "/api/v1/category",
   verifyTokenUser.verifyTokenADM,
   planController.create
 );
 
 // criando a rota de atualização de Roles
-routerPlan.put(
-  "/api/v1/plan",
+routerCategory.put(
+  "/api/v1/category",
   verifyTokenUser.verifyTokenADM,
   planController.update
 );
 
 // criando a rota de listagem de todos as Roles
-routerPlan.get(
-  "/api/v1/showPlans",
+routerCategory.get(
+  "/api/v1/showCategories",
   verifyTokenUser.verifyTokenAuth,
   planController.show
 );
 // criando a rota de pesquisa da Role pelo id
-routerPlan.get(
-  "/api/v1/plan/:id",
+routerCategory.get(
+  "/api/v1/category/:id",
   verifyTokenUser.verifyTokenAuth,
   planController.read
 );
 
-routerPlan.get("/api/v1/plan", (req: Request, res: Response) => {
+routerCategory.get("/api/v1/category", (req: Request, res: Response) => {
   return res.status(422).json({
     Message: Status.ID_NOT_FOUND,
   });
 });
 
 // criando a rota de deleção de Roles
-routerPlan.delete(
-  "/api/v1/plan/:id",
+routerCategory.delete(
+  "/api/v1/category/:id",
   verifyTokenUser.verifyTokenADM,
   planController.delete
 );
 
-routerPlan.delete("/api/v1/plan", (req: Request, res: Response) => {
+routerCategory.delete("/api/v1/category", (req: Request, res: Response) => {
   return res.status(422).json({
     Message: Status.ID_NOT_FOUND,
   });
 });
 
 // exportando o router
-export { routerPlan };
+export { routerCategory };

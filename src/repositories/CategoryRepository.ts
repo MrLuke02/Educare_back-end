@@ -1,10 +1,10 @@
 import { EntityRepository, Repository } from "typeorm";
-import { Plan } from "../models/Plan";
+import { Category } from "../models/Category";
 
 // criando o repositorio customizado/personalizado passando o model
-@EntityRepository(Plan)
+@EntityRepository(Category)
 // extendendo a classe Repository, passando também o model
-class PlansRepository extends Repository<Plan> {}
+class CategoriesRepository extends Repository<Category> {}
 
 // exportando a classe
-export { PlansRepository };
+export { CategoriesRepository };
