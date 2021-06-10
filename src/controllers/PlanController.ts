@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Status } from "../env/status";
-import { PlansRepository } from "../repositories/PlanRepository";
+import { CategoriesRepository } from "../repositories/CategoryRepository";
 import { PlanResponseDTO } from "../models/DTO/plan/PlanResponseDTO";
 
 class PlanController {
@@ -18,7 +18,7 @@ class PlanController {
       });
     }
 
-    const plansRepository = getCustomRepository(PlansRepository);
+    const plansRepository = getCustomRepository(CategoriesRepository);
 
     const plan = plansRepository.create({
       name,
@@ -36,7 +36,7 @@ class PlanController {
   async read(req: Request, res: Response) {
     const { id } = req.params;
 
-    const plansRepository = getCustomRepository(PlansRepository);
+    const plansRepository = getCustomRepository(CategoriesRepository);
 
     const plan = await plansRepository.findOne({ id });
 
@@ -64,7 +64,7 @@ class PlanController {
     }
 
     // pegando o repositorio customizado/personalizado
-    const plansRepository = getCustomRepository(PlansRepository);
+    const plansRepository = getCustomRepository(CategoriesRepository);
 
     // pesquisando uma role pelo id
     let plan = await plansRepository.findOne(id);
@@ -103,7 +103,7 @@ class PlanController {
   async delete(req: Request, res: Response) {
     const { id } = req.params;
 
-    const plansRepository = getCustomRepository(PlansRepository);
+    const plansRepository = getCustomRepository(CategoriesRepository);
 
     const plan = await plansRepository.findOne(id);
 
@@ -119,7 +119,7 @@ class PlanController {
   }
 
   async show(req: Request, res: Response) {
-    const plansRepository = getCustomRepository(PlansRepository);
+    const plansRepository = getCustomRepository(CategoriesRepository);
 
     const plans = await plansRepository.find();
 

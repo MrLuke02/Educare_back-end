@@ -4,7 +4,7 @@ import { routerUserRole } from "./routesUserRole";
 import { routerPhone } from "./routesPhone";
 import { routerAddress } from "./routesAddress";
 import { routerCompany } from "./routesCompany";
-import { routerPlan } from "./routesPlan";
+import { routerCategory } from "./routesCategory";
 import { routerCompanyAddress } from "./routesCompanyAddress";
 import { routesCompanyContact } from "./routesCompanyContact";
 
@@ -16,7 +16,7 @@ export {
   routerPhone,
   routerAddress,
   routerCompany,
-  routerPlan,
+  routerCategory,
   routerCompanyAddress,
   routesCompanyContact,
 };

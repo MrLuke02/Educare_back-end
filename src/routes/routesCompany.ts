@@ -16,10 +16,29 @@ routerCompany.post(
   verifyTokenUser.verifyTokenADM,
   companyController.create
 );
-routerCompany.post(
-  "/api/v1/getCompany",
+routerCompany.get(
+  "/api/v1/companyByCpnj",
   verifyTokenUser.verifyTokenAuth,
   companyController.read
+);
+routerCompany.get("/api/v1/companyByCpnj", (req: Request, res: Response) => {
+  return res.status(422).json({
+    Message: Status.ID_NOT_FOUND,
+  });
+});
+
+routerCompany.get(
+  "/api/v1/companiesByCategory",
+  verifyTokenUser.verifyTokenAuth,
+  companyController.read
+);
+routerCompany.get(
+  "/api/v1/companiesByCategory",
+  (req: Request, res: Response) => {
+    return res.status(422).json({
+      Message: Status.ID_NOT_FOUND,
+    });
+  }
 );
 
 routerCompany.get(
