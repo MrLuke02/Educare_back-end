@@ -23,15 +23,21 @@
 instalção - download e instalação via cmd
 
 
+
+
 # Status do Projeto 
 Em construção 🚧
 
 
+
+
 # Informações 💬
 
--👉O Educare é uma aplicação que esta sendo desenvolvida pelo grupo Fábrica de Software da Universidade Vale do Salgado
--👉O projeto ainda está em desenvolvimento
--👉Logo logo poderá ser acompanhado quando for hospedado
+- 👉O Educare é uma aplicação que esta sendo desenvolvida pelo grupo Fábrica de Software da Universidade Vale do Salgado
+- 👉O projeto ainda está em desenvolvimento
+- 👉Logo logo poderá ser acompanhado quando for hospedado
+
+
 
 
 # Contato 📞
