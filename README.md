@@ -19,8 +19,8 @@
 - React Js (biblioteca JavaScript de código aberto com foco em criar interfaces de usuário em páginas web)
 - React Router Dom ( lib completa para controle de rotas)
 - Bootstrap JS (consiste em arquivos JavaScript, responsáveis pela interatividade de um site)
-- vscode (editor de código-fonte)
-instalção - download e instalação via cmd
+- Vscode (editor de código-fonte)
+- Instalção - download e instalação via cmd
 
 
 
@@ -31,7 +31,7 @@ Em construção 🚧
 
 # Informações 💬
 
-- 👉O Educare é uma aplicação que esta sendo desenvolvida pelo grupo Fábrica de Software da Universidade Vale do Salgado
+- 👉O Educare é uma aplicação que está sendo desenvolvida pelo grupo Fábrica de Software da Universidade Vale do Salgado
 - 👉O projeto ainda está em desenvolvimento
 - 👉Logo logo poderá ser acompanhado quando for hospedado
 
