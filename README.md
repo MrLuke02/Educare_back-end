@@ -29,8 +29,6 @@ instalção - download e instalação via cmd
 Em construção 🚧
 
 
-
-
 # Informações 💬
 
 - 👉O Educare é uma aplicação que esta sendo desenvolvida pelo grupo Fábrica de Software da Universidade Vale do Salgado
@@ -43,4 +41,5 @@ Em construção 🚧
 # Contato 📞
 ### Telefone(whatsapp): (88)9.9809-0170 / (88)9.9808-2506
 ### Instagram:         @o_pedroangelim  /  @mr.luke_lr
-### Email: pedroangelim10@gmail.com  
+### Email: pedroangelim10@gmail.com 
+### Git: Pedroangelim123 / MrLuke02 
