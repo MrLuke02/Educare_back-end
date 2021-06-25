@@ -17,7 +17,7 @@ app.use(
   routes.routerUserRole,
   routes.routerAddress,
   routes.routerCompany,
-  routes.routerPlan,
+  routes.routerCategory,
   routes.routerCompanyAddress,
   routes.routesCompanyContact
 );
