@@ -311,13 +311,13 @@ class UserController {
       }
 
       if (roles.length === 0 && phone.length === 0) {
-        user["roles"] = "Nada encontrado!";
-        user["phone"] = "Nada encontrado!";
+        user["roles"] = Status.NOT_FOUND;
+        user["phone"] = Status.NOT_FOUND;
       } else if (roles.length === 0) {
-        user["roles"] = "Nada encontrado!";
+        user["roles"] = Status.NOT_FOUND;
         user["phone"] = phone;
       } else if (phone.length === 0) {
-        user["phone"] = "Nada encontrado!";
+        user["phone"] = Status.NOT_FOUND;
         user["roles"] = roles;
       } else {
         user["roles"] = roles;
