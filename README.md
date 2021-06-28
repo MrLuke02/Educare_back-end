@@ -22,8 +22,7 @@
 - React Router Dom ( lib completa para controle de rotas)
 - Bootstrap JS (consiste em arquivos JavaScript, responsáveis pela interatividade de um site)
 - Vscode (editor de código-fonte)
-- instalaçao cmd
-- 
+- instalaçao cmd 
 
 # Passo a Passo:⚙️
 ## Instalção - download e instalação via cmd:
@@ -34,7 +33,9 @@
 ## Vs Code:
 - Para fazer a instalação do VS Code, basta apenas clicar em " https://code.visualstudio.com/ ".
 - Escolha o sistema operacional desejado.
-- 
+- Clique na seta para o download.
+
+## React Js:
 
 
 
