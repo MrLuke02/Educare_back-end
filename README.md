@@ -3,7 +3,7 @@
 <h1 align="center"> 🚀 EDUCARE 🚀 </h1>
 
 
-## <h1 align="center"> 🚧 README AINDA EM CONSTRUÇÃO 🚧 </h1>
+## <h1 align="center"> 🚧 README EM CONSTRUÇÃO 🚧 </h1>
 
  
 
