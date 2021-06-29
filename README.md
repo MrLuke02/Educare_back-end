@@ -3,7 +3,7 @@
 <h1 align="center"> 🚀 EDUCARE 🚀 </h1>
 
 
-## <h1 align="center"> 🚧 README EM CONSTRUÇÃO 🚧 </h1>
+## <h1 align="center"> 🚧 README AINDA EM CONSTRUÇÃO 🚧 </h1>
 
  
 
@@ -22,7 +22,7 @@
 - React Router Dom ( lib completa para controle de rotas)
 - Bootstrap JS (consiste em arquivos JavaScript, responsáveis pela interatividade de um site)
 - Vscode (editor de código-fonte)
-- instalaçao cmd 
+- instalaçao cmd.
 
 # Passo a Passo:⚙️
 ## Instalção - download e instalação via cmd:
@@ -35,7 +35,7 @@
 - Escolha o sistema operacional desejado.
 - Clique na seta para o download.
 
-## React Js:
+## React Js
 
 
 
@@ -57,6 +57,6 @@ Em construção 🚧
 
 # Contato 📞
 ### Telefone(whatsapp): (88)9.9809-0170 / (88)9.9808-2506
-### Instagram:         @o_pedroangelim  /  @mr.luke_lr
+### Instagram:   @o_pedroangelim  /  @mr.luke_lr
 ### Email: pedroangelim10@gmail.com 
 ### Git: Pedroangelim123 / MrLuke02 
