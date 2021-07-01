@@ -7,6 +7,7 @@ import { routerCompany } from "./routesCompany";
 import { routerCategory } from "./routesCategory";
 import { routerCompanyAddress } from "./routesCompanyAddress";
 import { routerCompanyContact } from "./routesCompanyContact";
+import { routerApiDocs } from "./routesApiDocs";
 
 // importando e exportando as rotas de usuário
 export {
@@ -19,4 +20,5 @@ export {
   routerCategory,
   routerCompanyAddress,
   routerCompanyContact,
+  routerApiDocs,
 };

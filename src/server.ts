@@ -12,6 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use(
   "/api/v1",
+  routes.routerApiDocs,
   routes.routerUser,
   routes.routerRole,
   routes.routerPhone,
