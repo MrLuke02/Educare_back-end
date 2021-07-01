@@ -1,14 +1,14 @@
-import { Request, Response } from "express";
-import { verifyToken } from "../../token.auth";
-import { Status } from "../../../env/status";
+import { DefaultToken, NextFunction, Request, Response } from "express";
 import { AddressController } from "../../../controllers/AddressController";
 import { PhoneController } from "../../../controllers/PhoneController";
+import { Status } from "../../../env/status";
+import { verifyToken } from "../../token/token.auth";
 
 // classe para a verificação dos tokens
 class VerifyTokenUser {
   // metodo para verificar o token enviado na rota de atualização de dados dos usuários
-  async verifyADMUser(req: Request, res: Response, next: Function) {
-    let userID;
+  async verifyADMUser(req: Request, res: Response, next: NextFunction) {
+    let userID: string;
     if (!req.body.userID) {
       userID = req.params.userID;
     } else {
@@ -21,29 +21,37 @@ class VerifyTokenUser {
       });
     }
 
-    let token;
+    let token: DefaultToken;
     // armazenando o token retornado da função
     if (!req.headers.authorization) {
       return res.status(401).json({ Message: Status.REQUIRED_TOKEN });
     } else {
-      token = await verifyToken(req.headers.authorization.split(" ")[1], res);
-    }
+      try {
+        token = await verifyToken(req.headers.authorization.split(" ")[1]);
 
-    // verifica se o token enviado pertence ao proprio usuário ou a um administrador
-    if (
-      token["sub"] == userID ||
-      token["roles"].some((role: string) => role === "ADM")
-    ) {
-      // avança para o proximo middleware
-      next();
-    } else {
-      // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-      return res.status(401).json({ Message: Status.INVALID_TOKEN });
+        // verifica se o token enviado pertence ao proprio usuário ou a um administrador
+        if (
+          token.sub == userID ||
+          token.roles.some((role: string) => role === "ADM")
+        ) {
+          // avança para o proximo middleware
+          next();
+        } else {
+          // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
+          return res.status(401).json({ Message: Status.INVALID_TOKEN });
+        }
+      } catch (error) {
+        res.status(error.Status).json({ Message: error.Message });
+      }
     }
   }
 
-  async verifyADMUserByAddressID(req: Request, res: Response, next: Function) {
-    let id;
+  async verifyADMUserByAddressID(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    let id: string;
     if (!req.body.id) {
       id = req.params.id;
     } else {
@@ -66,29 +74,36 @@ class VerifyTokenUser {
       });
     }
 
-    let token;
+    let token: DefaultToken;
     // armazenando o token retornado da função
     if (!req.headers.authorization) {
       return res.status(401).json({ Message: Status.REQUIRED_TOKEN });
     } else {
-      token = await verifyToken(req.headers.authorization.split(" ")[1], res);
-    }
-
-    // verifica se o token enviado pertence ao proprio usuário ou a um administrador
-    if (
-      token["sub"] == address.userID ||
-      token["roles"].some((role: string) => role === "ADM")
-    ) {
-      // avança para o proximo middleware
-      next();
-    } else {
-      // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-      return res.status(401).json({ Message: Status.INVALID_TOKEN });
+      try {
+        token = await verifyToken(req.headers.authorization.split(" ")[1]);
+        // verifica se o token enviado pertence ao proprio usuário ou a um administrador
+        if (
+          token.sub == address.userID ||
+          token.roles.some((role: string) => role === "ADM")
+        ) {
+          // avança para o proximo middleware
+          next();
+        } else {
+          // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
+          return res.status(401).json({ Message: Status.INVALID_TOKEN });
+        }
+      } catch (error) {
+        res.status(error.Status).json({ Message: error.Message });
+      }
     }
   }
 
-  async verifyADMUserByPhoneID(req: Request, res: Response, next: Function) {
-    let id;
+  async verifyADMUserByPhoneID(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    let id: string;
     if (!req.body.id) {
       id = req.params.id;
     } else {
@@ -111,54 +126,66 @@ class VerifyTokenUser {
       });
     }
 
-    let token;
+    let token: DefaultToken;
     // armazenando o token retornado da função
     if (!req.headers.authorization) {
       return res.status(401).json({ Message: Status.REQUIRED_TOKEN });
     } else {
-      token = await verifyToken(req.headers.authorization.split(" ")[1], res);
-    }
+      try {
+        token = await verifyToken(req.headers.authorization.split(" ")[1]);
 
-    // verifica se o token enviado pertence ao proprio usuário ou a um administrador
-    if (
-      token["sub"] == phone.userID ||
-      token["roles"].some((role: string) => role === "ADM")
-    ) {
-      // avança para o proximo middleware
-      next();
-    } else {
-      // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-      return res.status(401).json({ Message: Status.INVALID_TOKEN });
+        // verifica se o token enviado pertence ao proprio usuário ou a um administrador
+        if (
+          token.sub == phone.userID ||
+          token.roles.some((role: string) => role === "ADM")
+        ) {
+          // avança para o proximo middleware
+          next();
+        } else {
+          // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
+          return res.status(401).json({ Message: Status.INVALID_TOKEN });
+        }
+      } catch (error) {
+        res.status(error.Status).json({ Message: error.Message });
+      }
     }
   }
 
   // função para a verificação dos tokens
-  async verifyTokenADM(req: Request, res: Response, next: Function) {
-    let token;
+  async verifyTokenADM(req: Request, res: Response, next: NextFunction) {
+    let token: DefaultToken;
     // armazenando o token retornado da função
     if (!req.headers.authorization) {
       return res.status(401).json({ Message: Status.REQUIRED_TOKEN });
     } else {
-      token = await verifyToken(req.headers.authorization.split(" ")[1], res);
-    }
+      try {
+        token = await verifyToken(req.headers.authorization.split(" ")[1]);
 
-    // verificando se o token é de um administrador
-    if (token["roles"].some((role: string) => role === "ADM")) {
-      // avança para o proximo middleware
-      next();
-    } else {
-      // caso o token não seja de um administrador, retorna um json de error
-      return res.status(401).json({ Message: Status.INVALID_TOKEN });
+        // verificando se o token é de um administrador
+        if (token.roles.some((role: string) => role === "ADM")) {
+          // avança para o proximo middleware
+          next();
+        } else {
+          // caso o token não seja de um administrador, retorna um json de error
+          return res.status(401).json({ Message: Status.INVALID_TOKEN });
+        }
+      } catch (error) {
+        res.status(error.Status).json({ Message: error.Message });
+      }
     }
   }
 
   // função para a verificação dos tokens
-  async verifyTokenAuth(req: Request, res: Response, next: Function) {
+  async verifyTokenAuth(req: Request, res: Response, next: NextFunction) {
     // armazenando o token retornado da função
     if (!req.headers.authorization) {
       return res.status(401).json({ Message: Status.REQUIRED_TOKEN });
     } else {
-      await verifyToken(req.headers.authorization.split(" ")[1], res);
+      try {
+        await verifyToken(req.headers.authorization.split(" ")[1]);
+      } catch (error) {
+        res.status(error.Status).json({ Message: error.Message });
+      }
     }
     next();
   }

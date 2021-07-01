@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
+import { Status } from "../env/status";
 import { UserRoleResponseDTO } from "../models/DTO/userRole/UserRoleResponseDTO";
 import { UserRoleRepository } from "../repositories/UserRoleRepository";
-import { Status } from "../env/status";
 
 class UserRoleController {
   // metodo assincrono para a criação de user_roles
@@ -87,35 +87,6 @@ class UserRoleController {
       .json({ userRole: UserRoleResponseDTO.responseUserRoleDTO(userRole) });
   }
 
-  async readFromUser(userID: string) {
-    // pegando o repositorio customizado/personalizado
-    const userRoleRepository = getCustomRepository(UserRoleRepository);
-
-    // pesquisando userRole e role pelo id do usuário
-    const userRole_role = await userRoleRepository.find({
-      // select -> o que quero de retorno
-      // where -> condição
-      // relations -> para trazer também as informações da tabela que se relaciona
-      select: ["id"],
-      where: { userID },
-      relations: ["role"],
-    });
-
-    // retornando a userRole pesquisada
-    return userRole_role;
-  }
-
-  async readFromUserRole(userID: string, roleID: string) {
-    // pegando o repositorio customizado/personalizado
-    const userRoleRepository = getCustomRepository(UserRoleRepository);
-
-    // pesquisando userRole e role pelo id do usuário
-    const userRole_role = await userRoleRepository.findOne({ userID, roleID });
-
-    // retornando a userRole pesquisada
-    return userRole_role;
-  }
-
   // metodo assincrono para a atualização dos dados das userRoles
   async update(req: Request, res: Response) {
     // capturando e armazenando o id da userRole do corpo da requisição
@@ -175,14 +146,9 @@ class UserRoleController {
   }
 
   // metodo assincrono para a deleção de userRoles
-  async delete(req: Request, res: Response, porpsUserRole?: any) {
+  async delete(req: Request, res: Response) {
     // capturando e armazenando o id da userRole do parametro do URL
     let { id } = req.params;
-
-    if (Object.values(porpsUserRole).length !== 0) {
-      // sobrescrevendo as variaveis com os valores de props
-      [id] = porpsUserRole;
-    }
 
     // pegando o repositorio customizado/personalizado
     const userRolesRepository = getCustomRepository(UserRoleRepository);
@@ -200,11 +166,6 @@ class UserRoleController {
 
     // deletando a userRole a partir do id
     await userRolesRepository.delete({ id });
-
-    if (Object.values(porpsUserRole).length !== 0) {
-      // sobrescrevendo as variaveis com os valores de props
-      return true;
-    }
 
     // retornando um json de sucesso
     return res.status(200).json({ Message: Status.SUCCESS });
@@ -234,12 +195,41 @@ class UserRoleController {
       });
     }
 
-    const userRole = userRoles.map((userRole) => {
+    const userRolesDTO = userRoles.map((userRole) => {
       return UserRoleResponseDTO.responseUserRoleDTO(userRole);
     });
 
     // retornando as userRoles encontradas no DB
-    return res.status(200).json({ userRoles: userRole });
+    return res.status(200).json({ userRoles: userRolesDTO });
+  }
+
+  async readFromUser(userID: string) {
+    // pegando o repositorio customizado/personalizado
+    const userRoleRepository = getCustomRepository(UserRoleRepository);
+
+    // pesquisando userRole e role pelo id do usuário
+    const userRole_role = await userRoleRepository.find({
+      // select -> o que quero de retorno
+      // where -> condição
+      // relations -> para trazer também as informações da tabela que se relaciona
+      select: ["id"],
+      where: { userID },
+      relations: ["role"],
+    });
+
+    // retornando a userRole pesquisada
+    return userRole_role;
+  }
+
+  async readFromUserRole(userID: string, roleID: string) {
+    // pegando o repositorio customizado/personalizado
+    const userRoleRepository = getCustomRepository(UserRoleRepository);
+
+    // pesquisando userRole e role pelo id do usuário
+    const userRole_role = await userRoleRepository.findOne({ userID, roleID });
+
+    // retornando a userRole pesquisada
+    return userRole_role;
   }
 }
 

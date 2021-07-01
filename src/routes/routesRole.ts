@@ -10,33 +10,25 @@ const verifyTokenUser = new VerifyTokenUser();
 const routerRole = Router();
 
 // criando a rota de cadastro de Roles
-routerRole.post(
-  "/api/v1/role",
-  verifyTokenUser.verifyTokenADM,
-  roleController.create
-);
+routerRole.post("/role", verifyTokenUser.verifyTokenADM, roleController.create);
 
 // criando a rota de atualização de Roles
-routerRole.put(
-  "/api/v1/role",
-  verifyTokenUser.verifyTokenADM,
-  roleController.update
-);
+routerRole.put("/role", verifyTokenUser.verifyTokenADM, roleController.update);
 
 // criando a rota de listagem de todos as Roles
 routerRole.get(
-  "/api/v1/showRoles",
+  "/showRoles",
   verifyTokenUser.verifyTokenADM,
   roleController.show
 );
 // criando a rota de pesquisa da Role pelo id
 routerRole.get(
-  "/api/v1/role/:id",
+  "/role/:id",
   verifyTokenUser.verifyTokenADM,
   roleController.read
 );
 
-routerRole.get("/api/v1/role", (req: Request, res: Response) => {
+routerRole.get("/role", (req: Request, res: Response) => {
   return res.status(422).json({
     Message: Status.ID_NOT_FOUND,
   });
@@ -44,12 +36,12 @@ routerRole.get("/api/v1/role", (req: Request, res: Response) => {
 
 // criando a rota de deleção de Roles
 routerRole.delete(
-  "/api/v1/role/:id",
+  "/role/:id",
   verifyTokenUser.verifyTokenADM,
   roleController.delete
 );
 
-routerRole.delete("/api/v1/role", (req: Request, res: Response) => {
+routerRole.delete("/role", (req: Request, res: Response) => {
   return res.status(422).json({
     Message: Status.ID_NOT_FOUND,
   });

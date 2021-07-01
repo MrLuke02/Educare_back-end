@@ -1,7 +1,7 @@
-import { Plan } from "../../Plan";
+import { Category } from "../../Category";
 
 // criando o UserResponseDTO para retorno, como os campos que se deseja retornar
-class PlanResponseDTO {
+class CategoryResponseDTO {
   private id: string;
 
   private name: string;
@@ -11,18 +11,18 @@ class PlanResponseDTO {
   private value: number;
 
   // criando o cronstrutor do UserResponseDTO a ser retornado, passando para ele o usuário
-  constructor(plan: Plan) {
+  constructor(category: Category) {
     // capturando todos os atributos da usuário, menos a senha, a data de criação e o id
-    const { createdAt, ...props } = plan;
+    const { createdAt, ...props } = category;
     // alimentando o UserResponseDTO com as propriedades do usuário
     Object.assign(this, props);
   }
 
   // criando o metodo statico que para possa acessa-lo atravez da classe, esse metodo retorna um responseUserDTO com todos os seus atributos preenchidos com os dados do usuário
-  static responsePlanDTO(plan: Plan): PlanResponseDTO {
-    return new PlanResponseDTO(plan);
+  static responseCategoryDTO(category: Category): CategoryResponseDTO {
+    return new CategoryResponseDTO(category);
   }
 }
 
 // exportando o UserResponseDTO
-export { PlanResponseDTO };
+export { CategoryResponseDTO };

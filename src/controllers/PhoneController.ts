@@ -90,18 +90,6 @@ class PhoneController {
     return phoneSaved;
   }
 
-  // metodo assincrono para a pesquisa de phones pelo id do usuário
-  async readFromUser(userID: string) {
-    // pegando o repositorio customizado/personalizado
-    const phoneRepository = getCustomRepository(PhonesRepository);
-
-    // pesquisando um phone pelo id do usuário
-    const phone = await phoneRepository.find({ userID });
-
-    // retornando o DTO do(s) phone(s) pesquisado(s)
-    return phone;
-  }
-
   // metodo assincrono para a pesquisa de phones pelo id
   async read(req: Request, res: Response) {
     // capturando e armazenando o id do phone do parametro da URL
@@ -125,28 +113,6 @@ class PhoneController {
     return res
       .status(200)
       .json({ phone: PhoneResponseDTO.responsePhoneDTO(phone) });
-  }
-
-  async readFromId(phoneID: string) {
-    // pegando o repositorio customizado/personalizado
-    const phoneRepository = getCustomRepository(PhonesRepository);
-
-    // pesquisando um phone pelo id
-    const phone = await phoneRepository.findOne({ id: phoneID });
-
-    // retornando o DTO do phone pesquisado
-    return phone;
-  }
-
-  async readFromNumber(phoneNumber: string) {
-    // pegando o repositorio customizado/personalizado
-    const phoneRepository = getCustomRepository(PhonesRepository);
-
-    // pesquisando um phone pelo numero
-    const phoneExist = await phoneRepository.findOne({ phoneNumber });
-
-    // retornando o DTO do(s) phone(s) pesquisado(s)
-    return phoneExist;
   }
 
   // metodo assincrono para a atualização dos dados dos phones
@@ -209,30 +175,6 @@ class PhoneController {
       .json({ phone: PhoneResponseDTO.responsePhoneDTO(phone) });
   }
 
-  // metodo assincrono para a listagem de todos os phones
-  async show(req: Request, res: Response) {
-    // pegando o repositorio customizado/personalizado
-    const phoneRepository = getCustomRepository(PhonesRepository);
-
-    // pesquisando todos os phones do DB
-    const phones = await phoneRepository.find();
-
-    // verificando se o DB possui phones cadastrados
-    if (phones.length === 0) {
-      // retornando uma resposta de erro em json
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
-    }
-
-    const phone = phones.map((phone) => {
-      return PhoneResponseDTO.responsePhoneDTO(phone);
-    });
-
-    // retornando os phones encontrados no DB
-    return res.status(200).json({ phones: phone });
-  }
-
   async delete(req: Request, res: Response) {
     // capturando e armazenando o id do phone do parametro da URL
     const { id } = req.params;
@@ -255,6 +197,64 @@ class PhoneController {
 
     // retornando o DTO do phone pesquisado
     return res.status(200).json({ Message: Status.SUCCESS });
+  }
+
+  // metodo assincrono para a listagem de todos os phones
+  async show(req: Request, res: Response) {
+    // pegando o repositorio customizado/personalizado
+    const phoneRepository = getCustomRepository(PhonesRepository);
+
+    // pesquisando todos os phones do DB
+    const phones = await phoneRepository.find();
+
+    // verificando se o DB possui phones cadastrados
+    if (phones.length === 0) {
+      // retornando uma resposta de erro em json
+      return res.status(406).json({
+        Message: Status.NOT_FOUND,
+      });
+    }
+
+    const phonesDTO = phones.map((phone) => {
+      return PhoneResponseDTO.responsePhoneDTO(phone);
+    });
+
+    // retornando os phones encontrados no DB
+    return res.status(200).json({ phones: phonesDTO });
+  }
+
+  // metodo assincrono para a pesquisa de phones pelo id do usuário
+  async readFromUser(userID: string) {
+    // pegando o repositorio customizado/personalizado
+    const phoneRepository = getCustomRepository(PhonesRepository);
+
+    // pesquisando um phone pelo id do usuário
+    const phones = await phoneRepository.find({ userID });
+
+    // retornando o DTO do(s) phone(s) pesquisado(s)
+    return phones;
+  }
+
+  async readFromId(phoneID: string) {
+    // pegando o repositorio customizado/personalizado
+    const phoneRepository = getCustomRepository(PhonesRepository);
+
+    // pesquisando um phone pelo id
+    const phone = await phoneRepository.findOne({ id: phoneID });
+
+    // retornando o DTO do phone pesquisado
+    return phone;
+  }
+
+  async readFromNumber(phoneNumber: string) {
+    // pegando o repositorio customizado/personalizado
+    const phoneRepository = getCustomRepository(PhonesRepository);
+
+    // pesquisando um phone pelo numero
+    const phoneExist = await phoneRepository.findOne({ phoneNumber });
+
+    // retornando o DTO do(s) phone(s) pesquisado(s)
+    return phoneExist;
   }
 }
 

@@ -9,47 +9,44 @@ const companyContactController = new CompanyContactController();
 const verifyTokenCompany = new VerifyTokenCompany();
 const verifyTokenUser = new VerifyTokenUser();
 
-const routesCompanyContact = Router();
+const routerCompanyContact = Router();
 
-routesCompanyContact.post(
-  "/api/v1/companyContact",
+routerCompanyContact.post(
+  "/companyContact",
   verifyTokenCompany.verifyADMCompany,
   companyContactController.create
 );
 
-routesCompanyContact.get(
-  "/api/v1/companyContact/:id",
+routerCompanyContact.get(
+  "/companyContact/:id",
   verifyTokenUser.verifyTokenADM,
   companyContactController.read
 );
-routesCompanyContact.get(
-  "/api/v1/companyContact/",
-  (req: Request, res: Response) => {
-    return res.status(422).json({
-      Message: Status.ID_NOT_FOUND,
-    });
-  }
-);
-routesCompanyContact.get(
-  "/api/v1/showCompaniesContacts",
+routerCompanyContact.get("/companyContact/", (req: Request, res: Response) => {
+  return res.status(422).json({
+    Message: Status.ID_NOT_FOUND,
+  });
+});
+routerCompanyContact.get(
+  "/showCompaniesContacts",
   verifyTokenUser.verifyTokenADM,
   companyContactController.show
 );
 
-routesCompanyContact.put(
-  "/api/v1/companyContact",
+routerCompanyContact.put(
+  "/companyContact",
   verifyTokenCompany.verifyADMCompanyByContactID,
   companyContactController.update
 );
 
-routesCompanyContact.delete(
-  "/api/v1/companyContact/:id",
+routerCompanyContact.delete(
+  "/companyContact/:id",
   verifyTokenCompany.verifyADMCompanyByContactID,
   companyContactController.delete
 );
-routesCompanyContact.delete(
-  "/api/v1/companyContact/",
+routerCompanyContact.delete(
+  "/companyContact/",
   verifyTokenCompany.verifyADMCompanyByContactID
 );
 
-export { routesCompanyContact };
+export { routerCompanyContact };

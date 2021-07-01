@@ -11,31 +11,31 @@ const routerAddress = Router();
 
 // criando a rota de cadastro de Roles
 routerAddress.post(
-  "/api/v1/address",
+  "/address",
   verifyTokenUser.verifyADMUser,
   addressController.create
 );
 
 // criando a rota de atualização de Roles
 routerAddress.put(
-  "/api/v1/address",
+  "/address",
   verifyTokenUser.verifyADMUserByAddressID,
   addressController.update
 );
 
 // criando a rota de listagem de todos as Roles
 routerAddress.get(
-  "/api/v1/showAddress",
+  "/showAddress",
   verifyTokenUser.verifyTokenADM,
   addressController.show
 );
 // criando a rota de pesquisa da Role pelo id
 routerAddress.get(
-  "/api/v1/address/:id",
+  "/address/:id",
   verifyTokenUser.verifyTokenADM,
   addressController.read
 );
-routerAddress.get("/api/v1/address", (req: Request, res: Response) => {
+routerAddress.get("/address", (req: Request, res: Response) => {
   return res.status(422).json({
     Message: Status.ID_NOT_FOUND,
   });
@@ -43,15 +43,12 @@ routerAddress.get("/api/v1/address", (req: Request, res: Response) => {
 
 // criando a rota de deleção de Roles
 routerAddress.delete(
-  "/api/v1/address/:id",
+  "/address/:id",
   verifyTokenUser.verifyADMUserByAddressID,
   addressController.delete
 );
 
-routerAddress.delete(
-  "/api/v1/address",
-  verifyTokenUser.verifyADMUserByAddressID
-);
+routerAddress.delete("/address", verifyTokenUser.verifyADMUserByAddressID);
 
 // exportando o router
 export { routerAddress };

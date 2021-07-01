@@ -1,21 +1,15 @@
 import { Request, Response } from "express";
 import md5 from "md5";
 import { getCustomRepository } from "typeorm";
-import { createToken } from "../auth/token.auth";
+import { createToken } from "../auth/token/token.auth";
 import { Status } from "../env/status";
 import { AddressResponseDTO } from "../models/DTO/address/AddressResponseDTO";
-import { CompanyResponseDTO } from "../models/DTO/company/CompanyResponseDTO";
-import { CompanyAddressResponseDTO } from "../models/DTO/companyAddress/CompanyAddressResponseDTO";
-import { CompanyContactResponseDTO } from "../models/DTO/companyContact/CompanyContactResponseDTO";
 import { PhoneResponseDTO } from "../models/DTO/phone/PhoneResponseDTO";
 import { UserResponseDTO } from "../models/DTO/user/UserResponseDTO";
-import { AddressRepository } from "../repositories/AddressRepository";
-import { CompanyAddressRepository } from "../repositories/CompanyAddressRepository";
-import { CompanyContactRepository } from "../repositories/CompanyContactRepository";
-import { CompaniesRepository } from "../repositories/CompanyRepository";
-import { PhonesRepository } from "../repositories/PhoneRepository";
 import { UsersRepository } from "../repositories/UserRepository";
 import * as validation from "../util/user/UserUtil";
+import { AddressController } from "./AddressController";
+import { CompanyController } from "./CompanyController";
 import { PhoneController } from "./PhoneController";
 import { RoleController } from "./RoleController";
 import { UserRoleController } from "./UserRoleController";
@@ -106,19 +100,26 @@ class UserController {
     const userRoleController = new UserRoleController();
 
     // criando e salvando a userRole
-    await userRoleController.createFromController(userSaved.id, role["id"]);
+    const userRoleSaved = await userRoleController.createFromController(
+      userSaved.id,
+      role.id
+    );
+
+    const roleSaved = await roleController.readFromId(userRoleSaved.roleID);
 
     const phone = await phoneController.createFromController(
       phoneNumber,
       user.id
     );
 
-    const userSave = UserResponseDTO.responseUserDTO(userSaved);
-    userSave["phone"] = phone.phoneNumber;
-    userSave["role"] = ["User"];
+    const userDTO = {
+      ...UserResponseDTO.responseUserDTO(userSaved),
+      phone: phone.phoneNumber,
+      role: [roleSaved.type],
+    };
 
     // retornando o DTO do usuario salvo
-    return res.status(201).json({ user: userSave });
+    return res.status(201).json({ user: userDTO });
   }
 
   // metodo assincrono para a autenticação de usuários
@@ -173,8 +174,14 @@ class UserController {
       roles,
     };
 
-    // criando um token de acordo com a constante payload criada a cima
-    const token = await createToken(payload, res);
+    let token: string;
+
+    try {
+      // criando um token de acordo com a constante payload criada a cima
+      token = await createToken(payload);
+    } catch (error) {
+      return res.status(error.Status).json({ Message: error.Message });
+    }
 
     // retornando o token criado
     return res.status(200).json({ token });
@@ -224,7 +231,7 @@ class UserController {
       const emailExists = await usersRepository.findOne({ email });
       if (emailExists) {
         // se encontrar algo retorna um json de erro
-        return res.status(409).json({ Message: Status.USER_ALREADY_EXIST });
+        return res.status(409).json({ Message: Status.EMAIL_ALREADY_EXIST });
       }
     }
 
@@ -307,24 +314,46 @@ class UserController {
       const phone = [];
 
       for (const key in phones) {
-        phone.push(phones[key]["phoneNumber"]);
+        phone.push(phones[key].phoneNumber);
       }
+
+      let userDTO = UserResponseDTO.responseUserDTO(user) as Object;
 
       if (roles.length === 0 && phone.length === 0) {
-        user["roles"] = Status.NOT_FOUND;
-        user["phone"] = Status.NOT_FOUND;
+        userDTO = {
+          ...userDTO,
+          phone: Status.NOT_FOUND,
+          roles: Status.NOT_FOUND,
+        };
+        // user["phone"] = Status.NOT_FOUND;
+        // user["roles"] = Status.NOT_FOUND;
       } else if (roles.length === 0) {
-        user["roles"] = Status.NOT_FOUND;
-        user["phone"] = phone;
+        userDTO = {
+          ...userDTO,
+          phone: phone,
+          roles: Status.NOT_FOUND,
+        };
+        // user["phone"] = phone;
+        // user["roles"] = Status.NOT_FOUND;
       } else if (phone.length === 0) {
-        user["phone"] = Status.NOT_FOUND;
-        user["roles"] = roles;
+        userDTO = {
+          ...userDTO,
+          phone: Status.NOT_FOUND,
+          roles: roles,
+        };
+        // user["phone"] = Status.NOT_FOUND;
+        // user["roles"] = roles;
       } else {
-        user["roles"] = roles;
-        user["phone"] = phone;
+        userDTO = {
+          ...userDTO,
+          phone: phone,
+          roles: roles,
+        };
+        // user["phone"] = phone;
+        // user["roles"] = roles;
       }
 
-      return UserResponseDTO.responseUserDTO(user);
+      return userDTO;
     });
 
     const usersDTO = [];
@@ -352,9 +381,9 @@ class UserController {
   async readAddressFromUser(req: Request, res: Response) {
     const { userID } = req.params;
 
-    const addressRepository = getCustomRepository(AddressRepository);
+    const addressController = new AddressController();
 
-    const address = await addressRepository.findOne({ userID });
+    const address = await addressController.readFromUser(userID);
 
     if (!address) {
       return res.status(406).json({
@@ -370,9 +399,9 @@ class UserController {
   async readPhoneFromUser(req: Request, res: Response) {
     const { userID } = req.params;
 
-    const phoneRepository = getCustomRepository(PhonesRepository);
+    const phoneController = new PhoneController();
 
-    const phones = await phoneRepository.find({ userID });
+    const phones = await phoneController.readFromUser(userID);
 
     if (phones.length === 0) {
       return res.status(406).json({
@@ -390,54 +419,23 @@ class UserController {
   async readCompanyFromUser(req: Request, res: Response) {
     const { userID } = req.params;
 
-    const companyRepository = getCustomRepository(CompaniesRepository);
+    const companyController = new CompanyController();
 
-    const company = await companyRepository.findOne({ userID });
+    const companiesDTO = await companyController.readCompaniesUser(userID);
 
-    if (!company) {
+    if (companiesDTO.length === 0) {
       return res.status(406).json({
         Message: Status.NOT_FOUND,
       });
     }
 
-    const companyAddressRepository = getCustomRepository(
-      CompanyAddressRepository
-    );
-
-    const companyContactRepository = getCustomRepository(
-      CompanyContactRepository
-    );
-
-    const companyAddress = await companyAddressRepository.findOne({
-      companyID: company["id"],
-    });
-
-    const companyContact = await companyContactRepository.findOne({
-      companyID: company["id"],
-    });
-
-    const companyDTO = CompanyResponseDTO.responseCompanyDTO(company);
-
-    if (companyAddress) {
-      companyDTO["Address"] =
-        CompanyAddressResponseDTO.responseCompanyAddressDTO(companyAddress);
-    } else {
-      companyDTO["Address"] = Status.NOT_FOUND;
-    }
-
-    if (companyContact) {
-      companyDTO["Contact"] =
-        CompanyContactResponseDTO.responseCompanyContactDTO(companyContact);
-    } else {
-      companyDTO["Contact"] = Status.NOT_FOUND;
-    }
-
-    return res.status(200).json({ company: companyDTO });
+    return res.status(200).json({ companies: companiesDTO });
   }
 
   async readAllFromUser(req: Request, res: Response) {
     const { userID } = req.params;
 
+    // manipulando o usuario
     const usersRepository = getCustomRepository(UsersRepository);
 
     const user = await usersRepository.findOne({ id: userID });
@@ -448,87 +446,83 @@ class UserController {
       });
     }
 
+    let userDTO = UserResponseDTO.responseUserDTO(user) as Object;
+
+    // manipulando os papeis do usuario
     const userRoleController = new UserRoleController();
 
     const userRoles = await userRoleController.readFromUser(userID);
 
-    if (!userRoles) {
-      user["roles"] = [Status.NOT_FOUND];
+    if (userRoles.length === 0) {
+      userDTO = {
+        ...userDTO,
+        roles: Status.NOT_FOUND,
+      };
     } else {
       const roles = userRoles.map((roles) => {
         return roles.role.type;
       });
-      user["roles"] = roles;
+      userDTO = {
+        ...userDTO,
+        roles: roles,
+      };
     }
 
-    const phoneRepository = getCustomRepository(PhonesRepository);
+    // manipulando os telefones do usuario
+    const phoneController = new PhoneController();
 
-    const phones = await phoneRepository.find({ userID });
+    const phones = await phoneController.readFromUser(userID);
 
     if (phones.length === 0) {
-      user["phoneNumber"] = Status.NOT_FOUND;
+      userDTO = {
+        ...userDTO,
+        phones: Status.NOT_FOUND,
+      };
     } else {
-      const phonesDto = phones.map((phone) => {
+      const phonesDTO = phones.map((phone) => {
         return PhoneResponseDTO.responsePhoneDTO(phone);
       });
-      user["phoneNumber"] = phonesDto;
+      userDTO = {
+        ...userDTO,
+        phones: phonesDTO,
+      };
     }
 
-    const addressRepository = getCustomRepository(AddressRepository);
+    // manipulando o endereço do usuario
+    const addressController = new AddressController();
 
-    const address = await addressRepository.findOne({ userID });
+    const address = await addressController.readFromUser(userID);
 
     if (!address) {
-      user["address"] = Status.NOT_FOUND;
+      userDTO = {
+        ...userDTO,
+        address: Status.NOT_FOUND,
+      };
     } else {
-      user["address"] = AddressResponseDTO.responseAddressDTO(address);
+      userDTO = {
+        ...userDTO,
+        address: AddressResponseDTO.responseAddressDTO(address),
+      };
     }
 
-    // company
+    // manipulando as empresas do usuario
+    const companyController = new CompanyController();
 
-    const companyRepository = getCustomRepository(CompaniesRepository);
+    const companiesDTO = await companyController.readCompaniesUser(userID);
 
-    const company = await companyRepository.findOne({ userID });
-
-    if (!company) {
-      user["company"] = Status.NOT_FOUND;
+    if (companiesDTO.length === 0) {
+      userDTO = {
+        ...userDTO,
+        companies: Status.NOT_FOUND,
+      };
     } else {
-      const companyAddressRepository = getCustomRepository(
-        CompanyAddressRepository
-      );
-
-      const companyContactRepository = getCustomRepository(
-        CompanyContactRepository
-      );
-
-      const companyAddress = await companyAddressRepository.findOne({
-        companyID: company["id"],
-      });
-
-      const companyContact = await companyContactRepository.findOne({
-        companyID: company["id"],
-      });
-
-      const companyDTO = CompanyResponseDTO.responseCompanyDTO(company);
-
-      if (companyAddress) {
-        companyDTO["companyAddress"] =
-          CompanyAddressResponseDTO.responseCompanyAddressDTO(companyAddress);
-      } else {
-        companyDTO["companyAddress"] = Status.NOT_FOUND;
-      }
-
-      if (companyContact) {
-        companyDTO["companyContact"] =
-          CompanyContactResponseDTO.responseCompanyContactDTO(companyContact);
-      } else {
-        companyDTO["companyContact"] = Status.NOT_FOUND;
-      }
-
-      user["company"] = companyDTO;
+      userDTO = {
+        ...userDTO,
+        companies: companiesDTO,
+      };
     }
 
-    return res.status(200).json({ user });
+    return res.status(200).json({ user: userDTO });
   }
 }
 

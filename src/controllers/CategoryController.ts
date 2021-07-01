@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Status } from "../env/status";
+import { CategoryResponseDTO } from "../models/DTO/Category/CategoryResponseDTO";
 import { CategoriesRepository } from "../repositories/CategoryRepository";
-import { PlanResponseDTO } from "../models/DTO/plan/PlanResponseDTO";
 
-class PlanController {
+class CategoryController {
   async create(req: Request, res: Response) {
     const { name, description, value } = req.body;
 
@@ -18,29 +18,29 @@ class PlanController {
       });
     }
 
-    const plansRepository = getCustomRepository(CategoriesRepository);
+    const categoriesRepository = getCustomRepository(CategoriesRepository);
 
-    const plan = plansRepository.create({
+    const category = categoriesRepository.create({
       name,
       description,
       value,
     });
 
-    const planSaved = await plansRepository.save(plan);
+    const categorySaved = await categoriesRepository.save(category);
 
-    return res
-      .status(201)
-      .json({ plan: PlanResponseDTO.responsePlanDTO(planSaved) });
+    return res.status(201).json({
+      category: CategoryResponseDTO.responseCategoryDTO(categorySaved),
+    });
   }
 
   async read(req: Request, res: Response) {
     const { id } = req.params;
 
-    const plansRepository = getCustomRepository(CategoriesRepository);
+    const categoriesRepository = getCustomRepository(CategoriesRepository);
 
-    const plan = await plansRepository.findOne({ id });
+    const category = await categoriesRepository.findOne({ id });
 
-    if (!plan) {
+    if (!category) {
       return res.status(409).json({
         Message: Status.NOT_FOUND,
       });
@@ -48,7 +48,7 @@ class PlanController {
 
     return res
       .status(200)
-      .json({ plan: PlanResponseDTO.responsePlanDTO(plan) });
+      .json({ category: CategoryResponseDTO.responseCategoryDTO(category) });
   }
 
   async update(req: Request, res: Response) {
@@ -64,13 +64,13 @@ class PlanController {
     }
 
     // pegando o repositorio customizado/personalizado
-    const plansRepository = getCustomRepository(CategoriesRepository);
+    const categoriesRepository = getCustomRepository(CategoriesRepository);
 
     // pesquisando uma role pelo id
-    let plan = await plansRepository.findOne(id);
+    let category = await categoriesRepository.findOne(id);
 
     // verificando se a role não existe
-    if (!plan) {
+    if (!category) {
       // retornando uma resposta de erro em json
       return res.status(406).json({
         Message: Status.NOT_FOUND,
@@ -79,62 +79,62 @@ class PlanController {
 
     // capturando o tipo de role passado no corpo da requisição, caso não seja passado nada, pega o valor que ja está cadastrado na role
     const {
-      name = plan.name,
-      description = plan.description,
-      value = plan.value,
+      name = category.name,
+      description = category.description,
+      value = category.value,
     } = req.body;
 
     // atualizando a role a partir do id
-    await plansRepository.update(id, {
+    await categoriesRepository.update(id, {
       name,
       description,
       value,
     });
 
     // pesquisando a role pelo id
-    plan = await plansRepository.findOne(id);
+    category = await categoriesRepository.findOne(id);
 
     // retornando o DTO da role atualizada
     return res
       .status(200)
-      .json({ plan: PlanResponseDTO.responsePlanDTO(plan) });
+      .json({ category: CategoryResponseDTO.responseCategoryDTO(category) });
   }
 
   async delete(req: Request, res: Response) {
     const { id } = req.params;
 
-    const plansRepository = getCustomRepository(CategoriesRepository);
+    const categoriesRepository = getCustomRepository(CategoriesRepository);
 
-    const plan = await plansRepository.findOne(id);
+    const category = await categoriesRepository.findOne(id);
 
-    if (!plan) {
+    if (!category) {
       return res.status(406).json({
         Message: Status.NOT_FOUND,
       });
     }
 
-    await plansRepository.delete(id);
+    await categoriesRepository.delete(id);
 
     return res.status(200).json({ Message: Status.SUCCESS });
   }
 
   async show(req: Request, res: Response) {
-    const plansRepository = getCustomRepository(CategoriesRepository);
+    const categoriesRepository = getCustomRepository(CategoriesRepository);
 
-    const plans = await plansRepository.find();
+    const categories = await categoriesRepository.find();
 
-    if (plans.length === 0) {
+    if (categories.length === 0) {
       return res.status(406).json({
         Message: Status.NOT_FOUND,
       });
     }
 
-    const plansDTO = plans.map((plan) => {
-      return PlanResponseDTO.responsePlanDTO(plan);
+    const categoriesDTO = categories.map((category) => {
+      return CategoryResponseDTO.responseCategoryDTO(category);
     });
 
-    return res.status(200).json({ plans: plansDTO });
+    return res.status(200).json({ category: categoriesDTO });
   }
 }
 
-export { PlanController };
+export { CategoryController };
