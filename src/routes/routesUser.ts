@@ -10,60 +10,60 @@ const verifyTokenUser = new VerifyTokenUser();
 const routerUser = Router();
 
 // criando a rota de cadastro de usuários
-routerUser.post("/api/v1/user", userController.create);
+routerUser.post("/user", userController.create);
 // criando a rota de autenticação de usuários
-routerUser.post("/api/v1/auth", userController.read);
+routerUser.post("/auth", userController.read);
 
 // criando a rota de atualização de usuários
 routerUser.put(
-  "/api/v1/userUpdate",
+  "/userUpdate",
   verifyTokenUser.verifyADMUser,
   userController.update
 );
 
 // criando a rota de listagem de todos os usuários
 routerUser.get(
-  "/api/v1/showUsers",
+  "/showUsers",
   verifyTokenUser.verifyTokenADM,
   userController.showUsers
 );
 
 // criando a rota de pesquisa da Role pelo id
 routerUser.get(
-  "/api/v1/userAddress/:userID",
+  "/userAddress/:userID",
   verifyTokenUser.verifyADMUser,
   userController.readAddressFromUser
 );
-routerUser.get("/api/v1/userAddress", verifyTokenUser.verifyADMUser);
+routerUser.get("/userAddress", verifyTokenUser.verifyADMUser);
 
 routerUser.get(
-  "/api/v1/userPhones/:userID",
+  "/userPhones/:userID",
   verifyTokenUser.verifyADMUser,
   userController.readPhoneFromUser
 );
-routerUser.get("/api/v1/userPhones", verifyTokenUser.verifyADMUser);
+routerUser.get("/userPhones", verifyTokenUser.verifyADMUser);
 
 routerUser.get(
-  "/api/v1/userCompany/:userID",
+  "/userCompany/:userID",
   verifyTokenUser.verifyADMUser,
   userController.readCompanyFromUser
 );
-routerUser.get("/api/v1/userCompany", verifyTokenUser.verifyADMUser);
+routerUser.get("/userCompanies", verifyTokenUser.verifyADMUser);
 
 routerUser.get(
-  "/api/v1/userAll/:userID",
+  "/userAll/:userID",
   verifyTokenUser.verifyADMUser,
   userController.readAllFromUser
 );
-routerUser.get("/api/v1/userAll", verifyTokenUser.verifyADMUser);
+routerUser.get("/userAll", verifyTokenUser.verifyADMUser);
 
 // criando a rota de deleção de usuários
 routerUser.delete(
-  "/api/v1/user/:userID",
+  "/user/:userID",
   verifyTokenUser.verifyADMUser,
   userController.delete
 );
-routerUser.delete("/api/v1/user", verifyTokenUser.verifyADMUser);
+routerUser.delete("/user", verifyTokenUser.verifyADMUser);
 
 // exportando o router
 export { routerUser };

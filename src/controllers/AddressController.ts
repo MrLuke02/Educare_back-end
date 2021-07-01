@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Status } from "../env/status";
-import { AddressRepository } from "../repositories/AddressRepository";
 import { AddressResponseDTO } from "../models/DTO/address/AddressResponseDTO";
+import { AddressRepository } from "../repositories/AddressRepository";
 import { UserController } from "./UserController";
 
 class AddressController {
@@ -88,14 +88,6 @@ class AddressController {
       .json({ address: AddressResponseDTO.responseAddressDTO(address) });
   }
 
-  async readFromID(addressID: string) {
-    const addressRepository = getCustomRepository(AddressRepository);
-
-    const address = await addressRepository.findOne({ id: addressID });
-
-    return address;
-  }
-
   async update(req: Request, res: Response) {
     const { id } = req.body;
 
@@ -167,11 +159,27 @@ class AddressController {
       });
     }
 
-    const address = addresses.map((address) => {
+    const addressDTO = addresses.map((address) => {
       return AddressResponseDTO.responseAddressDTO(address);
     });
 
-    return res.status(200).json({ addresses: address });
+    return res.status(200).json({ addresses: addressDTO });
+  }
+
+  async readFromUser(userID: string) {
+    const addressRepository = getCustomRepository(AddressRepository);
+
+    const address = await addressRepository.findOne({ userID });
+
+    return address;
+  }
+
+  async readFromID(addressID: string) {
+    const addressRepository = getCustomRepository(AddressRepository);
+
+    const address = await addressRepository.findOne({ id: addressID });
+
+    return address;
   }
 }
 

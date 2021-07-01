@@ -11,6 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(
+  "/api/v1",
   routes.routerUser,
   routes.routerRole,
   routes.routerPhone,
@@ -19,7 +20,7 @@ app.use(
   routes.routerCompany,
   routes.routerCategory,
   routes.routerCompanyAddress,
-  routes.routesCompanyContact
+  routes.routerCompanyContact
 );
 
 // Inicia o servidor da api na porta 3333

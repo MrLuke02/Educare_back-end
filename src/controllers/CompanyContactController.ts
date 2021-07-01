@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Status } from "../env/status";
-import { CompanyController } from "./CompanyController";
-import * as validation from "../util/user/UserUtil";
 import { CompanyContactResponseDTO } from "../models/DTO/companyContact/CompanyContactResponseDTO";
 import { CompanyContactRepository } from "../repositories/CompanyContactRepository";
+import * as validation from "../util/user/UserUtil";
+import { CompanyController } from "./CompanyController";
 
 class CompanyContactController {
   async create(req: Request, res: Response) {
@@ -92,70 +92,6 @@ class CompanyContactController {
     );
 
     return companyContactSaved;
-  }
-
-  async readFromPhone(phone: string) {
-    // pegando o repositorio customizado/personalizado
-    const companyContactRepository = getCustomRepository(
-      CompanyContactRepository
-    );
-
-    // pesquisando um phone pelo numero
-    const phoneExist = await companyContactRepository.findOne({ phone });
-
-    // retornando o DTO do(s) phone(s) pesquisado(s)
-    return phoneExist;
-  }
-
-  async readFromCompany(companyID: string) {
-    // pegando o repositorio customizado/personalizado
-    const companyContactRepository = getCustomRepository(
-      CompanyContactRepository
-    );
-
-    // pesquisando um phone pelo numero
-    const companyContact = await companyContactRepository.findOne({
-      companyID,
-    });
-
-    // retornando o DTO do(s) phone(s) pesquisado(s)
-    return companyContact;
-  }
-
-  async readFromEmail(email: string) {
-    // pegando o repositorio customizado/personalizado
-    const companyContactRepository = getCustomRepository(
-      CompanyContactRepository
-    );
-
-    // pesquisando um phone pelo numero
-    const emailExist = await companyContactRepository.findOne({
-      email,
-    });
-
-    // retornando o DTO do(s) phone(s) pesquisado(s)
-    return emailExist;
-  }
-
-  async readFromContact(contactID: string) {
-    const companyContactRepository = getCustomRepository(
-      CompanyContactRepository
-    );
-
-    const companyAddress_company = await companyContactRepository.find({
-      // select -> o que quero de retorno
-      // where -> condição
-      // relations -> para trazer também as informações da tabela que se relaciona
-      select: ["id"],
-      where: { id: contactID },
-      relations: ["company"],
-    });
-
-    const company = companyAddress_company.map((company) => {
-      return company.company;
-    });
-
-    return company[0];
   }
 
   async read(req: Request, res: Response) {
@@ -301,13 +237,77 @@ class CompanyContactController {
       });
     }
 
-    const companiesContactsDTO = companyContacts.map((companyContact) => {
+    const companyContactsDTO = companyContacts.map((companyContact) => {
       return CompanyContactResponseDTO.responseCompanyContactDTO(
         companyContact
       );
     });
 
-    return res.status(200).json({ companyContacts: companiesContactsDTO });
+    return res.status(200).json({ companyContacts: companyContactsDTO });
+  }
+
+  async readFromPhone(phone: string) {
+    // pegando o repositorio customizado/personalizado
+    const companyContactRepository = getCustomRepository(
+      CompanyContactRepository
+    );
+
+    // pesquisando um phone pelo numero
+    const phoneExist = await companyContactRepository.findOne({ phone });
+
+    // retornando o DTO do(s) phone(s) pesquisado(s)
+    return phoneExist;
+  }
+
+  async readFromCompany(companyID: string) {
+    // pegando o repositorio customizado/personalizado
+    const companyContactRepository = getCustomRepository(
+      CompanyContactRepository
+    );
+
+    // pesquisando um phone pelo numero
+    const companyContact = await companyContactRepository.findOne({
+      companyID,
+    });
+
+    // retornando o DTO do(s) phone(s) pesquisado(s)
+    return companyContact;
+  }
+
+  async readFromEmail(email: string) {
+    // pegando o repositorio customizado/personalizado
+    const companyContactRepository = getCustomRepository(
+      CompanyContactRepository
+    );
+
+    // pesquisando um phone pelo numero
+    const emailExist = await companyContactRepository.findOne({
+      email,
+    });
+
+    // retornando o DTO do(s) phone(s) pesquisado(s)
+    return emailExist;
+  }
+
+  async readFromContact(contactID: string) {
+    const companyContactRepository = getCustomRepository(
+      CompanyContactRepository
+    );
+
+    const companyAddress_company = await companyContactRepository.find({
+      // select -> o que quero de retorno
+      // where -> condição
+      // relations -> para trazer também as informações da tabela que se relaciona
+      select: ["id"],
+      where: { id: contactID },
+      relations: ["company"],
+    });
+
+    const company = companyAddress_company.map((company) => {
+      return company.company;
+    });
+
+    return company[0];
   }
 }
 

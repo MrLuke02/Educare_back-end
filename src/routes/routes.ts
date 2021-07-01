@@ -6,7 +6,7 @@ import { routerAddress } from "./routesAddress";
 import { routerCompany } from "./routesCompany";
 import { routerCategory } from "./routesCategory";
 import { routerCompanyAddress } from "./routesCompanyAddress";
-import { routesCompanyContact } from "./routesCompanyContact";
+import { routerCompanyContact } from "./routesCompanyContact";
 
 // importando e exportando as rotas de usuário
 export {
@@ -18,5 +18,5 @@ export {
   routerCompany,
   routerCategory,
   routerCompanyAddress,
-  routesCompanyContact,
+  routerCompanyContact,
 };

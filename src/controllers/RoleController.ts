@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
+import { Status } from "../env/status";
 import { RoleResponseDTO } from "../models/DTO/role/RoleResponseDTO";
 import { RolesRepository } from "../repositories/RolesRepository";
-import { Status } from "../env/status";
 
 class RoleController {
   // metodo assincrono para o cadastro de roles
@@ -69,17 +69,6 @@ class RoleController {
     return res
       .status(200)
       .json({ role: RoleResponseDTO.responseRoleDTO(role) });
-  }
-
-  async readFromType(type: string) {
-    // pegando o repositorio customizado/personalizado
-    const rolesRepository = getCustomRepository(RolesRepository);
-
-    // pesquisando uma role pelo id
-    const role = await rolesRepository.findOne({ type });
-
-    // retornando o DTO da role pesquisada
-    return role;
   }
 
   // metodo assincrono para a atualização dos dados das roles
@@ -178,12 +167,34 @@ class RoleController {
       });
     }
 
-    const role = roles.map((role) => {
+    const rolesDTO = roles.map((role) => {
       return RoleResponseDTO.responseRoleDTO(role);
     });
 
     // retornando as roles encontradas no DB
-    return res.status(200).json({ roles: role });
+    return res.status(200).json({ roles: rolesDTO });
+  }
+
+  async readFromType(type: string) {
+    // pegando o repositorio customizado/personalizado
+    const rolesRepository = getCustomRepository(RolesRepository);
+
+    // pesquisando uma role pelo id
+    const role = await rolesRepository.findOne({ type });
+
+    // retornando o DTO da role pesquisada
+    return role;
+  }
+
+  async readFromId(id: string) {
+    // pegando o repositorio customizado/personalizado
+    const rolesRepository = getCustomRepository(RolesRepository);
+
+    // pesquisando uma role pelo id
+    const role = await rolesRepository.findOne({ id });
+
+    // retornando o DTO da role pesquisada
+    return role;
   }
 }
 

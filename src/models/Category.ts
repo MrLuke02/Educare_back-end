@@ -17,7 +17,7 @@ class Category {
   value: number;
 
   // @Column()
-  // coloful: boolean;
+  // colorful: boolean;
 
   // @Column()
   // haveAds: boolean;
