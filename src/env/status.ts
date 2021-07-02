@@ -26,6 +26,7 @@ const Status = {
   INVALID_DATA: "Dados Inválidos!",
   INVALID_CNPJ: "CNPJ inválido!",
   SUCCESS: "Sucesso!",
+  CATEGORY_ALREADY_EXIST: "Categoria já existe!",
 };
 
 export { Status };

@@ -2,9 +2,9 @@ import { MigrationInterface, QueryRunner, TableColumn } from "typeorm";
 
 export class AlterTableCompany1623364003130 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.changeColumn(
+    await queryRunner.dropColumn("companies", "inscricaoEstadual");
+    await queryRunner.addColumn(
       "companies",
-      "inscricaoEstadual",
       new TableColumn({
         name: "companyCategory",
         type: "varchar",
@@ -13,12 +13,13 @@ export class AlterTableCompany1623364003130 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.changeColumn(
+    await queryRunner.dropColumn("companies", "companyCategory");
+    await queryRunner.addColumn(
       "companies",
-      "companyCategory",
       new TableColumn({
         name: "inscricaoEstadual",
         type: "varchar",
+        isUnique: true,
       })
     );
   }
