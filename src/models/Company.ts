@@ -20,7 +20,7 @@ class Company {
   @Column()
   cnpj: string;
 
-  @Column()
+  @Column({ unique: false })
   companyCategory: string;
 
   @CreateDateColumn()

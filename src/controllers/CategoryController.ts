@@ -6,13 +6,40 @@ import { CategoriesRepository } from "../repositories/CategoryRepository";
 
 class CategoryController {
   async create(req: Request, res: Response) {
-    const { name, description, value } = req.body;
+    const {
+      name,
+      description,
+      value,
+      colorful,
+      hasAd,
+      deliveryTimeInDays,
+      qtdMaxPage,
+      qtdMinPage,
+      limiteCopiesMonthlyUser,
+      limiteCopiesMonthly,
+    } = req.body;
 
-    if (!name || !description || !value) {
+    if (
+      !name ||
+      !description ||
+      value === null ||
+      colorful === null ||
+      hasAd === null ||
+      deliveryTimeInDays === null ||
+      qtdMinPage === null
+    ) {
       return res.status(422).json({
         Message: Status.REQUIRED_FIELD,
       });
-    } else if (typeof value === "string") {
+    } else if (
+      typeof value === "string" ||
+      typeof deliveryTimeInDays === "string" ||
+      typeof qtdMaxPage === "string" ||
+      typeof qtdMinPage === "string" ||
+      (limiteCopiesMonthlyUser !== null &&
+        typeof limiteCopiesMonthlyUser === "string") ||
+      (limiteCopiesMonthly !== null && typeof limiteCopiesMonthly === "string")
+    ) {
       return res.status(422).json({
         Message: Status.INVALID_DATA,
       });
@@ -20,10 +47,26 @@ class CategoryController {
 
     const categoriesRepository = getCustomRepository(CategoriesRepository);
 
+    const categoriesExist = await categoriesRepository.findOne({ name });
+
+    if (categoriesExist) {
+      // retornando uma resposta de erro em json
+      return res.status(409).json({
+        Message: Status.CATEGORY_ALREADY_EXIST,
+      });
+    }
+
     const category = categoriesRepository.create({
       name,
       description,
       value,
+      colorful,
+      hasAd,
+      deliveryTimeInDays,
+      qtdMaxPage,
+      qtdMinPage,
+      limiteCopiesMonthlyUser,
+      limiteCopiesMonthly,
     });
 
     const categorySaved = await categoriesRepository.save(category);
@@ -82,13 +125,38 @@ class CategoryController {
       name = category.name,
       description = category.description,
       value = category.value,
+      colorful = category.colorful,
+      hasAd = category.hasAd,
+      deliveryTimeInDays = category.deliveryTimeInDays,
+      qtdMaxPage = category.qtdMaxPage,
+      qtdMinPage = category.qtdMinPage,
+      limiteCopiesMonthlyUser = category.limiteCopiesMonthlyUser,
+      limiteCopiesMonthly = category.limiteCopiesMonthly,
     } = req.body;
+
+    if (name !== category.name) {
+      const nameExists = await categoriesRepository.findOne({ name });
+
+      if (nameExists) {
+        // retornando uma resposta de erro em json
+        return res.status(409).json({
+          Message: Status.CATEGORY_ALREADY_EXIST,
+        });
+      }
+    }
 
     // atualizando a role a partir do id
     await categoriesRepository.update(id, {
       name,
       description,
       value,
+      colorful,
+      deliveryTimeInDays,
+      hasAd,
+      limiteCopiesMonthly,
+      limiteCopiesMonthlyUser,
+      qtdMaxPage,
+      qtdMinPage,
     });
 
     // pesquisando a role pelo id

@@ -16,20 +16,26 @@ class Category {
   @Column()
   value: number;
 
-  // @Column()
-  // colorful: boolean;
+  @Column()
+  colorful: boolean;
 
-  // @Column()
-  // haveAds: boolean;
+  @Column()
+  hasAd: boolean;
 
-  // @Column()
-  // deadline: boolean;
+  @Column()
+  deliveryTimeInDays: number;
 
-  // @Column()
-  // pageCountMax: number;
+  @Column()
+  qtdMaxPage: number;
 
-  // @Column()
-  // pageCountMin: number;
+  @Column()
+  qtdMinPage: number;
+
+  @Column()
+  limiteCopiesMonthly: number;
+
+  @Column()
+  limiteCopiesMonthlyUser: number;
 
   @CreateDateColumn()
   createdAt: Date;
