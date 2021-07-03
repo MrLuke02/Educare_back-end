@@ -3,7 +3,6 @@ import { getCustomRepository } from "typeorm";
 import { Status } from "../env/status";
 import { RoleDTO } from "../models/DTOs/RoleDTO";
 import { UserRoleDTO } from "../models/DTOs/UserRoleDTO";
-import { Role } from "../models/Role";
 import { UserRoleRepository } from "../repositories/UserRoleRepository";
 
 class UserRoleController {
