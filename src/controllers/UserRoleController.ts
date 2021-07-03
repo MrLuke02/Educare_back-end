@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Status } from "../env/status";
-import { UserRoleResponseDTO } from "../models/DTO/userRole/UserRoleResponseDTO";
+import { RoleDTO } from "../models/DTOs/RoleDTO";
+import { UserRoleDTO } from "../models/DTOs/UserRoleDTO";
 import { UserRoleRepository } from "../repositories/UserRoleRepository";
 
 class UserRoleController {
@@ -41,7 +42,7 @@ class UserRoleController {
 
     // retornando a userRole
     return res.status(201).json({
-      userRole: UserRoleResponseDTO.responseUserRoleDTO(userRoleSaved),
+      UserRole: UserRoleDTO.convertUserRoleToDTO(userRoleSaved),
     });
   }
 
@@ -84,7 +85,7 @@ class UserRoleController {
     // retornando a userRole pesquisada
     return res
       .status(200)
-      .json({ userRole: UserRoleResponseDTO.responseUserRoleDTO(userRole) });
+      .json({ UserRole: UserRoleDTO.convertUserRoleToDTO(userRole) });
   }
 
   // metodo assincrono para a atualização dos dados das userRoles
@@ -142,7 +143,7 @@ class UserRoleController {
     // retornando a userRole atualizada
     return res
       .status(200)
-      .json({ userRole: UserRoleResponseDTO.responseUserRoleDTO(userRole) });
+      .json({ UserRole: UserRoleDTO.convertUserRoleToDTO(userRole) });
   }
 
   // metodo assincrono para a deleção de userRoles
@@ -196,11 +197,11 @@ class UserRoleController {
     }
 
     const userRolesDTO = userRoles.map((userRole) => {
-      return UserRoleResponseDTO.responseUserRoleDTO(userRole);
+      return UserRoleDTO.convertUserRoleToDTO(userRole);
     });
 
     // retornando as userRoles encontradas no DB
-    return res.status(200).json({ userRoles: userRolesDTO });
+    return res.status(200).json({ UserRoles: userRolesDTO });
   }
 
   async readFromUser(userID: string) {
@@ -217,8 +218,13 @@ class UserRoleController {
       relations: ["role"],
     });
 
+    // pegando somente os tipos de roles que o usuário possui
+    const rolesDTO = userRole_role.map((userRole) => {
+      return RoleDTO.convertRoleToDTO(userRole.role);
+    });
+
     // retornando a userRole pesquisada
-    return userRole_role;
+    return rolesDTO;
   }
 
   async readFromUserRole(userID: string, roleID: string) {

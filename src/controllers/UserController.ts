@@ -3,11 +3,9 @@ import md5 from "md5";
 import { getCustomRepository } from "typeorm";
 import { createToken } from "../auth/token/token.auth";
 import { Status } from "../env/status";
-import { AddressResponseDTO } from "../models/DTO/address/AddressResponseDTO";
-import { PhoneResponseDTO } from "../models/DTO/phone/PhoneResponseDTO";
-import { UserResponseDTO } from "../models/DTO/user/UserResponseDTO";
+import { UserDTO } from "../models/DTOs/UserDTO";
 import { UsersRepository } from "../repositories/UserRepository";
-import * as validation from "../util/user/UserUtil";
+import * as validation from "../util/user/Validations";
 import { AddressController } from "./AddressController";
 import { CompanyController } from "./CompanyController";
 import { PhoneController } from "./PhoneController";
@@ -105,21 +103,21 @@ class UserController {
       role.id
     );
 
-    const roleSaved = await roleController.readFromId(userRoleSaved.roleID);
+    const roleDTO = await roleController.readFromId(userRoleSaved.roleID);
 
-    const phone = await phoneController.createFromController(
+    const phoneDTO = await phoneController.createFromController(
       phoneNumber,
       user.id
     );
 
     const userDTO = {
-      ...UserResponseDTO.responseUserDTO(userSaved),
-      phone: phone.phoneNumber,
-      role: [roleSaved.type],
+      ...UserDTO.convertUserToDTO(userSaved),
+      Phones: [phoneDTO],
+      Roles: [roleDTO],
     };
 
     // retornando o DTO do usuario salvo
-    return res.status(201).json({ user: userDTO });
+    return res.status(201).json({ User: userDTO });
   }
 
   // metodo assincrono para a autenticação de usuários
@@ -153,25 +151,20 @@ class UserController {
 
     const userRoleController = new UserRoleController();
 
-    const userRole_role = await userRoleController.readFromUser(user.id);
+    const roles = await userRoleController.readFromUser(user.id);
 
-    if (!userRole_role) {
+    if (roles.length === 0) {
       return res.status(406).json({
         Message: Status.NOT_FOUND,
       });
     }
-
-    // pegando somente os tipos de roles que o usuário possui
-    const roles = userRole_role.map((userRole) => {
-      return userRole.role.type;
-    });
 
     // criando o objeto playload, que será passado para a função generate
     const payload = {
       iss: "Educare_api",
       nameUser: user.name,
       sub: user.id,
-      roles,
+      roles: roles,
     };
 
     let token: string;
@@ -248,10 +241,10 @@ class UserController {
     // pesquisando o usuário pelo id
     user = await usersRepository.findOne({ id: userID });
 
-    const userSave = UserResponseDTO.responseUserDTO(user);
+    const userSave = UserDTO.convertUserToDTO(user);
 
     // retornando o DTO do usuario salvo
-    return res.status(201).json({ user: userSave });
+    return res.status(201).json({ User: userSave });
   }
 
   // metodo assincrono para a deleção de usuários
@@ -303,63 +296,21 @@ class UserController {
     const userRoleController = new UserRoleController();
     const phoneController = new PhoneController();
 
-    const usersDTOPromise = users.map(async (user) => {
-      const userRole_role = await userRoleController.readFromUser(user.id);
-      const phones = await phoneController.readFromUser(user.id);
-
-      const roles = userRole_role.map((userRole) => {
-        return userRole.role.type;
-      });
-
-      const phone = [];
-
-      for (const key in phones) {
-        phone.push(phones[key].phoneNumber);
-      }
-
-      let userDTO = UserResponseDTO.responseUserDTO(user) as Object;
-
-      if (roles.length === 0 && phone.length === 0) {
-        userDTO = {
-          ...userDTO,
-          phone: Status.NOT_FOUND,
-          roles: Status.NOT_FOUND,
-        };
-        // user["phone"] = Status.NOT_FOUND;
-        // user["roles"] = Status.NOT_FOUND;
-      } else if (roles.length === 0) {
-        userDTO = {
-          ...userDTO,
-          phone: phone,
-          roles: Status.NOT_FOUND,
-        };
-        // user["phone"] = phone;
-        // user["roles"] = Status.NOT_FOUND;
-      } else if (phone.length === 0) {
-        userDTO = {
-          ...userDTO,
-          phone: Status.NOT_FOUND,
-          roles: roles,
-        };
-        // user["phone"] = Status.NOT_FOUND;
-        // user["roles"] = roles;
-      } else {
-        userDTO = {
-          ...userDTO,
-          phone: phone,
-          roles: roles,
-        };
-        // user["phone"] = phone;
-        // user["roles"] = roles;
-      }
-
-      return userDTO;
-    });
-
     const usersDTO = [];
 
-    for (const user of usersDTOPromise) {
-      usersDTO.push(await user);
+    for (const user of users) {
+      const rolesDTO = await userRoleController.readFromUser(user.id);
+      const phonesDTO = await phoneController.readFromUser(user.id);
+
+      let userDTO = UserDTO.convertUserToDTO(user) as Object;
+
+      userDTO = {
+        ...userDTO,
+        Phones: phonesDTO.length === 0 ? Status.NOT_FOUND : phonesDTO,
+        Roles: rolesDTO.length === 0 ? Status.NOT_FOUND : rolesDTO,
+      };
+
+      usersDTO.push(userDTO);
     }
 
     // retornando os usuários encontrados no DB
@@ -383,17 +334,15 @@ class UserController {
 
     const addressController = new AddressController();
 
-    const address = await addressController.readFromUser(userID);
+    const addressDTO = await addressController.readFromUser(userID);
 
-    if (!address) {
+    if (!addressDTO) {
       return res.status(406).json({
         Message: Status.NOT_FOUND,
       });
     }
 
-    return res
-      .status(200)
-      .json({ address: AddressResponseDTO.responseAddressDTO(address) });
+    return res.status(200).json({ Address: addressDTO });
   }
 
   async readPhoneFromUser(req: Request, res: Response) {
@@ -401,19 +350,15 @@ class UserController {
 
     const phoneController = new PhoneController();
 
-    const phones = await phoneController.readFromUser(userID);
+    const phonesDTO = await phoneController.readFromUser(userID);
 
-    if (phones.length === 0) {
+    if (phonesDTO.length === 0) {
       return res.status(406).json({
         Message: Status.NOT_FOUND,
       });
     }
 
-    const phonesDTO = phones.map((phone) => {
-      return PhoneResponseDTO.responsePhoneDTO(phone);
-    });
-
-    return res.status(200).json({ phones: phonesDTO });
+    return res.status(200).json({ Phones: phonesDTO });
   }
 
   async readCompanyFromUser(req: Request, res: Response) {
@@ -429,7 +374,7 @@ class UserController {
       });
     }
 
-    return res.status(200).json({ companies: companiesDTO });
+    return res.status(200).json({ Companies: companiesDTO });
   }
 
   async readAllFromUser(req: Request, res: Response) {
@@ -446,83 +391,27 @@ class UserController {
       });
     }
 
-    let userDTO = UserResponseDTO.responseUserDTO(user) as Object;
+    let userDTO = UserDTO.convertUserToDTO(user) as Object;
 
-    // manipulando os papeis do usuario
     const userRoleController = new UserRoleController();
-
-    const userRoles = await userRoleController.readFromUser(userID);
-
-    if (userRoles.length === 0) {
-      userDTO = {
-        ...userDTO,
-        roles: Status.NOT_FOUND,
-      };
-    } else {
-      const roles = userRoles.map((roles) => {
-        return roles.role.type;
-      });
-      userDTO = {
-        ...userDTO,
-        roles: roles,
-      };
-    }
-
-    // manipulando os telefones do usuario
     const phoneController = new PhoneController();
-
-    const phones = await phoneController.readFromUser(userID);
-
-    if (phones.length === 0) {
-      userDTO = {
-        ...userDTO,
-        phones: Status.NOT_FOUND,
-      };
-    } else {
-      const phonesDTO = phones.map((phone) => {
-        return PhoneResponseDTO.responsePhoneDTO(phone);
-      });
-      userDTO = {
-        ...userDTO,
-        phones: phonesDTO,
-      };
-    }
-
-    // manipulando o endereço do usuario
     const addressController = new AddressController();
-
-    const address = await addressController.readFromUser(userID);
-
-    if (!address) {
-      userDTO = {
-        ...userDTO,
-        address: Status.NOT_FOUND,
-      };
-    } else {
-      userDTO = {
-        ...userDTO,
-        address: AddressResponseDTO.responseAddressDTO(address),
-      };
-    }
-
-    // manipulando as empresas do usuario
     const companyController = new CompanyController();
 
+    const rolesDTO = await userRoleController.readFromUser(userID);
+    const phonesDTO = await phoneController.readFromUser(userID);
+    const addressDTO = await addressController.readFromUser(userID);
     const companiesDTO = await companyController.readCompaniesUser(userID);
 
-    if (companiesDTO.length === 0) {
-      userDTO = {
-        ...userDTO,
-        companies: Status.NOT_FOUND,
-      };
-    } else {
-      userDTO = {
-        ...userDTO,
-        companies: companiesDTO,
-      };
-    }
+    userDTO = {
+      ...userDTO,
+      Roles: rolesDTO.length === 0 ? Status.NOT_FOUND : rolesDTO,
+      Phones: phonesDTO.length === 0 ? Status.NOT_FOUND : phonesDTO,
+      Address: !addressDTO ? Status.NOT_FOUND : addressDTO,
+      Companies: companiesDTO.length === 0 ? Status.NOT_FOUND : companiesDTO,
+    };
 
-    return res.status(200).json({ user: userDTO });
+    return res.status(200).json({ User: userDTO });
   }
 }
 

@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Status } from "../env/status";
-import { CompanyContactResponseDTO } from "../models/DTO/companyContact/CompanyContactResponseDTO";
+import { CompanyContactDTO } from "../models/DTOs/CompanyContactDTO";
 import { CompanyContactRepository } from "../repositories/CompanyContactRepository";
-import * as validation from "../util/user/UserUtil";
+import * as validation from "../util/user/Validations";
 import { CompanyController } from "./CompanyController";
 
 class CompanyContactController {
@@ -69,10 +69,8 @@ class CompanyContactController {
     );
 
     return res.status(201).json({
-      companyContact:
-        CompanyContactResponseDTO.responseCompanyContactDTO(
-          companyContactSaved
-        ),
+      CompanyContact:
+        CompanyContactDTO.convertCompanyContactToDTO(companyContactSaved),
     });
   }
 
@@ -91,7 +89,10 @@ class CompanyContactController {
       companyContact
     );
 
-    return companyContactSaved;
+    const companyContactDTO =
+      CompanyContactDTO.convertCompanyContactToDTO(companyContactSaved);
+
+    return companyContactDTO;
   }
 
   async read(req: Request, res: Response) {
@@ -110,8 +111,8 @@ class CompanyContactController {
     }
 
     return res.status(200).json({
-      companyContact:
-        CompanyContactResponseDTO.responseCompanyContactDTO(companyContact),
+      CompanyContact:
+        CompanyContactDTO.convertCompanyContactToDTO(companyContact),
     });
   }
 
@@ -172,8 +173,8 @@ class CompanyContactController {
     companyContact = await companyContactRepository.findOne(id);
 
     return res.status(200).json({
-      companyContact:
-        CompanyContactResponseDTO.responseCompanyContactDTO(companyContact),
+      CompanyContact:
+        CompanyContactDTO.convertCompanyContactToDTO(companyContact),
     });
   }
 
@@ -201,7 +202,10 @@ class CompanyContactController {
 
     companyContact = await companyContactRepository.findOne(id);
 
-    return companyContact;
+    const companyContactDTO =
+      CompanyContactDTO.convertCompanyContactToDTO(companyContact);
+
+    return companyContactDTO;
   }
 
   async delete(req: Request, res: Response) {
@@ -238,12 +242,10 @@ class CompanyContactController {
     }
 
     const companyContactsDTO = companyContacts.map((companyContact) => {
-      return CompanyContactResponseDTO.responseCompanyContactDTO(
-        companyContact
-      );
+      return CompanyContactDTO.convertCompanyContactToDTO(companyContact);
     });
 
-    return res.status(200).json({ companyContacts: companyContactsDTO });
+    return res.status(200).json({ CompanyContacts: companyContactsDTO });
   }
 
   async readFromPhone(phone: string) {
@@ -270,8 +272,15 @@ class CompanyContactController {
       companyID,
     });
 
+    let companyContactDTO: Object;
+
+    if (companyContact) {
+      companyContactDTO =
+        CompanyContactDTO.convertCompanyContactToDTO(companyContact);
+    }
+
     // retornando o DTO do(s) phone(s) pesquisado(s)
-    return companyContact;
+    return companyContactDTO;
   }
 
   async readFromEmail(email: string) {

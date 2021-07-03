@@ -44,7 +44,7 @@ routerUser.get(
 routerUser.get("/userPhones", verifyTokenUser.verifyADMUser);
 
 routerUser.get(
-  "/userCompany/:userID",
+  "/userCompanies/:userID",
   verifyTokenUser.verifyADMUser,
   userController.readCompanyFromUser
 );

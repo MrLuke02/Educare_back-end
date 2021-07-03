@@ -1,4 +1,5 @@
-import { DefaultToken, NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+import { DefaultToken } from "jsonwebtoken";
 import { AddressController } from "../../../controllers/AddressController";
 import { PhoneController } from "../../../controllers/PhoneController";
 import { Status } from "../../../env/status";

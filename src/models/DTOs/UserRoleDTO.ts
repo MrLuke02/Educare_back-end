@@ -1,7 +1,7 @@
-import { UserRole } from "../../UserRole";
+import { UserRole } from "../UserRole";
 
 // criando o UserRoleResponseDTO para retorno, como os campos que se deseja retornar
-class UserRoleResponseDTO {
+class UserRoleDTO {
   private id: string;
 
   private userID: string;
@@ -17,10 +17,10 @@ class UserRoleResponseDTO {
   }
 
   // criando o metodo statico que para possa acessa-lo atravez da classe, esse metodo retorna um UserRoleResponseDTO com todos os seus atributos preenchidos com os dados da UserRole
-  static responseUserRoleDTO(userRole: UserRole): UserRoleResponseDTO {
-    return new UserRoleResponseDTO(userRole);
+  static convertUserRoleToDTO(userRole: UserRole): UserRoleDTO {
+    return new UserRoleDTO(userRole);
   }
 }
 
 // exportando o RoleResponseDTO
-export { UserRoleResponseDTO };
+export { UserRoleDTO };

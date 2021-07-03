@@ -1,7 +1,7 @@
-import { CompanyContact } from "../../CompanyContact";
+import { CompanyContact } from "../CompanyContact";
 
 // criando o RoleResponseDTO para retorno, como os campos que se deseja retornar
-class CompanyContactResponseDTO {
+class CompanyContactDTO {
   private id: string;
 
   private email: string;
@@ -17,12 +17,12 @@ class CompanyContactResponseDTO {
   }
 
   // criando o metodo statico que para possa acessa-lo atravez da classe, esse metodo retorna um RoleResponseDTO com todos os seus atributos preenchidos com os dados da role
-  static responseCompanyContactDTO(
+  static convertCompanyContactToDTO(
     companyContact: CompanyContact
-  ): CompanyContactResponseDTO {
-    return new CompanyContactResponseDTO(companyContact);
+  ): CompanyContactDTO {
+    return new CompanyContactDTO(companyContact);
   }
 }
 
 // exportando o RoleResponseDTO
-export { CompanyContactResponseDTO };
+export { CompanyContactDTO };

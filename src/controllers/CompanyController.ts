@@ -1,16 +1,15 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Status } from "../env/status";
-import { CompanyResponseDTO } from "../models/DTO/company/CompanyResponseDTO";
-import { CompanyAddressResponseDTO } from "../models/DTO/companyAddress/CompanyAddressResponseDTO";
-import { CompanyContactResponseDTO } from "../models/DTO/companyContact/CompanyContactResponseDTO";
+import { CompanyDTO } from "../models/DTOs/CompanyDTO";
 import { CompaniesRepository } from "../repositories/CompanyRepository";
-import * as validation from "../util/user/UserUtil";
+import * as validation from "../util/user/Validations";
 import { CompanyAddressController } from "./CompanyAddressController";
 import { CompanyContactController } from "./CompanyContactController";
 import { RoleController } from "./RoleController";
 import { UserController } from "./UserController";
 import { UserRoleController } from "./UserRoleController";
+import { CompanyContact } from "../models/CompanyContact";
 
 class CompanyController {
   async create(req: Request, res: Response) {
@@ -104,19 +103,19 @@ class CompanyController {
       await userRoleController.createFromController(userID, role.id);
     }
 
-    const companyContact = await companyContactController.createFromController(
-      email,
-      phone,
-      companySaved.id
-    );
+    const companyContactDTO =
+      await companyContactController.createFromController(
+        email,
+        phone,
+        companySaved.id
+      );
 
     const companyDTO = {
-      ...CompanyResponseDTO.responseCompanyDTO(companySaved),
-      contact:
-        CompanyContactResponseDTO.responseCompanyContactDTO(companyContact),
+      ...CompanyDTO.convertCompanyToDTO(companySaved),
+      Contact: companyContactDTO,
     };
 
-    return res.status(201).json({ company: companyDTO });
+    return res.status(201).json({ Company: companyDTO });
   }
 
   async read(req: Request, res: Response) {
@@ -142,7 +141,7 @@ class CompanyController {
 
     return res
       .status(200)
-      .json({ company: CompanyResponseDTO.responseCompanyDTO(company) });
+      .json({ Company: CompanyDTO.convertCompanyToDTO(company) });
   }
 
   async update(req: Request, res: Response) {
@@ -172,9 +171,9 @@ class CompanyController {
 
     const companyContactController = new CompanyContactController();
 
-    let companyContact = await companyContactController.readFromCompany(
+    const companyContact = (await companyContactController.readFromCompany(
       companyID
-    );
+    )) as CompanyContact;
 
     if (!companyContact) {
       return res.status(406).json({
@@ -230,12 +229,13 @@ class CompanyController {
       }
     }
 
-    companyContact = await companyContactController.updateFromController(
-      companyContact.id,
-      email,
-      phone,
-      company.id
-    );
+    const companyContactDTO =
+      await companyContactController.updateFromController(
+        companyContact.id,
+        email,
+        phone,
+        company.id
+      );
 
     if (!companyContact) {
       return res.status(422).json({ Message: Status.INVALID_ID });
@@ -252,13 +252,12 @@ class CompanyController {
     company = await companyRepository.findOne({ id: companyID });
 
     const companyDTO = {
-      ...CompanyResponseDTO.responseCompanyDTO(company),
-      contact:
-        CompanyContactResponseDTO.responseCompanyContactDTO(companyContact),
+      ...CompanyDTO.convertCompanyToDTO(company),
+      Contact: companyContactDTO,
     };
 
     // retornando o DTO da role atualizada
-    return res.status(200).json({ company: companyDTO });
+    return res.status(200).json({ Company: companyDTO });
   }
 
   async delete(req: Request, res: Response) {
@@ -324,11 +323,11 @@ class CompanyController {
     }
 
     const companiesDTO = companies.map((company) => {
-      return CompanyResponseDTO.responseCompanyDTO(company);
+      return CompanyDTO.convertCompanyToDTO(company);
     });
 
     return res.status(200).json({
-      companies: companiesDTO,
+      Companies: companiesDTO,
     });
   }
 
@@ -354,10 +353,10 @@ class CompanyController {
     }
 
     const companiesDTO = companies.map((company) => {
-      return CompanyResponseDTO.responseCompanyDTO(company);
+      return CompanyDTO.convertCompanyToDTO(company);
     });
 
-    return res.status(200).json({ companies: companiesDTO });
+    return res.status(200).json({ Companies: companiesDTO });
   }
 
   async readCompaniesUser(userID: string) {
@@ -365,61 +364,29 @@ class CompanyController {
 
     const companies = await companyRepository.find({ userID });
 
-    if (companies.length !== 0) {
+    if (companies.length > 0) {
       const companyAddressController = new CompanyAddressController();
 
       const companyContactController = new CompanyContactController();
 
-      const companiesDTOPromise = companies.map(async (company) => {
-        const companyAddress = await companyAddressController.readFromCompany(
-          company.id
-        );
-
-        const companyContact = await companyContactController.readFromCompany(
-          company.id
-        );
-
-        let companyDTO = CompanyResponseDTO.responseCompanyDTO(
-          company
-        ) as Object;
-
-        if (companyAddress) {
-          companyDTO = {
-            ...companyDTO,
-            address:
-              CompanyAddressResponseDTO.responseCompanyAddressDTO(
-                companyAddress
-              ),
-          };
-        } else {
-          companyDTO = {
-            ...companyDTO,
-            address: Status.NOT_FOUND,
-          };
-        }
-
-        if (companyContact) {
-          companyDTO = {
-            ...companyDTO,
-            contact:
-              CompanyContactResponseDTO.responseCompanyContactDTO(
-                companyContact
-              ),
-          };
-        } else {
-          companyDTO = {
-            ...companyDTO,
-            contact: Status.NOT_FOUND,
-          };
-        }
-
-        return companyDTO;
-      });
-
       const companiesDTO = [];
 
-      for (const company of companiesDTOPromise) {
-        companiesDTO.push(await company);
+      for (const company of companies) {
+        const companyAddressDTO =
+          await companyAddressController.readFromCompany(company.id);
+
+        const companyContactDTO =
+          await companyContactController.readFromCompany(company.id);
+
+        let companyDTO = CompanyDTO.convertCompanyToDTO(company) as Object;
+
+        companyDTO = {
+          ...companyDTO,
+          Address: !companyAddressDTO ? Status.NOT_FOUND : companyAddressDTO,
+          Contact: !companyContactDTO ? Status.NOT_FOUND : companyContactDTO,
+        };
+
+        companiesDTO.push(companyDTO);
       }
 
       return companiesDTO;
@@ -449,7 +416,7 @@ class CompanyController {
 
     return res
       .status(200)
-      .json({ company: CompanyResponseDTO.responseCompanyDTO(company) });
+      .json({ Company: CompanyDTO.convertCompanyToDTO(company) });
   }
 
   async readCompanyAddress(req: Request, res: Response) {
@@ -457,19 +424,18 @@ class CompanyController {
 
     const companyAddressController = new CompanyAddressController();
 
-    const companyAddress = await companyAddressController.readFromCompany(
+    const companyAddressDTO = await companyAddressController.readFromCompany(
       companyID
     );
 
-    if (!companyAddress) {
+    if (!companyAddressDTO) {
       return res.status(406).json({
         Message: Status.NOT_FOUND,
       });
     }
 
     return res.status(200).json({
-      companyAddress:
-        CompanyAddressResponseDTO.responseCompanyAddressDTO(companyAddress),
+      CompanyAddress: companyAddressDTO,
     });
   }
 
@@ -478,19 +444,18 @@ class CompanyController {
 
     const companyContactController = new CompanyContactController();
 
-    const companyContact = await companyContactController.readFromCompany(
+    const companyContactDTO = await companyContactController.readFromCompany(
       companyID
     );
 
-    if (!companyContact) {
+    if (!companyContactDTO) {
       return res.status(406).json({
         Message: Status.NOT_FOUND,
       });
     }
 
     return res.status(200).json({
-      companyContact:
-        CompanyContactResponseDTO.responseCompanyContactDTO(companyContact),
+      CompanyContact: companyContactDTO,
     });
   }
 
@@ -519,42 +484,22 @@ class CompanyController {
 
     const companyContactController = new CompanyContactController();
 
-    const companyAddress = await companyAddressController.readFromCompany(
+    const companyAddressDTO = await companyAddressController.readFromCompany(
       companyID
     );
-    const companyContact = await companyContactController.readFromCompany(
+    const companyContactDTO = await companyContactController.readFromCompany(
       companyID
     );
 
-    let companyDTO = CompanyResponseDTO.responseCompanyDTO(company) as Object;
+    let companyDTO = CompanyDTO.convertCompanyToDTO(company) as Object;
 
-    if (companyAddress) {
-      companyDTO = {
-        ...companyDTO,
-        address:
-          CompanyAddressResponseDTO.responseCompanyAddressDTO(companyAddress),
-      };
-    } else {
-      companyDTO = {
-        ...companyDTO,
-        address: Status.NOT_FOUND,
-      };
-    }
+    companyDTO = {
+      ...companyDTO,
+      Address: !companyAddressDTO ? Status.NOT_FOUND : companyAddressDTO,
+      Contact: !companyContactDTO ? Status.NOT_FOUND : companyContactDTO,
+    };
 
-    if (companyContact) {
-      companyDTO = {
-        ...companyDTO,
-        contact:
-          CompanyContactResponseDTO.responseCompanyContactDTO(companyContact),
-      };
-    } else {
-      companyDTO = {
-        ...companyDTO,
-        contact: Status.NOT_FOUND,
-      };
-    }
-
-    return res.status(200).json({ company: companyDTO });
+    return res.status(200).json({ Company: companyDTO });
   }
 }
 
