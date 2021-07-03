@@ -164,7 +164,7 @@ class UserController {
       iss: "Educare_api",
       nameUser: user.name,
       sub: user.id,
-      roles,
+      roles: roles,
     };
 
     let token: string;
