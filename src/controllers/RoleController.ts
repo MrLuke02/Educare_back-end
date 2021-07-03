@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Status } from "../env/status";
-import { RoleResponseDTO } from "../models/DTO/role/RoleResponseDTO";
+import { RoleDTO } from "../models/DTOs/RoleDTO";
 import { RolesRepository } from "../repositories/RolesRepository";
 
 class RoleController {
@@ -41,9 +41,7 @@ class RoleController {
     const roleSaved = await rolesRepository.save(role);
 
     // retornando o DTO da role salva
-    return res
-      .status(201)
-      .json({ role: RoleResponseDTO.responseRoleDTO(roleSaved) });
+    return res.status(201).json({ Role: RoleDTO.convertRoleToDTO(roleSaved) });
   }
 
   // metodo assincrono para a pesquisa de roles pelo id
@@ -66,9 +64,7 @@ class RoleController {
     }
 
     // retornando o DTO da role pesquisada
-    return res
-      .status(200)
-      .json({ role: RoleResponseDTO.responseRoleDTO(role) });
+    return res.status(200).json({ Role: RoleDTO.convertRoleToDTO(role) });
   }
 
   // metodo assincrono para a atualização dos dados das roles
@@ -120,9 +116,7 @@ class RoleController {
     role = await rolesRepository.findOne(id);
 
     // retornando o DTO da role atualizada
-    return res
-      .status(200)
-      .json({ role: RoleResponseDTO.responseRoleDTO(role) });
+    return res.status(200).json({ Role: RoleDTO.convertRoleToDTO(role) });
   }
 
   // metodo assincrono para a deleção de roles
@@ -168,11 +162,11 @@ class RoleController {
     }
 
     const rolesDTO = roles.map((role) => {
-      return RoleResponseDTO.responseRoleDTO(role);
+      return RoleDTO.convertRoleToDTO(role);
     });
 
     // retornando as roles encontradas no DB
-    return res.status(200).json({ roles: rolesDTO });
+    return res.status(200).json({ Roles: rolesDTO });
   }
 
   async readFromType(type: string) {
@@ -193,8 +187,10 @@ class RoleController {
     // pesquisando uma role pelo id
     const role = await rolesRepository.findOne({ id });
 
+    const roleDTO = RoleDTO.convertRoleToDTO(role);
+
     // retornando o DTO da role pesquisada
-    return role;
+    return roleDTO;
   }
 }
 

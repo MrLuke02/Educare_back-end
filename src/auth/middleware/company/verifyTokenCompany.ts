@@ -1,4 +1,5 @@
-import { DefaultToken, NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+import { DefaultToken } from "jsonwebtoken";
 import { CompanyAddressController } from "../../../controllers/CompanyAddressController";
 import { CompanyContactController } from "../../../controllers/CompanyContactController";
 import { CompanyController } from "../../../controllers/CompanyController";

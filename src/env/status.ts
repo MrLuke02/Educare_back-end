@@ -27,6 +27,8 @@ const Status = {
   INVALID_CNPJ: "CNPJ inválido!",
   SUCCESS: "Sucesso!",
   CATEGORY_ALREADY_EXIST: "Categoria já existe!",
+  FILE_TOO_LARGE: "Tamanho de arquivo inválido!",
+  INVALID_PAGE_COUNT: "Número de paginas inválida!",
 };
 
 export { Status };

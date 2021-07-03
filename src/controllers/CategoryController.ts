@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Status } from "../env/status";
-import { CategoryResponseDTO } from "../models/DTO/Category/CategoryResponseDTO";
+import { CategoryDTO } from "../models/DTOs/CategoryDTO";
 import { CategoriesRepository } from "../repositories/CategoryRepository";
 
 class CategoryController {
@@ -72,7 +72,7 @@ class CategoryController {
     const categorySaved = await categoriesRepository.save(category);
 
     return res.status(201).json({
-      category: CategoryResponseDTO.responseCategoryDTO(categorySaved),
+      Category: CategoryDTO.covertCategoryToDTO(categorySaved),
     });
   }
 
@@ -91,7 +91,7 @@ class CategoryController {
 
     return res
       .status(200)
-      .json({ category: CategoryResponseDTO.responseCategoryDTO(category) });
+      .json({ Category: CategoryDTO.covertCategoryToDTO(category) });
   }
 
   async update(req: Request, res: Response) {
@@ -165,7 +165,7 @@ class CategoryController {
     // retornando o DTO da role atualizada
     return res
       .status(200)
-      .json({ category: CategoryResponseDTO.responseCategoryDTO(category) });
+      .json({ Category: CategoryDTO.covertCategoryToDTO(category) });
   }
 
   async delete(req: Request, res: Response) {
@@ -198,10 +198,18 @@ class CategoryController {
     }
 
     const categoriesDTO = categories.map((category) => {
-      return CategoryResponseDTO.responseCategoryDTO(category);
+      return CategoryDTO.covertCategoryToDTO(category);
     });
 
-    return res.status(200).json({ category: categoriesDTO });
+    return res.status(200).json({ Categories: categoriesDTO });
+  }
+
+  async readFromController(id: string) {
+    const categoriesRepository = getCustomRepository(CategoriesRepository);
+
+    const category = await categoriesRepository.findOne({ id });
+
+    return category;
   }
 }
 

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Status } from "../env/status";
-import { CompanyAddressResponseDTO } from "../models/DTO/companyAddress/CompanyAddressResponseDTO";
+import { CompanyAddressDTO } from "../models/DTOs/CompanyAddressDTO";
 import { CompanyAddressRepository } from "../repositories/CompanyAddressRepository";
 import { CompanyController } from "./CompanyController";
 
@@ -72,10 +72,8 @@ class CompanyAddressController {
     );
 
     return res.status(201).json({
-      companyAddress:
-        CompanyAddressResponseDTO.responseCompanyAddressDTO(
-          companyAddressSaved
-        ),
+      CompanyAddress:
+        CompanyAddressDTO.convertCompanyAddressToDTO(companyAddressSaved),
     });
   }
 
@@ -95,8 +93,8 @@ class CompanyAddressController {
     }
 
     return res.status(200).json({
-      companyAddress:
-        CompanyAddressResponseDTO.responseCompanyAddressDTO(companyAddress),
+      CompanyAddress:
+        CompanyAddressDTO.convertCompanyAddressToDTO(companyAddress),
     });
   }
 
@@ -140,8 +138,8 @@ class CompanyAddressController {
     companyAddress = await companyAddressRepository.findOne(id);
 
     return res.status(200).json({
-      companyAddress:
-        CompanyAddressResponseDTO.responseCompanyAddressDTO(companyAddress),
+      CompanyAddress:
+        CompanyAddressDTO.convertCompanyAddressToDTO(companyAddress),
     });
   }
 
@@ -177,12 +175,10 @@ class CompanyAddressController {
     }
 
     const companyAddressesDTO = companyAddresses.map((companyAddress) => {
-      return CompanyAddressResponseDTO.responseCompanyAddressDTO(
-        companyAddress
-      );
+      return CompanyAddressDTO.convertCompanyAddressToDTO(companyAddress);
     });
 
-    return res.status(200).json({ companyAddresses: companyAddressesDTO });
+    return res.status(200).json({ CompanyAddresses: companyAddressesDTO });
   }
 
   async readFromAddress(addressID: string) {
@@ -215,7 +211,14 @@ class CompanyAddressController {
       companyID,
     });
 
-    return companyAddress;
+    let companyAddressDTO: Object;
+
+    if (companyAddress) {
+      companyAddressDTO =
+        CompanyAddressDTO.convertCompanyAddressToDTO(companyAddress);
+    }
+
+    return companyAddressDTO;
   }
 }
 

@@ -1,6 +1,6 @@
-import "express";
+import "jsonwebtoken";
 
-declare module "express" {
+declare module "jsonwebtoken" {
   export interface DefaultToken {
     iss: string;
     nameUser: string;

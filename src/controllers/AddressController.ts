@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Status } from "../env/status";
-import { AddressResponseDTO } from "../models/DTO/address/AddressResponseDTO";
+import { AddressDTO } from "../models/DTOs/AddressDTO";
 import { AddressRepository } from "../repositories/AddressRepository";
 import { UserController } from "./UserController";
 
@@ -67,7 +67,7 @@ class AddressController {
 
     return res
       .status(201)
-      .json({ address: AddressResponseDTO.responseAddressDTO(addressSaved) });
+      .json({ Address: AddressDTO.convertAddressToDTO(addressSaved) });
   }
 
   async read(req: Request, res: Response) {
@@ -85,7 +85,7 @@ class AddressController {
 
     return res
       .status(200)
-      .json({ address: AddressResponseDTO.responseAddressDTO(address) });
+      .json({ Address: AddressDTO.convertAddressToDTO(address) });
   }
 
   async update(req: Request, res: Response) {
@@ -127,7 +127,7 @@ class AddressController {
 
     return res
       .status(200)
-      .json({ address: AddressResponseDTO.responseAddressDTO(address) });
+      .json({ Address: AddressDTO.convertAddressToDTO(address) });
   }
 
   async delete(req: Request, res: Response) {
@@ -160,10 +160,10 @@ class AddressController {
     }
 
     const addressDTO = addresses.map((address) => {
-      return AddressResponseDTO.responseAddressDTO(address);
+      return AddressDTO.convertAddressToDTO(address);
     });
 
-    return res.status(200).json({ addresses: addressDTO });
+    return res.status(200).json({ Addresses: addressDTO });
   }
 
   async readFromUser(userID: string) {
@@ -171,7 +171,13 @@ class AddressController {
 
     const address = await addressRepository.findOne({ userID });
 
-    return address;
+    let addressDTO: Object;
+
+    if (address) {
+      addressDTO = AddressDTO.convertAddressToDTO(address);
+    }
+
+    return addressDTO;
   }
 
   async readFromID(addressID: string) {

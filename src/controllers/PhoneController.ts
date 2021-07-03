@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Status } from "../env/status";
-import { PhoneResponseDTO } from "../models/DTO/phone/PhoneResponseDTO";
+import { PhoneDTO } from "../models/DTOs/PhoneDTO";
 import { PhonesRepository } from "../repositories/PhoneRepository";
-import * as validation from "../util/user/UserUtil";
+import * as validation from "../util/user/Validations";
 import { UserController } from "./UserController";
 
 class PhoneController {
@@ -69,7 +69,7 @@ class PhoneController {
 
     // retornando a userRole
     return res.status(201).json({
-      phone: PhoneResponseDTO.responsePhoneDTO(phoneSaved),
+      Phone: PhoneDTO.convertPhoneToDTO(phoneSaved),
     });
   }
 
@@ -86,8 +86,10 @@ class PhoneController {
     // salvando o phone
     const phoneSaved = await phoneRepository.save(phone);
 
+    const phoneDTO = PhoneDTO.convertPhoneToDTO(phoneSaved);
+
     // retornando a userRole
-    return phoneSaved;
+    return phoneDTO;
   }
 
   // metodo assincrono para a pesquisa de phones pelo id
@@ -110,9 +112,7 @@ class PhoneController {
     }
 
     // retornando o DTO do phone pesquisado
-    return res
-      .status(200)
-      .json({ phone: PhoneResponseDTO.responsePhoneDTO(phone) });
+    return res.status(200).json({ Phone: PhoneDTO.convertPhoneToDTO(phone) });
   }
 
   // metodo assincrono para a atualização dos dados dos phones
@@ -170,9 +170,7 @@ class PhoneController {
     phone = await phoneRepository.findOne(id);
 
     // retornando o DTO do phone atualizado
-    return res
-      .status(200)
-      .json({ phone: PhoneResponseDTO.responsePhoneDTO(phone) });
+    return res.status(200).json({ Phone: PhoneDTO.convertPhoneToDTO(phone) });
   }
 
   async delete(req: Request, res: Response) {
@@ -216,11 +214,11 @@ class PhoneController {
     }
 
     const phonesDTO = phones.map((phone) => {
-      return PhoneResponseDTO.responsePhoneDTO(phone);
+      return PhoneDTO.convertPhoneToDTO(phone);
     });
 
     // retornando os phones encontrados no DB
-    return res.status(200).json({ phones: phonesDTO });
+    return res.status(200).json({ Phones: phonesDTO });
   }
 
   // metodo assincrono para a pesquisa de phones pelo id do usuário
@@ -231,8 +229,16 @@ class PhoneController {
     // pesquisando um phone pelo id do usuário
     const phones = await phoneRepository.find({ userID });
 
+    let phonesDTO = [];
+
+    if (phones.length > 0) {
+      phonesDTO = phones.map((phone) => {
+        return PhoneDTO.convertPhoneToDTO(phone);
+      });
+    }
+
     // retornando o DTO do(s) phone(s) pesquisado(s)
-    return phones;
+    return phonesDTO;
   }
 
   async readFromId(phoneID: string) {
