@@ -19,7 +19,7 @@ class Document {
   @Column()
   pageNumber: number;
 
-  @Column()
+  @Column({ type: "bytea" })
   file: Buffer;
 
   @CreateDateColumn()

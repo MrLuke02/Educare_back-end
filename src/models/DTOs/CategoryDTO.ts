@@ -2,27 +2,27 @@ import { Category } from "../Category";
 
 // criando o UserResponseDTO para retorno, como os campos que se deseja retornar
 class CategoryDTO {
-  private id: string;
+  id: string;
 
-  private name: string;
+  name: string;
 
-  private description: string;
+  description: string;
 
-  private value: number;
+  value: number;
 
-  private colorful: boolean;
+  colorful: boolean;
 
-  private hasAd: boolean;
+  hasAd: boolean;
 
-  private deliveryTimeInDays: number;
+  deliveryTimeInDays: number;
 
-  private qtdMaxPage: number;
+  qtdMaxPage: number;
 
-  private qtdMinPage: number;
+  qtdMinPage: number;
 
-  private limiteCopiesMonthlyUser: number;
+  limiteCopiesMonthlyUser: number;
 
-  private limiteCopiesMonthly: number;
+  limiteCopiesMonthly: number;
 
   // criando o cronstrutor do UserResponseDTO a ser retornado, passando para ele o usuário
   constructor(category: Category) {

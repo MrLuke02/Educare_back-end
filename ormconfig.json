@@ -1,6 +1,11 @@
 {
-  "type": "sqlite",
-  "database": "./src/database/database.sqlite",
+  "type": "postgres",
+  "host": "34.95.189.93",
+  "port": 5432,
+  "username": "postgres",
+  "password": "educare2021",
+  "database": "educare",
+  "synchronize": false,
   "entities": ["./src/models/**.ts"],
   "migrations": ["./src/database/migrations/**.ts"],
   "cli": {

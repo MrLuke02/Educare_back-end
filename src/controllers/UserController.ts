@@ -159,12 +159,16 @@ class UserController {
       });
     }
 
+    const rolesDTO = roles.map((role) => {
+      return role.type;
+    });
+
     // criando o objeto playload, que será passado para a função generate
     const payload = {
       iss: "Educare_api",
       nameUser: user.name,
       sub: user.id,
-      roles: roles,
+      roles: rolesDTO,
     };
 
     let token: string;

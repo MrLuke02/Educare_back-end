@@ -2,13 +2,13 @@ import { Company } from "../Company";
 
 // criando o RoleResponseDTO para retorno, como os campos que se deseja retornar
 class CompanyDTO {
-  private id: string;
+  id: string;
 
-  private companyName: string;
+  companyName: string;
 
-  private cnpj: string;
+  cnpj: string;
 
-  private inscricaoEstadual: string;
+  inscricaoEstadual: string;
 
   // criando o cronstrutor do RoleResponseDTO a ser retornado, passando para ele a role
   constructor(company: Company) {
