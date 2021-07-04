@@ -2,9 +2,9 @@ import { Phone } from "../Phone";
 
 // criando o RoleResponseDTO para retorno, como os campos que se deseja retornar
 class PhoneDTO {
-  private id: string;
+  id: string;
 
-  private phoneNumber: string;
+  phoneNumber: string;
 
   // criando o construtor do RoleResponseDTO a ser retornado, passando para ele a role
   constructor(phone: Phone) {

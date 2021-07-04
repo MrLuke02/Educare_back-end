@@ -14,7 +14,7 @@ export class DropColumnAddressTableUser1621041513106
       // coluna
       new TableColumn({
         name: "address",
-        type: "string",
+        type: "varchar",
         isNullable: true,
       })
     );
