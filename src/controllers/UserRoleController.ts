@@ -6,7 +6,7 @@ import { UserRoleDTO } from "../models/DTOs/UserRoleDTO";
 import { UserRoleRepository } from "../repositories/UserRoleRepository";
 
 class UserRoleController {
-  // metodo assincrono para a criação de user_roles
+  // metodo assincrono para a criação de user_rolesq
   async create(req: Request, res: Response) {
     // capturando e armazenando os valores do corpo da requisição
     const { userID, roleID } = req.body;

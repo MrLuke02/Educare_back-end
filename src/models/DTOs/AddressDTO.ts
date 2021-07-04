@@ -2,23 +2,23 @@ import { Address } from "../Address";
 
 // criando o RoleResponseDTO para retorno, como os campos que se deseja retornar
 class AddressDTO {
-  private id: string;
+  id: string;
 
-  private street: string;
+  street: string;
 
-  private houseNumber: string;
+  houseNumber: string;
 
-  private bairro: string;
+  bairro: string;
 
-  private state: string;
+  state: string;
 
-  private city: string;
+  city: string;
 
-  private cep: string;
+  cep: string;
 
-  private referencePoint: string;
+  referencePoint: string;
 
-  private complement: string;
+  complement: string;
 
   // criando o cronstrutor do RoleResponseDTO a ser retornado, passando para ele a role
   constructor(address: Address) {

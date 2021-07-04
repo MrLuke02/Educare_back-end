@@ -17,7 +17,7 @@ export class CreateDocuments1625332588748 implements MigrationInterface {
           },
           {
             name: "size",
-            type: "double",
+            type: "numeric",
           },
           {
             name: "name",
@@ -29,7 +29,7 @@ export class CreateDocuments1625332588748 implements MigrationInterface {
           },
           {
             name: "file",
-            type: "blob",
+            type: "bytea",
           },
           {
             name: "createdAt",
