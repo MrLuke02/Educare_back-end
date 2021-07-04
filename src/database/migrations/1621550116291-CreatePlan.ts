@@ -21,7 +21,7 @@ export class CreatePlan1621550116291 implements MigrationInterface {
           },
           {
             name: "value",
-            type: "double",
+            type: "numeric",
           },
           {
             name: "createdAt",
