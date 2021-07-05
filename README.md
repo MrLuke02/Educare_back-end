@@ -18,10 +18,10 @@
 
 ## Anotações e apps usados:📋
 
-- React Js (biblioteca JavaScript de código aberto com foco em criar interfaces de usuário em páginas web)
-- React Router Dom ( lib completa para controle de rotas)
+- React Js (biblioteca JavaScript de código aberto com foco em criar interfaces de usuário em páginas web). Possibilita aos developers criarem aplicações web onde possam alterar elementos ou os dados exibidos, sem recarregar a página.
+- React Router Dom ( lib completa para controle de rotas). oferece muitos trechos de CSS e JavaScript reutilizáveis, evitando que se tenha que programar do zero – consumindo muito tempo – e que podem servir para muitas situações comuns na maior parte dos sites, requerendo apenas a utilização do HTML para integrá-los.
 - Bootstrap JS (consiste em arquivos JavaScript, responsáveis pela interatividade de um site)
-- Vscode (editor de código-fonte)
+- Vscode (editor de código-fonte). Além de ser fácil uso, é bastante intuitivo, arquitetura bem planejada, ferramentas simples, possibilidade de customização, várias funcionalidades e atalhos.
 - instalaçao cmd.
 
 # Passo a Passo:⚙️
