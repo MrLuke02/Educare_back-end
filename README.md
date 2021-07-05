@@ -36,10 +36,13 @@
 - Clique na seta para o download.
 
 ## React Js
+Para usar o React é preciso utilizar o gerenciador de pacotes NPM, que faz parte do Node.js. Essa é uma ferramenta importante para a criação do ambiente.
 
+A instalação do React é feita com apenas uma linha de comando, que fará o download da biblioteca e a instalação no computador:
+" npm install -g create-react-app "
 
-
-
+A criação do ambiente também é feita com apenas um comando e a estrutura do projeto será criada no diretório corrente.
+" create-react-app aplicacao_react "
 
 
 # Status do Projeto 
