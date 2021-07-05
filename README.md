@@ -35,7 +35,7 @@
 - Escolha o sistema operacional desejado.
 - Clique na seta para o download.
 
-## React Js
+## React Js:
 Para usar o React é preciso utilizar o gerenciador de pacotes NPM, que faz parte do Node.js. Essa é uma ferramenta importante para a criação do ambiente.
 
 A instalação do React é feita com apenas uma linha de comando, que fará o download da biblioteca e a instalação no computador:
@@ -43,6 +43,20 @@ A instalação do React é feita com apenas uma linha de comando, que fará o do
 
 A criação do ambiente também é feita com apenas um comando e a estrutura do projeto será criada no diretório corrente.
 " create-react-app aplicacao_react "
+
+
+
+## React Router Dom:
+Após a criação do React, execute o comando "cd react-rotas"
+⚠️A instalação é feita por NPM ou Yarn, manteremos o foco em NPM por ser mais comum.
+Em seguida execute "npm install react-router-dom".
+
+## Bootstrap Js:
+Continuando mantendo o foco em NPM, execute o código abaixo para o Bootstrap.
+"Npm install bootstrap@3"
+
+⚠️⚠️⚠️
+
 
 
 # Status do Projeto 
