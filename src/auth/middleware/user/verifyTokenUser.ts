@@ -31,10 +31,7 @@ class VerifyTokenUser {
         token = await verifyToken(req.headers.authorization.split(" ")[1]);
 
         // verifica se o token enviado pertence ao proprio usuário ou a um administrador
-        if (
-          token.sub == userID ||
-          token.roles.some((role: string) => role === "ADM")
-        ) {
+        if (token.sub == userID || token.roles.includes("ADM")) {
           // avança para o proximo middleware
           next();
         } else {
@@ -83,10 +80,7 @@ class VerifyTokenUser {
       try {
         token = await verifyToken(req.headers.authorization.split(" ")[1]);
         // verifica se o token enviado pertence ao proprio usuário ou a um administrador
-        if (
-          token.sub == address.userID ||
-          token.roles.some((role: string) => role === "ADM")
-        ) {
+        if (token.sub == address.userID || token.roles.includes("ADM")) {
           // avança para o proximo middleware
           next();
         } else {
@@ -136,10 +130,7 @@ class VerifyTokenUser {
         token = await verifyToken(req.headers.authorization.split(" ")[1]);
 
         // verifica se o token enviado pertence ao proprio usuário ou a um administrador
-        if (
-          token.sub == phone.userID ||
-          token.roles.some((role: string) => role === "ADM")
-        ) {
+        if (token.sub == phone.userID || token.roles.includes("ADM")) {
           // avança para o proximo middleware
           next();
         } else {
@@ -163,7 +154,7 @@ class VerifyTokenUser {
         token = await verifyToken(req.headers.authorization.split(" ")[1]);
 
         // verificando se o token é de um administrador
-        if (token.roles.some((role: string) => role === "ADM")) {
+        if (token.roles.includes("ADM")) {
           // avança para o proximo middleware
           next();
         } else {

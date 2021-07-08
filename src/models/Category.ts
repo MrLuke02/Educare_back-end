@@ -14,7 +14,7 @@ class Category {
   description: string;
 
   @Column()
-  value: number;
+  price: number;
 
   @Column()
   colorful: boolean;

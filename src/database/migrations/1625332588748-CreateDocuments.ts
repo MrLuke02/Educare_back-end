@@ -17,7 +17,7 @@ export class CreateDocuments1625332588748 implements MigrationInterface {
           },
           {
             name: "size",
-            type: "numeric",
+            type: "int",
           },
           {
             name: "name",

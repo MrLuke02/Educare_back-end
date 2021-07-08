@@ -42,7 +42,7 @@ class PhoneController {
 
     const userController = new UserController();
 
-    const user = await userController.readFromId(userID);
+    const user = await userController.readFromController(userID);
 
     if (!user) {
       return res.status(406).json({

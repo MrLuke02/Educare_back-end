@@ -151,16 +151,16 @@ class UserController {
 
     const userRoleController = new UserRoleController();
 
-    const roles = await userRoleController.readFromUser(user.id);
+    const rolesDTO = await userRoleController.readFromUser(user.id);
 
-    if (roles.length === 0) {
+    if (rolesDTO.length === 0) {
       return res.status(406).json({
         Message: Status.NOT_FOUND,
       });
     }
 
-    const rolesDTO = roles.map((role) => {
-      return role.type;
+    const rolesTypes = rolesDTO.map((roleDTO) => {
+      return roleDTO.type;
     });
 
     // criando o objeto playload, que será passado para a função generate
@@ -168,7 +168,7 @@ class UserController {
       iss: "Educare_api",
       nameUser: user.name,
       sub: user.id,
-      roles: rolesDTO,
+      roles: rolesTypes,
     };
 
     let token: string;
@@ -321,7 +321,7 @@ class UserController {
     return res.status(200).json({ users: usersDTO });
   }
 
-  async readFromId(id: string) {
+  async readFromController(id: string) {
     // pegando o repositorio customizado/personalizado
     const usersRepository = getCustomRepository(UsersRepository);
 
@@ -411,7 +411,7 @@ class UserController {
       ...userDTO,
       Roles: rolesDTO.length === 0 ? Status.NOT_FOUND : rolesDTO,
       Phones: phonesDTO.length === 0 ? Status.NOT_FOUND : phonesDTO,
-      Address: !addressDTO ? Status.NOT_FOUND : addressDTO,
+      Address: addressDTO || Status.NOT_FOUND,
       Companies: companiesDTO.length === 0 ? Status.NOT_FOUND : companiesDTO,
     };
 

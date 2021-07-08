@@ -2,11 +2,11 @@ import { Company } from "../Company";
 
 // criando o RoleResponseDTO para retorno, como os campos que se deseja retornar
 class CompanyDTO {
-  id: string;
+  public readonly id: string;
 
-  companyName: string;
+  public readonly companyName: string;
 
-  cnpj: string;
+  public readonly cnpj: string;
 
   inscricaoEstadual: string;
 

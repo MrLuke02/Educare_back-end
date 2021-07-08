@@ -43,10 +43,7 @@ class VerifyTokenCompany {
         token = await verifyToken(req.headers.authorization.split(" ")[1]);
 
         // verifica se o token enviado pertence ao proprio usuário ou a um administrador
-        if (
-          token.sub == company.userID ||
-          token.roles.some((role: string) => role === "ADM")
-        ) {
+        if (token.sub == company.userID || token.roles.includes("ADM")) {
           // avança para o proximo middleware
           next();
         } else {
@@ -96,10 +93,7 @@ class VerifyTokenCompany {
         token = await verifyToken(req.headers.authorization.split(" ")[1]);
 
         // verifica se o token enviado pertence ao proprio usuário ou a um administrador
-        if (
-          token.sub == company.userID ||
-          token.roles.some((role: string) => role === "ADM")
-        ) {
+        if (token.sub == company.userID || token.roles.includes("ADM")) {
           // avança para o proximo middleware
           next();
         } else {
@@ -149,10 +143,7 @@ class VerifyTokenCompany {
         token = await verifyToken(req.headers.authorization.split(" ")[1]);
 
         // verifica se o token enviado pertence ao proprio usuário ou a um administrador
-        if (
-          token.sub == company.userID ||
-          token.roles.some((role: string) => role === "ADM")
-        ) {
+        if (token.sub == company.userID || token.roles.includes("ADM")) {
           // avança para o proximo middleware
           next();
         } else {

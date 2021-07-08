@@ -9,7 +9,7 @@ class CategoryController {
     const {
       name,
       description,
-      value,
+      price,
       colorful,
       hasAd,
       deliveryTimeInDays,
@@ -22,7 +22,7 @@ class CategoryController {
     if (
       !name ||
       !description ||
-      value === null ||
+      price === null ||
       colorful === null ||
       hasAd === null ||
       deliveryTimeInDays === null ||
@@ -32,7 +32,7 @@ class CategoryController {
         Message: Status.REQUIRED_FIELD,
       });
     } else if (
-      typeof value === "string" ||
+      typeof price === "string" ||
       typeof deliveryTimeInDays === "string" ||
       typeof qtdMaxPage === "string" ||
       typeof qtdMinPage === "string" ||
@@ -59,7 +59,7 @@ class CategoryController {
     const category = categoriesRepository.create({
       name,
       description,
-      value,
+      price,
       colorful,
       hasAd,
       deliveryTimeInDays,
@@ -124,7 +124,7 @@ class CategoryController {
     const {
       name = category.name,
       description = category.description,
-      value = category.value,
+      price = category.price,
       colorful = category.colorful,
       hasAd = category.hasAd,
       deliveryTimeInDays = category.deliveryTimeInDays,
@@ -149,7 +149,7 @@ class CategoryController {
     await categoriesRepository.update(id, {
       name,
       description,
-      value,
+      price,
       colorful,
       deliveryTimeInDays,
       hasAd,
