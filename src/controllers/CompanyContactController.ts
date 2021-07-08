@@ -312,8 +312,8 @@ class CompanyContactController {
       relations: ["company"],
     });
 
-    const company = companyAddress_company.map((company) => {
-      return company.company;
+    const company = companyAddress_company.map((companyContact) => {
+      return companyContact.company;
     });
 
     return company[0];

@@ -1,4 +1,4 @@
-import JWT, { DefaultToken } from "jsonwebtoken";
+import JWT, { DefaultToken, VerifyErrors } from "jsonwebtoken";
 import { SECRET_KEY } from "../../env/token";
 import { Status } from "../../env/status";
 
@@ -41,7 +41,7 @@ const verifyToken = (token: string): Promise<DefaultToken> => {
         algorithms: ["HS512"],
       },
       // função para retornar o token caso ocorra tudo bem, caso de algo errado retorna um json de error
-      function (err: JWT.VerifyErrors, token: DefaultToken) {
+      function (err: VerifyErrors, token: DefaultToken) {
         if (err) {
           reject({ Message: Status.EXPIRED_SESSION, Status: 401 });
         }

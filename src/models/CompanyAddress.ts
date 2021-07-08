@@ -10,7 +10,7 @@ import { v4 as uuid } from "uuid";
 import { Company } from "./Company";
 
 // criando o modelo da tabela phones, especificando suas colunas e tipo de dado que será armazenado
-@Entity("companyAddresses")
+@Entity("company_addresses")
 class CompanyAddress {
   @PrimaryColumn()
   id: string;

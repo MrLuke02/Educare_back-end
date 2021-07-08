@@ -18,11 +18,14 @@ routerDocument.put(
   documentController.update
 );
 
-routerDocument.get(
-  "/document/:id",
-  multer().single("file"),
-  documentController.read
-);
+routerDocument.get("/document/:id", documentController.read);
+routerDocument.get("/document", (req: Request, res: Response) => {
+  return res.status(422).json({
+    Message: Status.ID_NOT_FOUND,
+  });
+});
+
+routerDocument.get("/showDocuments", documentController.show);
 
 routerDocument.get("/document", (req: Request, res: Response) => {
   return res.status(422).json({
@@ -30,11 +33,7 @@ routerDocument.get("/document", (req: Request, res: Response) => {
   });
 });
 
-routerDocument.delete(
-  "/document/:id",
-  multer().single("file"),
-  documentController.delete
-);
+routerDocument.delete("/document/:id", documentController.delete);
 
 routerDocument.delete("/document", (req: Request, res: Response) => {
   return res.status(422).json({

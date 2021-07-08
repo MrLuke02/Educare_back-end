@@ -2,13 +2,13 @@ import { User } from "../User";
 
 // criando o UserResponseDTO para retorno, como os campos que se deseja retornar
 class UserDTO {
-  id: string;
+  public readonly id: string;
 
-  name: string;
+  public readonly name: string;
 
-  email: string;
+  public readonly email: string;
 
-  address: string;
+  public readonly address: string;
 
   // criando o cronstrutor do UserResponseDTO a ser retornado, passando para ele o usuário
   constructor(user: User) {

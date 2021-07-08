@@ -2,9 +2,9 @@ import { Role } from "../Role";
 
 // criando o RoleResponseDTO para retorno, como os campos que se deseja retornar
 class RoleDTO {
-  id: string;
+  public readonly id: string;
 
-  type: string;
+  public readonly type: string;
 
   // criando o cronstrutor do RoleResponseDTO a ser retornado, passando para ele a role
   constructor(role: Role) {

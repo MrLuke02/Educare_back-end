@@ -2,11 +2,11 @@ import { CompanyContact } from "../CompanyContact";
 
 // criando o RoleResponseDTO para retorno, como os campos que se deseja retornar
 class CompanyContactDTO {
-  id: string;
+  public readonly id: string;
 
-  email: string;
+  public readonly email: string;
 
-  phone: string;
+  public readonly phone: string;
 
   // criando o cronstrutor do RoleResponseDTO a ser retornado, passando para ele a role
   constructor(companyContact: CompanyContact) {

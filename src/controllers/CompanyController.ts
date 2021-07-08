@@ -36,7 +36,7 @@ class CompanyController {
 
     const userController = new UserController();
 
-    const user = await userController.readFromId(userID);
+    const user = await userController.readFromController(userID);
 
     if (!user) {
       return res.status(406).json({
@@ -382,8 +382,8 @@ class CompanyController {
 
         companyDTO = {
           ...companyDTO,
-          Address: !companyAddressDTO ? Status.NOT_FOUND : companyAddressDTO,
-          Contact: !companyContactDTO ? Status.NOT_FOUND : companyContactDTO,
+          Address: companyAddressDTO || Status.NOT_FOUND,
+          Contact: companyContactDTO || Status.NOT_FOUND,
         };
 
         companiesDTO.push(companyDTO);
@@ -495,8 +495,8 @@ class CompanyController {
 
     companyDTO = {
       ...companyDTO,
-      Address: !companyAddressDTO ? Status.NOT_FOUND : companyAddressDTO,
-      Contact: !companyContactDTO ? Status.NOT_FOUND : companyContactDTO,
+      Address: companyAddressDTO || Status.NOT_FOUND,
+      Contact: companyContactDTO || Status.NOT_FOUND,
     };
 
     return res.status(200).json({ Company: companyDTO });
