@@ -14,6 +14,7 @@ const Message = {
   CATEGORY_NOT_FOUND: "Categoria não encontrada!",
   DOCUMENT_NOT_FOUND: "Document não encontrado!",
   ORDER_NOT_FOUND: "Pedido não encontrado!",
+  ORDER_STATUS_NOT_FOUND: "Status de pedido não encontrado!",
 
   // REQUIRED_FIELD
   REQUIRED_FIELD: "Campo obrigatório(s) vazio(s)!",

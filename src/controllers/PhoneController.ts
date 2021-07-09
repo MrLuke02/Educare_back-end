@@ -203,7 +203,7 @@ class PhoneController {
     // pesquisando um phone pelo id do usuário
     const phones = await phoneRepository.find({ userID });
 
-    let phonesDTO: PhoneDTO[];
+    let phonesDTO = [];
 
     if (phones.length > 0) {
       phonesDTO = phones.map((phone) => {

@@ -9,6 +9,7 @@ import { UsersRepository } from "../repositories/UserRepository";
 import * as validation from "../util/user/Validations";
 import { AddressController } from "./AddressController";
 import { CompanyController } from "./CompanyController";
+import { OrderController } from "./OrderController";
 import { PhoneController } from "./PhoneController";
 import { RoleController } from "./RoleController";
 import { UserRoleController } from "./UserRoleController";
@@ -314,7 +315,7 @@ class UserController {
     return res.status(200).json({ Address: addressDTO });
   }
 
-  async readPhoneFromUser(req: Request, res: Response) {
+  async readPhonesFromUser(req: Request, res: Response) {
     const { userID } = req.params;
 
     const phoneController = new PhoneController();
@@ -322,13 +323,13 @@ class UserController {
     const phonesDTO = await phoneController.readFromUser(userID);
 
     if (phonesDTO.length === 0) {
-      throw new AppError(Message.PHONE_NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 406);
     }
 
     return res.status(200).json({ Phones: phonesDTO });
   }
 
-  async readCompanyFromUser(req: Request, res: Response) {
+  async readCompaniesFromUser(req: Request, res: Response) {
     const { userID } = req.params;
 
     const companyController = new CompanyController();
@@ -336,10 +337,24 @@ class UserController {
     const companiesDTO = await companyController.readCompaniesUser(userID);
 
     if (companiesDTO.length === 0) {
-      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 406);
     }
 
     return res.status(200).json({ Companies: companiesDTO });
+  }
+
+  async readOrdersFromUser(req: Request, res: Response) {
+    const { userID } = req.params;
+
+    const orderController = new OrderController();
+
+    const ordersDTO = await orderController.readOrdersUser(userID);
+
+    if (ordersDTO.length === 0) {
+      throw new AppError(Message.NOT_FOUND, 406);
+    }
+
+    return res.status(200).json({ Orders: ordersDTO });
   }
 
   async readAllFromUser(req: Request, res: Response) {
@@ -360,7 +375,9 @@ class UserController {
     const phoneController = new PhoneController();
     const addressController = new AddressController();
     const companyController = new CompanyController();
+    const orderController = new OrderController();
 
+    const ordersDTO = await orderController.readOrdersUser(userID);
     const rolesDTO = await userRoleController.readFromUser(userID);
     const phonesDTO = await phoneController.readFromUser(userID);
     const addressDTO = await addressController.readFromUser(userID);
@@ -373,6 +390,7 @@ class UserController {
       Address: addressDTO || Message.ADDRESS_NOT_FOUND,
       Companies:
         companiesDTO.length === 0 ? Message.COMPANY_NOT_FOUND : companiesDTO,
+      Orders: ordersDTO.length === 0 ? Message.ORDER_NOT_FOUND : ordersDTO,
     };
 
     return res.status(200).json({ User: userDTO });
