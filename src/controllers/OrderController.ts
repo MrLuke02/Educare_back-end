@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Message } from "../env/message";
+import { OrderStatus, verifyStatus } from "../env/orderStatus";
 import { AppError } from "../errors/AppErrors";
+import { OrderDTO } from "../models/DTOs/OrderDTO";
 import { OrdersRepository } from "../repositories/OrderRepository";
 import { CategoryController } from "./CategoryController";
 import { DocumentController } from "./DocumentController";
@@ -11,7 +13,7 @@ class OrderController {
   async create(req: Request, res: Response) {
     const docs = req.file;
     const { userID, categoryID, copyNumber, price, pageNumber } = req.body;
-    const status = "Criado";
+    const status = OrderStatus.ORDER_CREATED;
 
     if (
       !userID ||
@@ -55,7 +57,9 @@ class OrderController {
 
     const orderSaved = await orderRepository.save(order);
 
-    return res.status(201).json({ Order: orderSaved });
+    return res
+      .status(201)
+      .json({ Order: OrderDTO.convertOrderToDTO(orderSaved) });
   }
 
   async read(req: Request, res: Response) {
@@ -69,15 +73,11 @@ class OrderController {
       throw new AppError(Message.ORDER_NOT_FOUND, 406);
     }
 
-    return res.status(200).json({ Order: order });
+    return res.status(200).json({ Order: OrderDTO.convertOrderToDTO(order) });
   }
 
   async update(req: Request, res: Response) {
     const { id } = req.body;
-
-    if (!id) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
-    }
 
     const orderRepository = getCustomRepository(OrdersRepository);
 
@@ -108,7 +108,33 @@ class OrderController {
 
     order = await orderRepository.findOne({ id });
 
-    return res.status(200).json({ Order: order });
+    return res.status(200).json({ Order: OrderDTO.convertOrderToDTO(order) });
+  }
+
+  async updateStatus(req: Request, res: Response) {
+    const { id, status } = req.body;
+
+    if (!id || !status) {
+      throw new AppError(Message.REQUIRED_FIELD, 422);
+    }
+
+    const orderRepository = getCustomRepository(OrdersRepository);
+
+    let order = await orderRepository.findOne({ id });
+
+    if (!order) {
+      throw new AppError(Message.ORDER_NOT_FOUND, 406);
+    }
+
+    if (!verifyStatus(status)) {
+      throw new AppError(Message.ORDER_STATUS_NOT_FOUND, 406);
+    }
+
+    await orderRepository.update(id, { status: OrderStatus[status] });
+
+    order = await orderRepository.findOne({ id });
+
+    return res.status(200).json({ Order: OrderDTO.convertOrderToDTO(order) });
   }
 
   async delete(req: Request, res: Response) {
@@ -136,7 +162,46 @@ class OrderController {
       throw new AppError(Message.NOT_FOUND, 406);
     }
 
-    return res.status(200).json({ Orders: orders });
+    const ordersDTO = orders.map((order) => {
+      return OrderDTO.convertOrderToDTO(order);
+    });
+
+    return res.status(200).json({ Orders: ordersDTO });
+  }
+
+  async readFromOrder(orderID: string) {
+    const orderRepository = getCustomRepository(OrdersRepository);
+
+    const order_user = await orderRepository.find({
+      // select -> o que quero de retorno
+      // where -> condição
+      // relations -> para trazer também as informações da tabela que se relaciona
+      select: ["id"],
+      where: { id: orderID },
+      relations: ["user"],
+    });
+
+    const user = order_user.map((company) => {
+      return company.user;
+    });
+
+    return user[0];
+  }
+
+  async readOrdersUser(userID: string) {
+    const orderRepository = getCustomRepository(OrdersRepository);
+
+    const orders = await orderRepository.find({ userID });
+
+    let ordersDTO = [];
+
+    if (orders.length > 0) {
+      ordersDTO = orders.map((order) => {
+        return OrderDTO.convertOrderToDTO(order);
+      });
+    }
+
+    return ordersDTO;
   }
 }
 

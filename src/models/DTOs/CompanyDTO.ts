@@ -8,7 +8,7 @@ class CompanyDTO {
 
   public readonly cnpj: string;
 
-  inscricaoEstadual: string;
+  public readonly companyCategory: string;
 
   // criando o cronstrutor do RoleResponseDTO a ser retornado, passando para ele a role
   constructor(company: Company) {

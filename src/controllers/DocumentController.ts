@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Message } from "../env/message";
 import { AppError } from "../errors/AppErrors";
+import { DocumentDTO } from "../models/DTOs/DocumentDTO";
 import { DocumentsRepository } from "../repositories/DocumentRepository";
 import { CategoryController } from "./CategoryController";
 
@@ -60,7 +61,9 @@ class DocumentController {
 
     const documentSaved = await documentRepository.save(document);
 
-    return res.status(201).json({ Document: documentSaved });
+    return res
+      .status(201)
+      .json({ Document: DocumentDTO.convertDocumentToDTO(documentSaved) });
   }
 
   async createFromController(
@@ -119,7 +122,7 @@ class DocumentController {
 
     const documentSaved = await documentRepository.save(document);
 
-    return documentSaved;
+    return DocumentDTO.convertDocumentToDTO(documentSaved);
   }
 
   async read(req: Request, res: Response) {
@@ -133,15 +136,9 @@ class DocumentController {
       throw new AppError(Message.DOCUMENT_NOT_FOUND, 406);
     }
 
-    return res.status(200).json({ Document: document });
-  }
-
-  async readFromController(id: string) {
-    const documentRepository = getCustomRepository(DocumentsRepository);
-
-    const document = await documentRepository.findOne({ id });
-
-    return document;
+    return res
+      .status(200)
+      .json({ Document: DocumentDTO.convertDocumentToDTO(document) });
   }
 
   async update(req: Request, res: Response) {
@@ -206,7 +203,9 @@ class DocumentController {
 
     document = await documentRepository.findOne({ id });
 
-    return res.status(200).json({ Document: document });
+    return res
+      .status(200)
+      .json({ Document: DocumentDTO.convertDocumentToDTO(document) });
   }
 
   async delete(req: Request, res: Response) {
@@ -234,7 +233,11 @@ class DocumentController {
       throw new AppError(Message.NOT_FOUND, 406);
     }
 
-    return res.status(200).json({ Documents: documents });
+    const documentsDTO = documents.map((document) => {
+      return DocumentDTO.convertDocumentToDTO(document);
+    });
+
+    return res.status(200).json({ Documents: documentsDTO });
   }
 }
 

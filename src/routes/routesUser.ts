@@ -39,16 +39,22 @@ routerUser.get("/userAddress", verifyTokenUser.verifyADMUser);
 routerUser.get(
   "/userPhones/:userID",
   verifyTokenUser.verifyADMUser,
-  userController.readPhoneFromUser
+  userController.readPhonesFromUser
 );
 routerUser.get("/userPhones", verifyTokenUser.verifyADMUser);
 
 routerUser.get(
   "/userCompanies/:userID",
   verifyTokenUser.verifyADMUser,
-  userController.readCompanyFromUser
+  userController.readCompaniesFromUser
 );
 routerUser.get("/userCompanies", verifyTokenUser.verifyADMUser);
+
+routerUser.get(
+  "/userOrders/:userID",
+  verifyTokenUser.verifyADMUser,
+  userController.readOrdersFromUser
+);
 
 routerUser.get(
   "/userAll/:userID",
