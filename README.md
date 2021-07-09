@@ -73,7 +73,7 @@ Em construção 🚧
 
 
 # Contato 📞
-### Telefone(whatsapp): (88)9.9809-0170 / (88)9.9808-2506
-### Instagram:   @o_pedroangelim  /  @mr.luke_lr
+### Telefone(whatsapp): (88)9.9809-0170 / (88)9.9808-2506 /(88)9.9636-7972
+### Instagram:   @o_pedroangelim  /  @mr.luke_lr / 
 ### Email: pedroangelim10@gmail.com 
 ### Git: Pedroangelim123 / MrLuke02 
