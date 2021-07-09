@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import { Status } from "../env/status";
+import { Message } from "../env/message";
+import { AppError } from "../errors/AppErrors";
 import { AddressDTO } from "../models/DTOs/AddressDTO";
 import { AddressRepository } from "../repositories/AddressRepository";
 import { UserController } from "./UserController";
@@ -25,9 +26,7 @@ class AddressController {
 
     if (addressExist) {
       // retornando um json de erro personalizado
-      return res.status(409).json({
-        Message: Status.USER_ADDRESS_ALREADY_EXIST,
-      });
+      throw new AppError(Message.USER_ADDRESS_ALREADY_EXIST, 409);
     } else if (
       !street ||
       !houseNumber ||
@@ -38,7 +37,7 @@ class AddressController {
       !userID
     ) {
       // retornando um json de erro personalizado
-      return res.status(422).json({ Message: Status.REQUIRED_FIELD });
+      throw new AppError(Message.REQUIRED_FIELD, 422);
     }
 
     const userController = new UserController();
@@ -46,9 +45,7 @@ class AddressController {
     const user = await userController.readFromController(userID);
 
     if (!user) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.USER_NOT_FOUND, 406);
     }
 
     const address = addressRepository.create({
@@ -78,9 +75,7 @@ class AddressController {
     const address = await addressRepository.findOne({ id });
 
     if (!address) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
     }
 
     return res
@@ -96,9 +91,7 @@ class AddressController {
     let address = await addressRepository.findOne(id);
 
     if (!address) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
     }
 
     const {
@@ -138,9 +131,7 @@ class AddressController {
     const address = await addressRepository.findOne(id);
 
     if (!address) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
     }
 
     await addressRepository.delete({ id });
@@ -154,9 +145,7 @@ class AddressController {
     const addresses = await addressRepository.find();
 
     if (addresses.length == 0) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.NOT_FOUND, 406);
     }
 
     const addressDTO = addresses.map((address) => {
@@ -171,7 +160,7 @@ class AddressController {
 
     const address = await addressRepository.findOne({ userID });
 
-    let addressDTO: Object;
+    let addressDTO: AddressDTO;
 
     if (address) {
       addressDTO = AddressDTO.convertAddressToDTO(address);

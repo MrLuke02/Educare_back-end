@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import { Status } from "../env/status";
+import { Message } from "../env/message";
+import { AppError } from "../errors/AppErrors";
 import { RoleDTO } from "../models/DTOs/RoleDTO";
 import { RolesRepository } from "../repositories/RolesRepository";
 
@@ -13,9 +14,7 @@ class RoleController {
     // verificando se não foi passado o tipo de role
     if (!type) {
       // retornando um json de erro personalizado
-      return res.status(422).json({
-        Message: Status.REQUIRED_FIELD,
-      });
+      throw new AppError(Message.REQUIRED_FIELD, 422);
     }
 
     // pegando o repositorio customizado/personalizado
@@ -27,9 +26,7 @@ class RoleController {
     // verificanddo se já existe uma role com o type enviado
     if (roleExist) {
       // retornando uma resposta de erro em json
-      return res.status(409).json({
-        Message: Status.ROLE_ALREADY_EXIST,
-      });
+      throw new AppError(Message.ROLE_ALREADY_EXIST, 409);
     }
 
     // criando o role
@@ -58,9 +55,7 @@ class RoleController {
     // verificando se a role não existe
     if (!role) {
       // retornando uma resposta de erro em json
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.ROLE_NOT_FOUND, 406);
     }
 
     // retornando o DTO da role pesquisada
@@ -75,9 +70,7 @@ class RoleController {
     // verificando se o id da role não foi passada
     if (!id) {
       // retornando um json de erro personalizado
-      return res.status(422).json({
-        Message: Status.ID_NOT_FOUND,
-      });
+      throw new AppError(Message.ID_NOT_FOUND, 422);
     }
 
     // pegando o repositorio customizado/personalizado
@@ -89,9 +82,7 @@ class RoleController {
     // verificando se a role não existe
     if (!role) {
       // retornando uma resposta de erro em json
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.ROLE_NOT_FOUND, 406);
     }
 
     // capturando o tipo de role passado no corpo da requisição, caso não seja passado nada, pega o valor que ja está cadastrado na role
@@ -103,7 +94,7 @@ class RoleController {
       const roleExists = await rolesRepository.findOne({ type });
       if (roleExists) {
         // se encontrar algo retorna um json de erro
-        return res.status(409).json({ Message: Status.ROLE_ALREADY_EXIST });
+        throw new AppError(Message.ROLE_ALREADY_EXIST, 409);
       }
     }
 
@@ -133,16 +124,14 @@ class RoleController {
     // verificando se a role não existe
     if (!role) {
       // retornando uma resposta de erro em json
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.ROLE_NOT_FOUND, 406);
     }
 
     // deletando a role a partir do id
     await rolesRepository.delete({ id });
 
     // retornando um json de sucesso
-    return res.status(200).json({ Message: Status.SUCCESS });
+    return res.status(200).json({ Message: Message.SUCCESS });
   }
 
   // metodo assincrono para a listagem de todas as roles
@@ -156,9 +145,7 @@ class RoleController {
     // verificando se o DB possui roles cadastradas
     if (roles.length === 0) {
       // retornando uma resposta de erro em json
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.NOT_FOUND, 406);
     }
 
     const rolesDTO = roles.map((role) => {

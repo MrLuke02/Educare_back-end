@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import { Status } from "../env/status";
+import { Message } from "../env/message";
+import { AppError } from "../errors/AppErrors";
 import { RoleDTO } from "../models/DTOs/RoleDTO";
 import { UserRoleDTO } from "../models/DTOs/UserRoleDTO";
 import { UserRoleRepository } from "../repositories/UserRoleRepository";
@@ -12,9 +13,7 @@ class UserRoleController {
     const { userID, roleID } = req.body;
 
     if (!userID || !roleID) {
-      return res.status(422).json({
-        Message: Status.REQUIRED_FIELD,
-      });
+      throw new AppError(Message.REQUIRED_FIELD, 422);
     }
 
     // pegando o repositorio customizado/personalizado
@@ -26,9 +25,7 @@ class UserRoleController {
     // verificanddo se já existe a userRole
     if (userRoleExist) {
       // retornando uma resposta em json
-      return res.status(409).json({
-        Message: Status.USER_ROLE,
-      });
+      throw new AppError(Message.USER_ROLE_ALREADY_EXIST, 409);
     }
 
     // criando a userRole
@@ -77,9 +74,7 @@ class UserRoleController {
     // verificando se a userRole não existe
     if (!userRole) {
       // retornando uma resposta de erro em json
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.USER_ROLE_NOT_FOUND, 406);
     }
 
     // retornando a userRole pesquisada
@@ -94,9 +89,7 @@ class UserRoleController {
     const { id } = req.body;
 
     if (!id) {
-      return res.status(422).json({
-        Message: Status.ID_NOT_FOUND,
-      });
+      throw new AppError(Message.ID_NOT_FOUND, 422);
     }
 
     // pegando o repositorio customizado/personalizado
@@ -108,16 +101,16 @@ class UserRoleController {
     // verificando se a userRole não existe
     if (!userRole) {
       // retornando uma resposta de erro em json
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.USER_ROLE_NOT_FOUND, 406);
     }
 
     // capturando o tipo de userRole passado no corpo da requisição, caso não seja passado nada, pega o valor que ja está cadastrado na userRole
-    const { userID = userRole.userID, roleID = userRole.roleID } = req.body;
+    const { roleID = userRole.roleID } = req.body;
+
+    const userID = userRole.userID;
 
     // verificando se o roleID da userRole passado e igual ao da userRole sendo editada
-    if (!(userRole.roleID === roleID && userRole.userID === userID)) {
+    if (!userRole.roleID === roleID) {
       // pesquisando uma userRole pelo roleID
       const userRoleExists = await userRolesRepository.findOne({
         userID,
@@ -125,15 +118,12 @@ class UserRoleController {
       });
       if (userRoleExists) {
         // se encontrar algo retorna um json de erro
-        return res.status(409).json({ Message: Status.USER_ROLE });
+        throw new AppError(Message.USER_ROLE_ALREADY_EXIST, 409);
       }
-    } else if (userRole.userID !== userID) {
-      return res.status(422).json({ Message: Status.INVALID_ID });
     }
 
     // atualizando a userRole a partir do id
     await userRolesRepository.update(id, {
-      userID,
       roleID,
     });
 
@@ -160,16 +150,14 @@ class UserRoleController {
     // verificando se a userRole não existe
     if (!userRole) {
       // retornando uma resposta de erro em json
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.USER_ROLE_NOT_FOUND, 406);
     }
 
     // deletando a userRole a partir do id
     await userRolesRepository.delete({ id });
 
     // retornando um json de sucesso
-    return res.status(200).json({ Message: Status.SUCCESS });
+    return res.status(200).json({ Message: Message.SUCCESS });
   }
 
   async deleteFromController(userRoleID: string) {
@@ -178,6 +166,10 @@ class UserRoleController {
 
     // deletando a userRole a partir do id
     await userRolesRepository.delete({ id: userRoleID });
+
+    const userRole = await userRolesRepository.findOne({ id: userRoleID });
+
+    return userRole;
   }
 
   // metodo assincrono para a listagem de todas as userRoles
@@ -191,9 +183,7 @@ class UserRoleController {
     // verificando se o DB possui userRoles cadastradas
     if (userRoles.length === 0) {
       // retornando uma resposta de erro em json
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.NOT_FOUND, 406);
     }
 
     const userRolesDTO = userRoles.map((userRole) => {

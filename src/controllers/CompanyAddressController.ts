@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import { Status } from "../env/status";
+import { Message } from "../env/message";
+import { AppError } from "../errors/AppErrors";
+import { AddressDTO } from "../models/DTOs/AddressDTO";
 import { CompanyAddressDTO } from "../models/DTOs/CompanyAddressDTO";
 import { CompanyAddressRepository } from "../repositories/CompanyAddressRepository";
 import { CompanyController } from "./CompanyController";
@@ -28,9 +30,7 @@ class CompanyAddressController {
     const companyExists = await companyController.readCompanyFromID(companyID);
 
     if (!companyExists) {
-      return res.status(422).json({
-        Message: Status.INVALID_ID,
-      });
+      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
     }
 
     const companyAddressExist = await companyAddressRepository.findOne({
@@ -39,9 +39,7 @@ class CompanyAddressController {
 
     if (companyAddressExist) {
       // retornando um json de erro personalizado
-      return res.status(409).json({
-        Message: Status.COMPANY_ADDRESS_ALREADY_EXIST,
-      });
+      throw new AppError(Message.COMPANY_ADDRESS_ALREADY_EXIST, 409);
     } else if (
       !street ||
       !houseNumber ||
@@ -52,7 +50,7 @@ class CompanyAddressController {
       !companyID
     ) {
       // retornando um json de erro personalizado
-      return res.status(422).json({ Message: Status.REQUIRED_FIELD });
+      throw new AppError(Message.REQUIRED_FIELD, 422);
     }
 
     const companyAddress = companyAddressRepository.create({
@@ -87,9 +85,7 @@ class CompanyAddressController {
     const companyAddress = await companyAddressRepository.findOne(id);
 
     if (!companyAddress) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
     }
 
     return res.status(200).json({
@@ -108,9 +104,7 @@ class CompanyAddressController {
     let companyAddress = await companyAddressRepository.findOne(id);
 
     if (!companyAddress) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
     }
 
     const {
@@ -153,9 +147,7 @@ class CompanyAddressController {
     const companyAddress = await companyAddressRepository.findOne(id);
 
     if (!companyAddress) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
     }
 
     await companyAddressRepository.delete({ id });
@@ -169,9 +161,7 @@ class CompanyAddressController {
     const companyAddresses = await addressRepository.find();
 
     if (companyAddresses.length == 0) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.NOT_FOUND, 406);
     }
 
     const companyAddressesDTO = companyAddresses.map((companyAddress) => {
@@ -211,7 +201,7 @@ class CompanyAddressController {
       companyID,
     });
 
-    let companyAddressDTO: Object;
+    let companyAddressDTO: AddressDTO;
 
     if (companyAddress) {
       companyAddressDTO =

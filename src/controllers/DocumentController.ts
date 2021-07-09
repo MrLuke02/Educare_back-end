@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import { Status } from "../env/status";
+import { Message } from "../env/message";
+import { AppError } from "../errors/AppErrors";
 import { DocumentsRepository } from "../repositories/DocumentRepository";
 import { CategoryController } from "./CategoryController";
-import { validationNumber } from "../util/user/NumberValidation";
 
 type FileType = Express.Multer.File;
 
@@ -18,18 +18,21 @@ class DocumentController {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
 
-    const convertedPageNumber = validationNumber(pageNumber);
-
-    if (!convertedPageNumber && convertedPageNumber === 0) {
-      return res.status(422).json({ Message: Status.INVALID_DATA });
-    } else if (!name || !size || !type || !file || !categoryID) {
-      return res.status(422).json({ Message: Status.REQUIRED_FIELD });
+    if (
+      !name ||
+      !size ||
+      !type ||
+      !file ||
+      !categoryID ||
+      (!pageNumber && pageNumber !== 0)
+    ) {
+      throw new AppError(Message.REQUIRED_FIELD, 422);
     }
 
     if (size > 10 * 1024 * 1024) {
-      return res.status(422).json({ Message: Status.FILE_TOO_LARGE });
+      throw new AppError(Message.FILE_TOO_LARGE, 422);
     } else if (!mimetypes.includes(type)) {
-      return res.status(422).json({ Message: Status.INVALID_DATA });
+      throw new AppError(Message.INVALID_DATA, 422);
     }
 
     const categoryController = new CategoryController();
@@ -37,12 +40,12 @@ class DocumentController {
     const category = await categoryController.readFromController(categoryID);
 
     if (!category) {
-      return res.status(406).json({ Message: Status.NOT_FOUND });
+      throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
     } else if (
-      category.qtdMinPage > convertedPageNumber ||
-      (category.qtdMaxPage && category.qtdMaxPage < convertedPageNumber)
+      category.qtdMinPage > pageNumber ||
+      (category.qtdMaxPage && category.qtdMaxPage < pageNumber)
     ) {
-      return res.status(406).json({ Message: Status.INVALID_PAGE_COUNT });
+      throw new AppError(Message.INVALID_PAGE_COUNT, 422);
     }
 
     const documentRepository = getCustomRepository(DocumentsRepository);
@@ -52,7 +55,7 @@ class DocumentController {
       size,
       type,
       file,
-      pageNumber: convertedPageNumber,
+      pageNumber,
     });
 
     const documentSaved = await documentRepository.save(document);
@@ -73,18 +76,22 @@ class DocumentController {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
 
-    const convertedPageNumber = validationNumber(pageNumber);
-
-    if (!convertedPageNumber && convertedPageNumber !== 0) {
-      throw new Error(Status.INVALID_DATA);
-    } else if (!name || !size || !type || !file || !categoryID) {
-      throw new Error(Status.REQUIRED_FIELD);
+    if (
+      !name ||
+      !size ||
+      !type ||
+      !file ||
+      !categoryID ||
+      !categoryID ||
+      (!pageNumber && pageNumber !== 0)
+    ) {
+      throw new AppError(Message.REQUIRED_FIELD, 422);
     }
 
     if (size > 10 * 1024 * 1024) {
-      throw new Error(Status.FILE_TOO_LARGE);
+      throw new AppError(Message.FILE_TOO_LARGE, 422);
     } else if (!mimetypes.includes(type)) {
-      throw new Error(Status.INVALID_DATA);
+      throw new AppError(Message.INVALID_DATA, 422);
     }
 
     const categoryController = new CategoryController();
@@ -92,12 +99,12 @@ class DocumentController {
     const category = await categoryController.readFromController(categoryID);
 
     if (!category) {
-      throw new Error(Status.NOT_FOUND);
+      throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
     } else if (
-      category.qtdMinPage > convertedPageNumber ||
-      (category.qtdMaxPage && category.qtdMaxPage < convertedPageNumber)
+      category.qtdMinPage > pageNumber ||
+      (category.qtdMaxPage && category.qtdMaxPage < pageNumber)
     ) {
-      throw new Error(Status.INVALID_PAGE_COUNT);
+      throw new AppError(Message.INVALID_PAGE_COUNT, 406);
     }
 
     const documentRepository = getCustomRepository(DocumentsRepository);
@@ -107,7 +114,7 @@ class DocumentController {
       size,
       type,
       file,
-      pageNumber: convertedPageNumber,
+      pageNumber,
     });
 
     const documentSaved = await documentRepository.save(document);
@@ -123,7 +130,7 @@ class DocumentController {
     const document = await documentRepository.findOne({ id });
 
     if (!document) {
-      return res.status(406).json({ Message: Status.NOT_FOUND });
+      throw new AppError(Message.DOCUMENT_NOT_FOUND, 406);
     }
 
     return res.status(200).json({ Document: document });
@@ -140,16 +147,25 @@ class DocumentController {
   async update(req: Request, res: Response) {
     const { id } = req.body;
 
+    if (!id) {
+      throw new AppError(Message.ID_NOT_FOUND, 422);
+    }
+
     const documentRepository = getCustomRepository(DocumentsRepository);
 
     let document = await documentRepository.findOne({ id });
 
     if (!document) {
-      return res.status(406).json({ Message: Status.NOT_FOUND });
+      throw new AppError(Message.DOCUMENT_NOT_FOUND, 406);
     }
 
-    const { originalname: name, size, mimetype: type, buffer: file } = req.file;
-    let { pageNumber, categoryID } = req.body;
+    const {
+      originalname: name = document.name,
+      size = document.size,
+      mimetype: type = document.type,
+      buffer: file = document.file,
+    } = req.file;
+    let { pageNumber = document.pageNumber, categoryID } = req.body;
 
     const mimetypes = [
       "application/pdf",
@@ -157,18 +173,14 @@ class DocumentController {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
 
-    const convertedPageNumber = validationNumber(pageNumber);
-
-    if (!convertedPageNumber && convertedPageNumber === 0) {
-      return res.status(422).json({ Message: Status.INVALID_DATA });
-    } else if (!name || !size || !type || !file || !categoryID) {
-      return res.status(422).json({ Message: Status.REQUIRED_FIELD });
+    if (!categoryID) {
+      throw new AppError(Message.REQUIRED_FIELD, 422);
     }
 
     if (size > 10 * 1024 * 1024) {
-      return res.status(422).json({ Message: Status.FILE_TOO_LARGE });
+      throw new AppError(Message.FILE_TOO_LARGE, 422);
     } else if (!mimetypes.includes(type)) {
-      return res.status(422).json({ Message: Status.INVALID_DATA });
+      throw new AppError(Message.INVALID_DATA, 422);
     }
 
     const categoryController = new CategoryController();
@@ -176,19 +188,19 @@ class DocumentController {
     const category = await categoryController.readFromController(categoryID);
 
     if (!category) {
-      return res.status(406).json({ Message: Status.NOT_FOUND });
+      throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
     } else if (
-      category.qtdMinPage > convertedPageNumber ||
-      (category.qtdMaxPage && category.qtdMaxPage < convertedPageNumber)
+      category.qtdMinPage > pageNumber ||
+      (category.qtdMaxPage && category.qtdMaxPage < pageNumber)
     ) {
-      return res.status(406).json({ Message: Status.INVALID_PAGE_COUNT });
+      throw new AppError(Message.INVALID_PAGE_COUNT, 422);
     }
 
     await documentRepository.update(id, {
       name,
       size,
       type,
-      pageNumber: convertedPageNumber,
+      pageNumber,
       file,
     });
 
@@ -205,12 +217,12 @@ class DocumentController {
     const document = await documentRepository.findOne({ id });
 
     if (!document) {
-      return res.status(406).json({ Message: Status.NOT_FOUND });
+      throw new AppError(Message.DOCUMENT_NOT_FOUND, 406);
     }
 
     await documentRepository.delete({ id });
 
-    return res.status(200).json({ Message: Status.SUCCESS });
+    return res.status(200).json({ Message: Message.SUCCESS });
   }
 
   async show(req: Request, res: Response) {
@@ -219,7 +231,7 @@ class DocumentController {
     const documents = await documentRepository.find();
 
     if (documents.length === 0) {
-      return res.status(406).json({ Message: Status.NOT_FOUND });
+      throw new AppError(Message.NOT_FOUND, 406);
     }
 
     return res.status(200).json({ Documents: documents });

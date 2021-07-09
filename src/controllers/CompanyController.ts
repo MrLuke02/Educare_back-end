@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import { Status } from "../env/status";
+import { Message } from "../env/message";
 import { CompanyDTO } from "../models/DTOs/CompanyDTO";
 import { CompaniesRepository } from "../repositories/CompanyRepository";
 import * as validation from "../util/user/Validations";
@@ -10,6 +10,7 @@ import { RoleController } from "./RoleController";
 import { UserController } from "./UserController";
 import { UserRoleController } from "./UserRoleController";
 import { CompanyContact } from "../models/CompanyContact";
+import { AppError } from "../errors/AppErrors";
 
 class CompanyController {
   async create(req: Request, res: Response) {
@@ -17,21 +18,15 @@ class CompanyController {
       req.body;
 
     if (!companyName || !cnpj || !companyCategory || !email || !phone) {
-      return res.status(422).json({
-        Message: Status.REQUIRED_FIELD,
-      });
+      throw new AppError(Message.REQUIRED_FIELD, 422);
     } else if (!userID) {
-      return res.status(422).json({
-        Message: Status.ID_NOT_FOUND,
-      });
+      throw new AppError(Message.ID_NOT_FOUND, 422);
     } else if (!validation.validationCnpj(cnpj)) {
-      return res.status(422).json({
-        Message: Status.INVALID_CNPJ,
-      });
+      throw new AppError(Message.INVALID_CNPJ, 422);
     } else if (!validation.validationEmail(email)) {
-      return res.status(422).json({ Message: Status.INVALID_EMAIL });
+      throw new AppError(Message.INVALID_EMAIL, 422);
     } else if (!validation.validationPhone(phone)) {
-      return res.status(422).json({ Message: Status.INVALID_PHONE });
+      throw new AppError(Message.INVALID_PHONE, 422);
     }
 
     const userController = new UserController();
@@ -39,9 +34,7 @@ class CompanyController {
     const user = await userController.readFromController(userID);
 
     if (!user) {
-      return res.status(406).json({
-        Message: Status.USER_NOT_FOUND,
-      });
+      throw new AppError(Message.USER_NOT_FOUND, 406);
     }
 
     const companyRepository = getCustomRepository(CompaniesRepository);
@@ -49,9 +42,7 @@ class CompanyController {
     const cnpjAlreadyExist = await companyRepository.findOne({ cnpj });
 
     if (cnpjAlreadyExist) {
-      return res.status(409).json({
-        Message: Status.CNPJ_ALREADY_EXIST,
-      });
+      throw new AppError(Message.CNPJ_ALREADY_EXIST, 409);
     }
 
     const company = companyRepository.create({
@@ -69,9 +60,7 @@ class CompanyController {
     const role = await roleController.readFromType(type);
 
     if (!role) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.ROLE_NOT_FOUND, 406);
     }
 
     const companyContactController = new CompanyContactController();
@@ -79,17 +68,13 @@ class CompanyController {
     const phoneExist = await companyContactController.readFromPhone(phone);
 
     if (phoneExist) {
-      return res.status(409).json({
-        Message: Status.PHONE_ALREADY_EXIST,
-      });
+      throw new AppError(Message.PHONE_ALREADY_EXIST, 409);
     }
 
     const emailExist = await companyContactController.readFromEmail(email);
 
     if (emailExist) {
-      return res.status(409).json({
-        Message: Status.EMAIL_ALREADY_EXIST,
-      });
+      throw new AppError(Message.EMAIL_ALREADY_EXIST, 409);
     }
 
     const companySaved = await companyRepository.save(company);
@@ -122,9 +107,7 @@ class CompanyController {
     const { cnpj } = req.params;
 
     if (!cnpj) {
-      return res.status(422).json({
-        Message: Status.REQUIRED_FIELD,
-      });
+      throw new AppError(Message.REQUIRED_FIELD, 422);
     }
 
     const companyRepository = getCustomRepository(CompaniesRepository);
@@ -134,9 +117,7 @@ class CompanyController {
     });
 
     if (!company) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
     }
 
     return res
@@ -147,14 +128,6 @@ class CompanyController {
   async update(req: Request, res: Response) {
     const { companyID } = req.body;
 
-    // verificando se o id da role não foi passada
-    if (!companyID) {
-      // retornando um json de erro personalizado
-      return res.status(422).json({
-        Message: Status.ID_NOT_FOUND,
-      });
-    }
-
     // pegando o repositorio customizado/personalizado
     const companyRepository = getCustomRepository(CompaniesRepository);
 
@@ -164,21 +137,17 @@ class CompanyController {
     // verificando se a role não existe
     if (!company) {
       // retornando uma resposta de erro em json
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
     }
 
     const companyContactController = new CompanyContactController();
 
-    const companyContact = (await companyContactController.readFromCompany(
+    const companyContact = await companyContactController.readFromCompany(
       companyID
-    )) as CompanyContact;
+    );
 
     if (!companyContact) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.COMPANY_CONTACT_NOT_FOUND, 406);
     }
 
     // capturando o tipo de role passado no corpo da requisição, caso não seja passado nada, pega o valor que ja está cadastrado na role
@@ -191,22 +160,18 @@ class CompanyController {
     } = req.body;
 
     if (!validation.validationCnpj(cnpj)) {
-      return res.status(422).json({
-        Message: Status.INVALID_CNPJ,
-      });
+      throw new AppError(Message.INVALID_CNPJ, 422);
     } else if (!validation.validationEmail(email)) {
-      return res.status(422).json({ Message: Status.INVALID_EMAIL });
+      throw new AppError(Message.INVALID_EMAIL, 422);
     } else if (!validation.validationPhone(phone)) {
-      return res.status(422).json({ Message: Status.INVALID_PHONE });
+      throw new AppError(Message.INVALID_PHONE, 422);
     }
 
     if (email !== companyContact.email) {
       const emailExist = await companyContactController.readFromEmail(email);
 
       if (emailExist) {
-        return res.status(409).json({
-          Message: Status.EMAIL_ALREADY_EXIST,
-        });
+        throw new AppError(Message.EMAIL_ALREADY_EXIST, 409);
       }
     }
 
@@ -214,9 +179,7 @@ class CompanyController {
       const phoneExist = await companyContactController.readFromPhone(phone);
 
       if (phoneExist) {
-        return res.status(409).json({
-          Message: Status.PHONE_ALREADY_EXIST,
-        });
+        throw new AppError(Message.PHONE_ALREADY_EXIST, 409);
       }
     }
 
@@ -225,7 +188,7 @@ class CompanyController {
       const cnpjExists = await companyRepository.findOne({ cnpj });
       if (cnpjExists) {
         // se encontrar algo retorna um json de erro
-        return res.status(409).json({ Message: Status.CNPJ_ALREADY_EXIST });
+        throw new AppError(Message.CNPJ_ALREADY_EXIST, 409);
       }
     }
 
@@ -236,10 +199,6 @@ class CompanyController {
         phone,
         company.id
       );
-
-    if (!companyContact) {
-      return res.status(422).json({ Message: Status.INVALID_ID });
-    }
 
     // atualizando a role a partir do id
     await companyRepository.update(companyID, {
@@ -261,21 +220,19 @@ class CompanyController {
   }
 
   async delete(req: Request, res: Response) {
-    const { comapanyID } = req.params;
+    const { companyID } = req.params;
 
     const companyRepository = getCustomRepository(CompaniesRepository);
 
-    const company = await companyRepository.findOne({ id: comapanyID });
+    const company = await companyRepository.findOne({ id: companyID });
 
     if (!company) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
     }
 
     const userID = company.userID;
 
-    await companyRepository.delete({ id: comapanyID });
+    await companyRepository.delete({ id: companyID });
 
     const userHaveCompany = await companyRepository.findOne({ userID });
 
@@ -287,9 +244,7 @@ class CompanyController {
       const role = await roleController.readFromType(type);
 
       if (!role) {
-        return res.status(406).json({
-          Message: Status.NOT_FOUND,
-        });
+        throw new AppError(Message.ROLE_NOT_FOUND, 406);
       }
 
       const userRole = await userRoleController.readFromUserRole(
@@ -298,16 +253,20 @@ class CompanyController {
       );
 
       if (!userRole) {
-        return res.status(406).json({
-          Message: Status.NOT_FOUND,
-        });
+        throw new AppError(Message.USER_ROLE_NOT_FOUND, 406);
       }
 
-      await userRoleController.deleteFromController(userRole.id);
+      const userRoleDeleted = await userRoleController.deleteFromController(
+        userRole.id
+      );
 
-      return res.status(200).json({ Message: Status.SUCCESS });
+      if (!userRoleDeleted) {
+        return res.status(200).json({ Message: Message.SUCCESS });
+      }
+
+      throw new AppError(Message.DELETE_USER_ROLE_ERROR, 500);
     } else {
-      return res.status(200).json({ Message: Status.SUCCESS });
+      return res.status(200).json({ Message: Message.SUCCESS });
     }
   }
 
@@ -317,9 +276,7 @@ class CompanyController {
     const companies = await companyRepository.find();
 
     if (companies.length === 0) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.NOT_FOUND, 406);
     }
 
     const companiesDTO = companies.map((company) => {
@@ -334,12 +291,6 @@ class CompanyController {
   async readFromCategory(req: Request, res: Response) {
     const { companyCategory } = req.params;
 
-    if (!companyCategory) {
-      return res.status(422).json({
-        Message: Status.REQUIRED_FIELD,
-      });
-    }
-
     const companyRepository = getCustomRepository(CompaniesRepository);
 
     const companies = await companyRepository.find({
@@ -347,9 +298,7 @@ class CompanyController {
     });
 
     if (companies.length === 0) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.NOT_FOUND, 406);
     }
 
     const companiesDTO = companies.map((company) => {
@@ -382,8 +331,8 @@ class CompanyController {
 
         companyDTO = {
           ...companyDTO,
-          Address: companyAddressDTO || Status.NOT_FOUND,
-          Contact: companyContactDTO || Status.NOT_FOUND,
+          Address: companyAddressDTO || Message.ADDRESS_NOT_FOUND,
+          Contact: companyContactDTO || Message.COMPANY_CONTACT_NOT_FOUND,
         };
 
         companiesDTO.push(companyDTO);
@@ -398,20 +347,12 @@ class CompanyController {
   async readFromID(req: Request, res: Response) {
     let { companyID } = req.params;
 
-    if (!companyID) {
-      return res.status(406).json({
-        Message: Status.ID_NOT_FOUND,
-      });
-    }
-
     const companyRepository = getCustomRepository(CompaniesRepository);
 
     const company = await companyRepository.findOne({ id: companyID });
 
     if (!company) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
     }
 
     return res
@@ -429,9 +370,7 @@ class CompanyController {
     );
 
     if (!companyAddressDTO) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
     }
 
     return res.status(200).json({
@@ -449,9 +388,7 @@ class CompanyController {
     );
 
     if (!companyContactDTO) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.COMPANY_CONTACT_NOT_FOUND, 406);
     }
 
     return res.status(200).json({
@@ -475,9 +412,7 @@ class CompanyController {
     const company = await companyRepository.findOne({ id: companyID });
 
     if (!company) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
     }
 
     const companyAddressController = new CompanyAddressController();
@@ -495,8 +430,8 @@ class CompanyController {
 
     companyDTO = {
       ...companyDTO,
-      Address: companyAddressDTO || Status.NOT_FOUND,
-      Contact: companyContactDTO || Status.NOT_FOUND,
+      Address: companyAddressDTO || Message.ADDRESS_NOT_FOUND,
+      Contact: companyContactDTO || Message.COMPANY_CONTACT_NOT_FOUND,
     };
 
     return res.status(200).json({ Company: companyDTO });

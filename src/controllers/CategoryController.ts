@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import { Status } from "../env/status";
+import { Message } from "../env/message";
+import { AppError } from "../errors/AppErrors";
 import { CategoryDTO } from "../models/DTOs/CategoryDTO";
 import { CategoriesRepository } from "../repositories/CategoryRepository";
 
@@ -19,30 +20,18 @@ class CategoryController {
       limiteCopiesMonthly,
     } = req.body;
 
+    const isNullable = [null, undefined];
+
     if (
       !name ||
       !description ||
-      price === null ||
-      colorful === null ||
-      hasAd === null ||
-      deliveryTimeInDays === null ||
-      qtdMinPage === null
+      isNullable.includes(colorful) ||
+      isNullable.includes(hasAd) ||
+      (!price && price !== 0) ||
+      (!deliveryTimeInDays && deliveryTimeInDays !== 0) ||
+      (!qtdMinPage && qtdMinPage !== 0)
     ) {
-      return res.status(422).json({
-        Message: Status.REQUIRED_FIELD,
-      });
-    } else if (
-      typeof price === "string" ||
-      typeof deliveryTimeInDays === "string" ||
-      typeof qtdMaxPage === "string" ||
-      typeof qtdMinPage === "string" ||
-      (limiteCopiesMonthlyUser !== null &&
-        typeof limiteCopiesMonthlyUser === "string") ||
-      (limiteCopiesMonthly !== null && typeof limiteCopiesMonthly === "string")
-    ) {
-      return res.status(422).json({
-        Message: Status.INVALID_DATA,
-      });
+      throw new AppError(Message.REQUIRED_FIELD, 422);
     }
 
     const categoriesRepository = getCustomRepository(CategoriesRepository);
@@ -51,9 +40,7 @@ class CategoryController {
 
     if (categoriesExist) {
       // retornando uma resposta de erro em json
-      return res.status(409).json({
-        Message: Status.CATEGORY_ALREADY_EXIST,
-      });
+      throw new AppError(Message.CATEGORY_ALREADY_EXIST, 409);
     }
 
     const category = categoriesRepository.create({
@@ -84,9 +71,7 @@ class CategoryController {
     const category = await categoriesRepository.findOne({ id });
 
     if (!category) {
-      return res.status(409).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
     }
 
     return res
@@ -101,9 +86,7 @@ class CategoryController {
     // verificando se o id da role não foi passada
     if (!id) {
       // retornando um json de erro personalizado
-      return res.status(422).json({
-        Message: Status.ID_NOT_FOUND,
-      });
+      throw new AppError(Message.ID_NOT_FOUND, 422);
     }
 
     // pegando o repositorio customizado/personalizado
@@ -115,9 +98,7 @@ class CategoryController {
     // verificando se a role não existe
     if (!category) {
       // retornando uma resposta de erro em json
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
     }
 
     // capturando o tipo de role passado no corpo da requisição, caso não seja passado nada, pega o valor que ja está cadastrado na role
@@ -139,9 +120,7 @@ class CategoryController {
 
       if (nameExists) {
         // retornando uma resposta de erro em json
-        return res.status(409).json({
-          Message: Status.CATEGORY_ALREADY_EXIST,
-        });
+        throw new AppError(Message.CATEGORY_ALREADY_EXIST, 409);
       }
     }
 
@@ -176,14 +155,12 @@ class CategoryController {
     const category = await categoriesRepository.findOne(id);
 
     if (!category) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
     }
 
     await categoriesRepository.delete(id);
 
-    return res.status(200).json({ Message: Status.SUCCESS });
+    return res.status(200).json({ Message: Message.SUCCESS });
   }
 
   async show(req: Request, res: Response) {
@@ -192,9 +169,7 @@ class CategoryController {
     const categories = await categoriesRepository.find();
 
     if (categories.length === 0) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.NOT_FOUND, 406);
     }
 
     const categoriesDTO = categories.map((category) => {
