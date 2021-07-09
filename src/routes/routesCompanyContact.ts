@@ -2,7 +2,8 @@ import { Request, Response, Router } from "express";
 import { CompanyContactController } from "../controllers/CompanyContactController";
 import { VerifyTokenCompany } from "../auth/middleware/company/verifyTokenCompany";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
-import { Status } from "../env/status";
+import { Message } from "../env/message";
+import { AppError } from "../errors/AppErrors";
 
 // criando um objeto de RoleController
 const companyContactController = new CompanyContactController();
@@ -17,26 +18,24 @@ routerCompanyContact.post(
   companyContactController.create
 );
 
+routerCompanyContact.put(
+  "/companyContact",
+  verifyTokenCompany.verifyADMCompanyByContactID,
+  companyContactController.update
+);
+
 routerCompanyContact.get(
   "/companyContact/:id",
   verifyTokenUser.verifyTokenADM,
   companyContactController.read
 );
 routerCompanyContact.get("/companyContact/", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
+  throw new AppError(Message.ID_NOT_FOUND, 422);
 });
 routerCompanyContact.get(
   "/showCompaniesContacts",
   verifyTokenUser.verifyTokenADM,
   companyContactController.show
-);
-
-routerCompanyContact.put(
-  "/companyContact",
-  verifyTokenCompany.verifyADMCompanyByContactID,
-  companyContactController.update
 );
 
 routerCompanyContact.delete(

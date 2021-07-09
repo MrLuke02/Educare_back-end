@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import { Status } from "../env/status";
+import { Message } from "../env/message";
+import { AppError } from "../errors/AppErrors";
 import { CompanyContactDTO } from "../models/DTOs/CompanyContactDTO";
 import { CompanyContactRepository } from "../repositories/CompanyContactRepository";
 import * as validation from "../util/user/Validations";
@@ -11,11 +12,11 @@ class CompanyContactController {
     const { email, phone, companyID } = req.body;
 
     if (!email || !phone || !companyID) {
-      return res.status(422).json({ Message: Status.REQUIRED_FIELD });
+      throw new AppError(Message.REQUIRED_FIELD, 244);
     } else if (!validation.validationEmail(email)) {
-      return res.status(422).json({ Message: Status.INVALID_EMAIL });
+      throw new AppError(Message.INVALID_EMAIL, 422);
     } else if (!validation.validationPhone(phone)) {
-      return res.status(422).json({ Message: Status.INVALID_PHONE });
+      throw new AppError(Message.INVALID_PHONE, 422);
     }
 
     const companyContactRepository = getCustomRepository(
@@ -25,17 +26,13 @@ class CompanyContactController {
     const emailExist = await companyContactRepository.findOne({ email });
 
     if (emailExist) {
-      return res.status(409).json({
-        Message: Status.EMAIL_ALREADY_EXIST,
-      });
+      throw new AppError(Message.EMAIL_ALREADY_EXIST, 409);
     }
 
     const phoneExist = await companyContactRepository.findOne({ phone });
 
     if (phoneExist) {
-      return res.status(409).json({
-        Message: Status.PHONE_ALREADY_EXIST,
-      });
+      throw new AppError(Message.PHONE_ALREADY_EXIST, 409);
     }
 
     const companyController = new CompanyController();
@@ -43,9 +40,7 @@ class CompanyContactController {
     const companyExists = await companyController.readCompanyFromID(companyID);
 
     if (!companyExists) {
-      return res.status(422).json({
-        Message: Status.INVALID_ID,
-      });
+      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
     }
 
     const companyAlreadyHavePhone = await companyContactRepository.findOne({
@@ -53,9 +48,7 @@ class CompanyContactController {
     });
 
     if (companyAlreadyHavePhone) {
-      return res.status(409).json({
-        Message: Status.COMPANY_ALREADY_HAVE_PHONE,
-      });
+      throw new AppError(Message.COMPANY_ALREADY_HAVE_PHONE, 409);
     }
 
     const companyContact = companyContactRepository.create({
@@ -105,9 +98,7 @@ class CompanyContactController {
     const companyContact = await companyContactRepository.findOne(id);
 
     if (!companyContact) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.COMPANY_CONTACT_NOT_FOUND, 406);
     }
 
     return res.status(200).json({
@@ -119,13 +110,6 @@ class CompanyContactController {
   async update(req: Request, res: Response) {
     const { id } = req.body;
 
-    if (!id) {
-      // retornando um json de erro personalizado
-      return res.status(422).json({
-        Message: Status.ID_NOT_FOUND,
-      });
-    }
-
     const companyContactRepository = getCustomRepository(
       CompanyContactRepository
     );
@@ -133,9 +117,7 @@ class CompanyContactController {
     let companyContact = await companyContactRepository.findOne(id);
 
     if (!companyContact) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.COMPANY_CONTACT_NOT_FOUND, 406);
     }
 
     const { email = companyContact.email, phone = companyContact.phone } =
@@ -145,24 +127,20 @@ class CompanyContactController {
       const emailExist = await companyContactRepository.findOne(email);
 
       if (emailExist) {
-        return res.status(409).json({
-          Message: Status.EMAIL_ALREADY_EXIST,
-        });
+        throw new AppError(Message.EMAIL_ALREADY_EXIST, 409);
       }
     }
     if (phone !== companyContact.phone) {
       const phoneExist = await companyContactRepository.findOne(phone);
 
       if (phoneExist) {
-        return res.status(409).json({
-          Message: Status.PHONE_ALREADY_EXIST,
-        });
+        throw new AppError(Message.PHONE_ALREADY_EXIST, 409);
       }
     }
     if (!validation.validationEmail(email)) {
-      return res.status(422).json({ Message: Status.INVALID_EMAIL });
+      throw new AppError(Message.INVALID_EMAIL, 422);
     } else if (!validation.validationPhone(phone)) {
-      return res.status(422).json({ Message: Status.INVALID_PHONE });
+      throw new AppError(Message.INVALID_PHONE, 422);
     }
 
     await companyContactRepository.update(id, {
@@ -218,14 +196,12 @@ class CompanyContactController {
     const companyContact = await companyContactRepository.findOne(id);
 
     if (!companyContact) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.COMPANY_CONTACT_NOT_FOUND, 406);
     }
 
     await companyContactRepository.delete(id);
 
-    return res.status(200).json({ Message: Status.SUCCESS });
+    return res.status(200).json({ Message: Message.SUCCESS });
   }
 
   async show(req: Request, res: Response) {
@@ -236,9 +212,7 @@ class CompanyContactController {
     const companyContacts = await companyContactRepository.find();
 
     if (companyContacts.length === 0) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.NOT_FOUND, 406);
     }
 
     const companyContactsDTO = companyContacts.map((companyContact) => {
@@ -272,7 +246,7 @@ class CompanyContactController {
       companyID,
     });
 
-    let companyContactDTO: Object;
+    let companyContactDTO: CompanyContactDTO;
 
     if (companyContact) {
       companyContactDTO =

@@ -1,10 +1,8 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-import { Status } from "../env/status";
-import { Document } from "../models/Document";
-import { CategoriesRepository } from "../repositories/CategoryRepository";
+import { Message } from "../env/message";
+import { AppError } from "../errors/AppErrors";
 import { OrdersRepository } from "../repositories/OrderRepository";
-import { validationNumber } from "../util/user/NumberValidation";
 import { CategoryController } from "./CategoryController";
 import { DocumentController } from "./DocumentController";
 import { UserController } from "./UserController";
@@ -15,18 +13,14 @@ class OrderController {
     const { userID, categoryID, copyNumber, price, pageNumber } = req.body;
     const status = "Criado";
 
-    const copyNumberConverted = validationNumber(copyNumber);
-    const pageNumberConverted = validationNumber(pageNumber);
-    const priceConverted = validationNumber(price);
-
     if (
-      (!priceConverted && priceConverted !== 0) ||
-      (!pageNumberConverted && pageNumberConverted !== 0) ||
-      (!copyNumberConverted && copyNumberConverted !== 0)
+      !userID ||
+      !categoryID ||
+      (!copyNumber && copyNumber !== 0) ||
+      (!price && price !== 0) ||
+      (!pageNumber && pageNumber !== 0)
     ) {
-      return res.status(422).json({ Message: Status.INVALID_DATA });
-    } else if (!userID || !categoryID || !copyNumber || !price || !pageNumber) {
-      return res.status(422).json({ Message: Status.REQUIRED_FIELD });
+      throw new AppError(Message.REQUIRED_FIELD, 422);
     }
 
     const userController = new UserController();
@@ -38,25 +32,22 @@ class OrderController {
     const user = await userController.readFromController(userID);
     const category = await categoryController.readFromController(categoryID);
 
-    if (!user || !category) {
-      return res.status(406).json({ Message: Status.NOT_FOUND });
+    if (!user) {
+      throw new AppError(Message.USER_NOT_FOUND, 406);
+    } else if (!category) {
+      throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
     }
 
-    let document: Document;
-    try {
-      document = await documentController.createFromController(
-        docs,
-        pageNumberConverted,
-        category.id
-      );
-    } catch (error) {
-      return res.status(422).json({ Message: error.message });
-    }
+    const document = await documentController.createFromController(
+      docs,
+      pageNumber,
+      category.id
+    );
 
     const order = orderRepository.create({
-      copyNumber: copyNumberConverted,
+      copyNumber,
       status,
-      price: priceConverted,
+      price,
       userID,
       categoryID,
       documentID: document.id,
@@ -75,7 +66,7 @@ class OrderController {
     const order = await orderRepository.findOne({ id });
 
     if (!order) {
-      return res.status(406).json({ Message: Status.NOT_FOUND });
+      throw new AppError(Message.ORDER_NOT_FOUND, 406);
     }
 
     return res.status(200).json({ Order: order });
@@ -84,12 +75,16 @@ class OrderController {
   async update(req: Request, res: Response) {
     const { id } = req.body;
 
+    if (!id) {
+      throw new AppError(Message.ID_NOT_FOUND, 422);
+    }
+
     const orderRepository = getCustomRepository(OrdersRepository);
 
     let order = await orderRepository.findOne({ id });
 
     if (!order) {
-      return res.status(406).json({ Message: Status.NOT_FOUND });
+      throw new AppError(Message.ORDER_NOT_FOUND, 406);
     }
 
     const {
@@ -98,27 +93,17 @@ class OrderController {
       price = order.price,
     } = req.body;
 
-    const copyNumberConverted = validationNumber(copyNumber);
-    const priceConverted = validationNumber(price);
-
-    if (
-      (!priceConverted && priceConverted !== 0) ||
-      (!copyNumberConverted && copyNumberConverted !== 0)
-    ) {
-      return res.status(422).json({ Message: Status.INVALID_DATA });
-    }
-
     const categoryController = new CategoryController();
     const category = await categoryController.readFromController(categoryID);
 
     if (!category) {
-      return res.status(406).json({ Message: Status.NOT_FOUND });
+      throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
     }
 
     await orderRepository.update(id, {
       categoryID,
-      copyNumber: copyNumberConverted,
-      price: priceConverted,
+      copyNumber,
+      price,
     });
 
     order = await orderRepository.findOne({ id });
@@ -134,12 +119,12 @@ class OrderController {
     const order = await orderRepository.findOne({ id });
 
     if (!order) {
-      return res.status(406).json({ Message: Status.NOT_FOUND });
+      throw new AppError(Message.ORDER_NOT_FOUND, 406);
     }
 
     await orderRepository.delete({ id });
 
-    return res.status(200).json({ Message: Status.SUCCESS });
+    return res.status(200).json({ Message: Message.SUCCESS });
   }
 
   async show(req: Request, res: Response) {
@@ -148,7 +133,7 @@ class OrderController {
     const orders = await orderRepository.find();
 
     if (!orders) {
-      return res.status(406).json({ Message: Status.NOT_FOUND });
+      throw new AppError(Message.NOT_FOUND, 406);
     }
 
     return res.status(200).json({ Orders: orders });

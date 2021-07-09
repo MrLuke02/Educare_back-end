@@ -1,44 +1,52 @@
 import { Request, Response, Router } from "express";
 import multer from "multer";
 import { DocumentController } from "../controllers/DocumentController";
-import { Status } from "../env/status";
+import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
+import { Message } from "../env/message";
+import { AppError } from "../errors/AppErrors";
 
 const routerDocument = Router();
 const documentController = new DocumentController();
+const verifyTokenUser = new VerifyTokenUser();
+
 // criando a rota de cadastro de usuários
 routerDocument.post(
   "/document",
   multer().single("file"),
+  verifyTokenUser.verifyTokenADM,
   documentController.create
 );
 
 routerDocument.put(
   "/document",
   multer().single("file"),
+  verifyTokenUser.verifyTokenADM,
   documentController.update
 );
 
-routerDocument.get("/document/:id", documentController.read);
+routerDocument.get(
+  "/document/:id",
+  verifyTokenUser.verifyTokenADM,
+  documentController.read
+);
 routerDocument.get("/document", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
+  throw new AppError(Message.ID_NOT_FOUND, 422);
 });
 
-routerDocument.get("/showDocuments", documentController.show);
+routerDocument.get(
+  "/showDocuments",
+  verifyTokenUser.verifyTokenADM,
+  documentController.show
+);
 
-routerDocument.get("/document", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
-});
-
-routerDocument.delete("/document/:id", documentController.delete);
+routerDocument.delete(
+  "/document/:id",
+  verifyTokenUser.verifyTokenADM,
+  documentController.delete
+);
 
 routerDocument.delete("/document", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
+  throw new AppError(Message.ID_NOT_FOUND, 422);
 });
 
 // exportando o router

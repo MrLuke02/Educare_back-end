@@ -1,0 +1,56 @@
+const Message = {
+  // NOT_FOUND
+  NOT_FOUND: "Nada encontrado!",
+  ID_NOT_FOUND: "Campo 'id' não encontrado!",
+  USER_NOT_FOUND: "Usuário não encontrado!",
+  ADDRESS_NOT_FOUND: "Endereço não encontrado!",
+  PHONE_NOT_FOUND: "Telefone não encontrado!",
+  CNPJ_NOT_FOUND: "CNPJ não encontrado!",
+  COMPANY_NOT_FOUND: "Empresa não encontrada!",
+  COMPANY_CONTACT_NOT_FOUND: "Contato não encontrado!",
+  EMAIL_NOT_FOUND: "E-mail não encontrado!",
+  ROLE_NOT_FOUND: "Role não encontrada!",
+  USER_ROLE_NOT_FOUND: "Role de usuário não encontrada!",
+  CATEGORY_NOT_FOUND: "Categoria não encontrada!",
+  DOCUMENT_NOT_FOUND: "Document não encontrado!",
+  ORDER_NOT_FOUND: "Pedido não encontrado!",
+
+  // REQUIRED_FIELD
+  REQUIRED_FIELD: "Campo obrigatório(s) vazio(s)!",
+  REQUIRED_TOKEN: "Token não encontrado!",
+
+  // INVALID_FIELD
+  INVALID_EMAIL: "E-mail inválido!",
+  INVALID_PASSWORD: "Senha inválida!",
+  INVALID_PHONE: "Telefone inválido!",
+  INVALID_DATA: "Dados inválidos!",
+  INVALID_CNPJ: "CNPJ inválido!",
+  INVALID_TOKEN: "Token inválido!",
+  FILE_TOO_LARGE: "Arquivo muito grande!",
+  INVALID_PAGE_COUNT: "Número de páginas inválidas!",
+
+  // ALREADY_EXISTS
+  PHONE_ALREADY_EXIST: "Telefone já existe!",
+  EMAIL_ALREADY_EXIST: "E-mail já existe!",
+  USER_ADDRESS_ALREADY_EXIST: "Usuário já possui endereço!",
+  COMPANY_ADDRESS_ALREADY_EXIST: "Empresa já possui endereço!",
+  CATEGORY_ALREADY_EXIST: "Categoria já existe!",
+  ROLE_ALREADY_EXIST: "Role já existe!",
+  USER_ROLE_ALREADY_EXIST: "UserRole já existe!",
+  CNPJ_ALREADY_EXIST: "CNPJ já existe!",
+  USER_ALREADY_HAVE_PHONE: "Usuário já possui telefone!",
+  COMPANY_ALREADY_HAVE_PHONE: "Empresa já possui telefone!",
+  ORDER_ALREADY_EXIST: "Pedido já existe!",
+
+  // ERROR
+  CREATION_ERROR_TOKEN: "Erro ao tentar criar o token!",
+  DELETE_USER_ROLE_ERROR: "Erro ao ao tentar deletar a userRole!",
+
+  // EXPIRED SESSION
+  EXPIRED_SESSION: "Sessão expirada!",
+
+  // SUCCESS
+  SUCCESS: "Sucesso!",
+};
+
+export { Message };

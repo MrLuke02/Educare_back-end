@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import md5 from "md5";
 import { getCustomRepository } from "typeorm";
 import { createToken } from "../auth/token/token.auth";
-import { Status } from "../env/status";
+import { Message } from "../env/message";
+import { AppError } from "../errors/AppErrors";
 import { UserDTO } from "../models/DTOs/UserDTO";
 import { UsersRepository } from "../repositories/UserRepository";
 import * as validation from "../util/user/Validations";
@@ -21,26 +22,20 @@ class UserController {
     // verificando se não foi passado um dos campos
     if (!name || !email || !password || !phoneNumber) {
       // retornando um json de erro personalizado
-      return res.status(422).json({ Message: Status.REQUIRED_FIELD });
+      throw new AppError(Message.REQUIRED_FIELD, 422);
     }
 
     // verificando se o email não é valido
     if (!validation.validationEmail(email)) {
       // retornando um json de erro personalizado
-      return res.status(422).json({
-        Message: Status.INVALID_EMAIL,
-      });
+      throw new AppError(Message.INVALID_EMAIL, 422);
       // verificando se a senha não é valida
     } else if (!validation.validationPassword(password)) {
       // retornando um json de erro personalizado
-      return res.status(422).json({
-        Message: Status.INVALID_PASSWORD,
-      });
+      throw new AppError(Message.INVALID_PASSWORD, 422);
     } else if (!validation.validationPhone(phoneNumber)) {
       // retornando um json de erro personalizado
-      return res.status(422).json({
-        Message: Status.INVALID_PHONE,
-      });
+      throw new AppError(Message.INVALID_PHONE, 422);
     }
 
     // tranformando a senha em hash
@@ -55,9 +50,7 @@ class UserController {
     // verificanddo se já existe um usuário com o email enviado
     if (userAlreadyExists) {
       // retornando uma resposta em json
-      return res.status(409).json({
-        Message: Status.USER_ALREADY_EXIST,
-      });
+      throw new AppError(Message.EMAIL_ALREADY_EXIST, 409);
     }
 
     // criando o usuário
@@ -74,9 +67,7 @@ class UserController {
     // verificanddo se já existe um phone com o numero enviado
     if (phoneExist) {
       // retornando uma resposta de erro em json
-      return res.status(409).json({
-        Message: Status.PHONE_ALREADY_EXIST,
-      });
+      throw new AppError(Message.PHONE_ALREADY_EXIST, 409);
     }
 
     // tipo padrão de usuário
@@ -87,9 +78,7 @@ class UserController {
     const role = await roleController.readFromType(type);
 
     if (!role) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.ROLE_NOT_FOUND, 406);
     }
     // savando o usuário criado a cima
     const userSaved = await usersRepository.save(user);
@@ -98,12 +87,7 @@ class UserController {
     const userRoleController = new UserRoleController();
 
     // criando e salvando a userRole
-    const userRoleSaved = await userRoleController.createFromController(
-      userSaved.id,
-      role.id
-    );
-
-    const roleDTO = await roleController.readFromId(userRoleSaved.roleID);
+    await userRoleController.createFromController(userSaved.id, role.id);
 
     const phoneDTO = await phoneController.createFromController(
       phoneNumber,
@@ -113,7 +97,7 @@ class UserController {
     const userDTO = {
       ...UserDTO.convertUserToDTO(userSaved),
       Phones: [phoneDTO],
-      Roles: [roleDTO],
+      Roles: [role.type],
     };
 
     // retornando o DTO do usuario salvo
@@ -126,7 +110,7 @@ class UserController {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(422).json({ Message: Status.REQUIRED_FIELD });
+      throw new AppError(Message.REQUIRED_FIELD, 422);
     }
 
     // tranformando a senha em hash
@@ -143,10 +127,7 @@ class UserController {
 
     // verificanddo se existe um usuário com o email e senha enviados
     if (!user) {
-      // retornando uma resposta em json
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.USER_NOT_FOUND, 406);
     }
 
     const userRoleController = new UserRoleController();
@@ -154,9 +135,7 @@ class UserController {
     const rolesDTO = await userRoleController.readFromUser(user.id);
 
     if (rolesDTO.length === 0) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.ROLE_NOT_FOUND, 406);
     }
 
     const rolesTypes = rolesDTO.map((roleDTO) => {
@@ -173,12 +152,8 @@ class UserController {
 
     let token: string;
 
-    try {
-      // criando um token de acordo com a constante payload criada a cima
-      token = await createToken(payload);
-    } catch (error) {
-      return res.status(error.Status).json({ Message: error.Message });
-    }
+    // criando um token de acordo com a constante payload criada a cima
+    token = await createToken(payload);
 
     // retornando o token criado
     return res.status(200).json({ token });
@@ -198,7 +173,7 @@ class UserController {
     // verificanddo se existe um usuário com o id enviado
     if (!user) {
       // retornando uma resposta em json
-      return res.status(406).json({ Message: Status.NOT_FOUND });
+      throw new AppError(Message.USER_NOT_FOUND, 406);
     }
 
     // capturando e armazenando os dados do corpo da requisição, caso não seja passado algum dado, a constante receberá o atributo do usuário pesquisado
@@ -211,15 +186,11 @@ class UserController {
     // verificando se o email é valido
     if (!validation.validationEmail(email)) {
       // retornando um json de erro personalizado
-      return res.status(422).json({
-        Message: Status.INVALID_EMAIL,
-      });
+      throw new AppError(Message.INVALID_EMAIL, 422);
       // verificando se a senha foi passada e se é valida
     } else if (!validation.validationPassword(password)) {
       // retornando um json de erro personalizado
-      return res.status(422).json({
-        Message: Status.INVALID_PASSWORD,
-      });
+      throw new AppError(Message.INVALID_PASSWORD, 422);
     }
 
     // verificando se o email passado e igual ao do usuário
@@ -228,7 +199,7 @@ class UserController {
       const emailExists = await usersRepository.findOne({ email });
       if (emailExists) {
         // se encontrar algo retorna um json de erro
-        return res.status(409).json({ Message: Status.EMAIL_ALREADY_EXIST });
+        throw new AppError(Message.EMAIL_ALREADY_EXIST, 409);
       }
     }
 
@@ -267,9 +238,7 @@ class UserController {
     // verificanddo se existe um usuário com o id enviado
     if (!userExist) {
       // retornando uma resposta em json
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.ROLE_NOT_FOUND, 406);
     }
 
     // deletando o usuário a partir do id
@@ -277,7 +246,7 @@ class UserController {
 
     // retornando um json de sucesso
     return res.status(200).json({
-      Message: Status.SUCCESS,
+      Message: Message.SUCCESS,
     });
   }
 
@@ -292,9 +261,7 @@ class UserController {
     // verificando se o DB possui usuários cadastrados
     if (users.length === 0) {
       // retornando uma resposta em json
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.NOT_FOUND, 406);
     }
 
     const userRoleController = new UserRoleController();
@@ -310,8 +277,8 @@ class UserController {
 
       userDTO = {
         ...userDTO,
-        Phones: phonesDTO.length === 0 ? Status.NOT_FOUND : phonesDTO,
-        Roles: rolesDTO.length === 0 ? Status.NOT_FOUND : rolesDTO,
+        Phones: phonesDTO.length === 0 ? Message.PHONE_NOT_FOUND : phonesDTO,
+        Roles: rolesDTO.length === 0 ? Message.ROLE_NOT_FOUND : rolesDTO,
       };
 
       usersDTO.push(userDTO);
@@ -341,9 +308,7 @@ class UserController {
     const addressDTO = await addressController.readFromUser(userID);
 
     if (!addressDTO) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
     }
 
     return res.status(200).json({ Address: addressDTO });
@@ -357,9 +322,7 @@ class UserController {
     const phonesDTO = await phoneController.readFromUser(userID);
 
     if (phonesDTO.length === 0) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.PHONE_NOT_FOUND, 406);
     }
 
     return res.status(200).json({ Phones: phonesDTO });
@@ -373,9 +336,7 @@ class UserController {
     const companiesDTO = await companyController.readCompaniesUser(userID);
 
     if (companiesDTO.length === 0) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
     }
 
     return res.status(200).json({ Companies: companiesDTO });
@@ -390,9 +351,7 @@ class UserController {
     const user = await usersRepository.findOne({ id: userID });
 
     if (!user) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.ROLE_NOT_FOUND, 406);
     }
 
     let userDTO = UserDTO.convertUserToDTO(user) as Object;
@@ -409,10 +368,11 @@ class UserController {
 
     userDTO = {
       ...userDTO,
-      Roles: rolesDTO.length === 0 ? Status.NOT_FOUND : rolesDTO,
-      Phones: phonesDTO.length === 0 ? Status.NOT_FOUND : phonesDTO,
-      Address: addressDTO || Status.NOT_FOUND,
-      Companies: companiesDTO.length === 0 ? Status.NOT_FOUND : companiesDTO,
+      Roles: rolesDTO.length === 0 ? Message.ROLE_NOT_FOUND : rolesDTO,
+      Phones: phonesDTO.length === 0 ? Message.PHONE_NOT_FOUND : phonesDTO,
+      Address: addressDTO || Message.ADDRESS_NOT_FOUND,
+      Companies:
+        companiesDTO.length === 0 ? Message.COMPANY_NOT_FOUND : companiesDTO,
     };
 
     return res.status(200).json({ User: userDTO });

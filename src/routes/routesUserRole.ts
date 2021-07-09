@@ -1,7 +1,8 @@
 import { Request, Response, Router } from "express";
 import { UserRoleController } from "../controllers/UserRoleController";
-import { Status } from "../env/status";
+import { Message } from "../env/message";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
+import { AppError } from "../errors/AppErrors";
 
 const userRoleController = new UserRoleController();
 const verifyTokenUser = new VerifyTokenUser();
@@ -36,9 +37,7 @@ routerUserRole.get(
 );
 
 routerUserRole.get("/userRole", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
+  throw new AppError(Message.ID_NOT_FOUND, 422);
 });
 
 // criando a rota de deleção de userRoles
@@ -49,9 +48,7 @@ routerUserRole.delete(
 );
 
 routerUserRole.delete("/userRole", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
+  throw new AppError(Message.ID_NOT_FOUND, 422);
 });
 
 // exportando o router

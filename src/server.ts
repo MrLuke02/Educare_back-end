@@ -1,7 +1,9 @@
 import cors from "cors";
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
+import "express-async-errors";
 import "reflect-metadata";
 import "./database";
+import { AppError } from "./errors/AppErrors";
 import * as routes from "./routes/routes";
 
 // Inicia uma aplicação express
@@ -25,6 +27,16 @@ app.use(
   routes.routerCompanyContact,
   routes.routerDocument
 );
+
+app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+  if (error instanceof AppError) {
+    return res.status(error.statusCode).json({ Message: error.message });
+  }
+
+  return res
+    .status(500)
+    .json({ Message: `Erro interno do servidor ${error.message}` });
+});
 
 // Inicia o servidor da api na porta 3333
 app.listen(3333, () => console.log("Servidor Rodando!"));

@@ -1,7 +1,8 @@
 import { Request, Response, Router } from "express";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
 import { AddressController } from "../controllers/AddressController";
-import { Status } from "../env/status";
+import { Message } from "../env/message";
+import { AppError } from "../errors/AppErrors";
 
 // criando um objeto de RoleController
 const addressController = new AddressController();
@@ -36,9 +37,7 @@ routerAddress.get(
   addressController.read
 );
 routerAddress.get("/address", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
+  throw new AppError(Message.ID_NOT_FOUND, 422);
 });
 
 // criando a rota de deleção de Roles

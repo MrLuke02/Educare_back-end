@@ -2,7 +2,8 @@ import { Request, Response, Router } from "express";
 import { VerifyTokenCompany } from "../auth/middleware/company/verifyTokenCompany";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
 import { CompanyController } from "../controllers/CompanyController";
-import { Status } from "../env/status";
+import { Message } from "../env/message";
+import { AppError } from "../errors/AppErrors";
 
 // criando um objeto de RoleController
 const companyController = new CompanyController();
@@ -16,26 +17,29 @@ routerCompany.post(
   verifyTokenUser.verifyTokenADM,
   companyController.create
 );
+
+routerCompany.put(
+  "/company",
+  verifyTokenCompany.verifyADMCompany,
+  companyController.update
+);
+
 routerCompany.get(
-  "/companyByCpnj",
+  "/companyByCpnj/:cnpj",
   verifyTokenUser.verifyTokenAuth,
   companyController.read
 );
 routerCompany.get("/companyByCpnj", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
+  throw new AppError(Message.CNPJ_NOT_FOUND, 422);
 });
 
 routerCompany.get(
-  "/companiesByCategory",
+  "/companiesByCategory/:category",
   verifyTokenUser.verifyTokenAuth,
-  companyController.read
+  companyController.readFromCategory
 );
 routerCompany.get("/companiesByCategory", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
+  throw new AppError(Message.CATEGORY_NOT_FOUND, 422);
 });
 
 routerCompany.get(
@@ -51,9 +55,7 @@ routerCompany.get(
   companyController.readAllFromCompany
 );
 routerCompany.get("/companyAll", (req: Request, res: Response) => {
-  return res.status(422).json({
-    Message: Status.ID_NOT_FOUND,
-  });
+  throw new AppError(Message.ID_NOT_FOUND, 422);
 });
 
 // criando a rota de pesquisa da Role pelo id
@@ -75,12 +77,6 @@ routerCompany.get(
   "/showCompanies",
   verifyTokenUser.verifyTokenAuth,
   companyController.show
-);
-
-routerCompany.put(
-  "/company",
-  verifyTokenCompany.verifyADMCompany,
-  companyController.update
 );
 
 routerCompany.delete(

@@ -1,16 +1,24 @@
-import JWT, { DefaultToken, VerifyErrors } from "jsonwebtoken";
-import { SECRET_KEY } from "../../env/token";
-import { Status } from "../../env/status";
+import JWT, { VerifyErrors } from "jsonwebtoken";
+import { Message } from "../../env/message";
+import { AppError } from "../../errors/AppErrors";
+
+type TokenType = {
+  sub: string;
+  roles: string[];
+};
+
+// codigo usado para a criação da chave secreta
+// node -e "console.log(require('crypto').randomBytes(256).toString('base64'));
 
 // criando o metodo de geração do token, com retorno em forma de promise
 const createToken = (payload: Object): Promise<string> => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     // chamando o metodo sign do JWT responsável por criar o token
     JWT.sign(
       // conteúdo do token
       payload,
       // chave secreta
-      SECRET_KEY,
+      process.env.SECRET_KEY,
       // opções/configurações, aqui no caso foi passado o algoritmo usado e o tempo de expiração
       {
         algorithm: "HS512",
@@ -19,7 +27,7 @@ const createToken = (payload: Object): Promise<string> => {
       // função para retornar o token caso ocorra tudo bem, caso de algo errado retorna um json de error
       function (err: Error, token: string) {
         if (err) {
-          reject({ Message: Status.CREATION_ERROR_TOKEN, Status: 500 });
+          throw new AppError(Message.CREATION_ERROR_TOKEN, 500);
         }
         resolve(token);
       }
@@ -28,22 +36,22 @@ const createToken = (payload: Object): Promise<string> => {
 };
 
 // criando o metodo de verificação do token, com retorno em forma de promise
-const verifyToken = (token: string): Promise<DefaultToken> => {
-  return new Promise((resolve, reject) => {
+const verifyToken = (token: string): Promise<TokenType> => {
+  return new Promise((resolve) => {
     // chamando o metodo verify do JWT responsável por verificar o token
     JWT.verify(
       // token a ser verificado
       token,
       // chave secreta
-      SECRET_KEY,
+      process.env.SECRET_KEY,
       // algoritmo que foi usado para criptografar o token
       {
         algorithms: ["HS512"],
       },
       // função para retornar o token caso ocorra tudo bem, caso de algo errado retorna um json de error
-      function (err: VerifyErrors, token: DefaultToken) {
+      function (err: VerifyErrors, token: TokenType) {
         if (err) {
-          reject({ Message: Status.EXPIRED_SESSION, Status: 401 });
+          throw new AppError(Message.EXPIRED_SESSION, 401);
         }
         resolve(token);
       }

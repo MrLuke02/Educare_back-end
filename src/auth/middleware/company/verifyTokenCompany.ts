@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { DefaultToken } from "jsonwebtoken";
 import { CompanyAddressController } from "../../../controllers/CompanyAddressController";
 import { CompanyContactController } from "../../../controllers/CompanyContactController";
 import { CompanyController } from "../../../controllers/CompanyController";
-import { Status } from "../../../env/status";
+import { Message } from "../../../env/message";
+import { AppError } from "../../../errors/AppErrors";
 import { verifyToken } from "../../token/token.auth";
 
 // classe para a verificação dos tokens
@@ -19,9 +19,7 @@ class VerifyTokenCompany {
     }
 
     if (!companyID) {
-      return res.status(422).json({
-        Message: Status.ID_NOT_FOUND,
-      });
+      throw new AppError(Message.ID_NOT_FOUND, 422);
     }
 
     const companyController = new CompanyController();
@@ -29,29 +27,22 @@ class VerifyTokenCompany {
     const company = await companyController.readCompanyFromID(companyID);
 
     if (!company) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
     }
 
-    let token: DefaultToken;
     // armazenando o token retornado da função
     if (!req.headers.authorization) {
-      return res.status(401).json({ Message: Status.REQUIRED_TOKEN });
+      throw new AppError(Message.REQUIRED_TOKEN, 401);
     } else {
-      try {
-        token = await verifyToken(req.headers.authorization.split(" ")[1]);
+      const token = await verifyToken(req.headers.authorization.split(" ")[1]);
 
-        // verifica se o token enviado pertence ao proprio usuário ou a um administrador
-        if (token.sub == company.userID || token.roles.includes("ADM")) {
-          // avança para o proximo middleware
-          next();
-        } else {
-          // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-          return res.status(401).json({ Message: Status.INVALID_TOKEN });
-        }
-      } catch (error) {
-        res.status(error.Status).json({ Message: error.Message });
+      // verifica se o token enviado pertence ao proprio usuário ou a um administrador
+      if (token.sub == company.userID || token.roles.includes("ADM")) {
+        // avança para o proximo middleware
+        next();
+      } else {
+        // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
+        throw new AppError(Message.INVALID_TOKEN, 401);
       }
     }
   }
@@ -69,9 +60,7 @@ class VerifyTokenCompany {
     }
 
     if (!id) {
-      return res.status(422).json({
-        Message: Status.ID_NOT_FOUND,
-      });
+      throw new AppError(Message.ID_NOT_FOUND, 422);
     }
 
     const companyAddressController = new CompanyAddressController();
@@ -79,29 +68,21 @@ class VerifyTokenCompany {
     const company = await companyAddressController.readFromAddress(id);
 
     if (!company) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
     }
 
-    let token: DefaultToken;
     // armazenando o token retornado da função
     if (!req.headers.authorization) {
-      return res.status(401).json({ Message: Status.REQUIRED_TOKEN });
+      throw new AppError(Message.REQUIRED_TOKEN, 401);
     } else {
-      try {
-        token = await verifyToken(req.headers.authorization.split(" ")[1]);
+      const token = await verifyToken(req.headers.authorization.split(" ")[1]);
 
-        // verifica se o token enviado pertence ao proprio usuário ou a um administrador
-        if (token.sub == company.userID || token.roles.includes("ADM")) {
-          // avança para o proximo middleware
-          next();
-        } else {
-          // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-          return res.status(401).json({ Message: Status.INVALID_TOKEN });
-        }
-      } catch (error) {
-        res.status(error.Status).json({ Message: error.Message });
+      // verifica se o token enviado pertence ao proprio usuário ou a um administrador
+      if (token.sub == company.userID || token.roles.includes("ADM")) {
+        // avança para o proximo middleware
+        next();
+      } else {
+        // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
       }
     }
   }
@@ -119,9 +100,7 @@ class VerifyTokenCompany {
     }
 
     if (!id) {
-      return res.status(422).json({
-        Message: Status.ID_NOT_FOUND,
-      });
+      throw new AppError(Message.ID_NOT_FOUND, 422);
     }
 
     const companyContactController = new CompanyContactController();
@@ -129,29 +108,22 @@ class VerifyTokenCompany {
     const company = await companyContactController.readFromContact(id);
 
     if (!company) {
-      return res.status(406).json({
-        Message: Status.NOT_FOUND,
-      });
+      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
     }
 
-    let token: DefaultToken;
     // armazenando o token retornado da função
     if (!req.headers.authorization) {
-      return res.status(401).json({ Message: Status.REQUIRED_TOKEN });
+      throw new AppError(Message.REQUIRED_TOKEN, 401);
     } else {
-      try {
-        token = await verifyToken(req.headers.authorization.split(" ")[1]);
+      const token = await verifyToken(req.headers.authorization.split(" ")[1]);
 
-        // verifica se o token enviado pertence ao proprio usuário ou a um administrador
-        if (token.sub == company.userID || token.roles.includes("ADM")) {
-          // avança para o proximo middleware
-          next();
-        } else {
-          // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-          return res.status(401).json({ Message: Status.INVALID_TOKEN });
-        }
-      } catch (error) {
-        res.status(error.Status).json({ Message: error.Message });
+      // verifica se o token enviado pertence ao proprio usuário ou a um administrador
+      if (token.sub == company.userID || token.roles.includes("ADM")) {
+        // avança para o proximo middleware
+        next();
+      } else {
+        // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
+        throw new AppError(Message.INVALID_TOKEN, 401);
       }
     }
   }
