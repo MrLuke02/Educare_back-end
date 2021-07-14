@@ -1,10 +1,10 @@
 {
   "type": "postgres",
-  "host": "34.95.189.93",
+  "host": "localhost",
   "port": 5432,
   "username": "postgres",
-  "password": "educare2021",
-  "database": "educare",
+  "password": "postgres",
+  "database": "Educare",
   "synchronize": false,
   "entities": ["./src/models/**.ts"],
   "migrations": ["./src/database/migrations/**.ts"],
