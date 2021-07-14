@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
+
 import { Message } from "../env/message";
-import { OrderStatus, verifyStatus } from "../env/orderStatus";
+import { OrderStatus } from "../env/orderStatus";
+import * as validation from "../util/user/Validations";
 import { AppError } from "../errors/AppErrors";
 import { OrderDTO } from "../models/DTOs/OrderDTO";
 import { OrdersRepository } from "../repositories/OrderRepository";
@@ -126,7 +128,7 @@ class OrderController {
       throw new AppError(Message.ORDER_NOT_FOUND, 406);
     }
 
-    if (!verifyStatus(status)) {
+    if (!validation.verifyStatus(status, OrderStatus)) {
       throw new AppError(Message.ORDER_STATUS_NOT_FOUND, 406);
     }
 

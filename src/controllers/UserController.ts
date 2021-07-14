@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import md5 from "md5";
 import { getCustomRepository } from "typeorm";
+
 import { createToken } from "../auth/token/token.auth";
 import { Message } from "../env/message";
 import { AppError } from "../errors/AppErrors";
@@ -151,10 +152,7 @@ class UserController {
       roles: rolesTypes,
     };
 
-    let token: string;
-
-    // criando um token de acordo com a constante payload criada a cima
-    token = await createToken(payload);
+    const token = await createToken(payload);
 
     // retornando o token criado
     return res.status(200).json({ token });

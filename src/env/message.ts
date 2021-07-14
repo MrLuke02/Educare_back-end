@@ -2,6 +2,8 @@ const Message = {
   // NOT_FOUND
   NOT_FOUND: "Nada encontrado!",
   ID_NOT_FOUND: "Campo 'id' não encontrado!",
+  USER_ID_NOT_FOUND: "Campo 'userID' não encontrado!",
+  ADM_ID_NOT_FOUND: "Campo 'admID' não encontrado!",
   USER_NOT_FOUND: "Usuário não encontrado!",
   ADDRESS_NOT_FOUND: "Endereço não encontrado!",
   PHONE_NOT_FOUND: "Telefone não encontrado!",
@@ -15,6 +17,8 @@ const Message = {
   DOCUMENT_NOT_FOUND: "Document não encontrado!",
   ORDER_NOT_FOUND: "Pedido não encontrado!",
   ORDER_STATUS_NOT_FOUND: "Status de pedido não encontrado!",
+  SOLICITATION_STATUS_NOT_FOUND: "Status de solicitação não encontrado!",
+  SOLICITATION_NOT_FOUND: "Solicitação não encontrada!",
 
   // REQUIRED_FIELD
   REQUIRED_FIELD: "Campo obrigatório(s) vazio(s)!",
@@ -42,6 +46,9 @@ const Message = {
   USER_ALREADY_HAVE_PHONE: "Usuário já possui telefone!",
   COMPANY_ALREADY_HAVE_PHONE: "Empresa já possui telefone!",
   ORDER_ALREADY_EXIST: "Pedido já existe!",
+
+  //AUTHORIZATION
+  USER_IS_NOT_ADM: "Usuário não é administrador",
 
   // ERROR
   CREATION_ERROR_TOKEN: "Erro ao tentar criar o token!",
