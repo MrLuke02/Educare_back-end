@@ -19,6 +19,8 @@ const Message = {
   ORDER_STATUS_NOT_FOUND: "Status de pedido não encontrado!",
   SOLICITATION_STATUS_NOT_FOUND: "Status de solicitação não encontrado!",
   SOLICITATION_NOT_FOUND: "Solicitação não encontrada!",
+  STUDENT_NOT_FOUND: "Estudante não encontrado!",
+  INTEREST_AREA_NOT_FOUND: "Área de interesse não encontrado!",
 
   // REQUIRED_FIELD
   REQUIRED_FIELD: "Campo obrigatório(s) vazio(s)!",
@@ -46,6 +48,7 @@ const Message = {
   USER_ALREADY_HAVE_PHONE: "Usuário já possui telefone!",
   COMPANY_ALREADY_HAVE_PHONE: "Empresa já possui telefone!",
   ORDER_ALREADY_EXIST: "Pedido já existe!",
+  INTEREST_AREA_ALREADY_EXIST: "Área de interesse já existe!",
 
   //AUTHORIZATION
   USER_IS_NOT_ADM: "Usuário não é administrador",

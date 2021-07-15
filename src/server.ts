@@ -26,7 +26,9 @@ app.use(
   routes.routerCompanyAddress,
   routes.routerCompanyContact,
   routes.routerDocument,
-  routes.routerSolicitation
+  routes.routerSolicitation,
+  routes.routerInterestArea,
+  routes.routerStudent
 );
 
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {

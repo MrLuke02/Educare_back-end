@@ -8,6 +8,7 @@ import { SolicitationsRepository } from "../repositories/SolicitationRepository"
 import * as validation from "../util/user/Validations";
 import { UserController } from "./UserController";
 import { UserRoleController } from "./UserRoleController";
+import { StudentController } from "./StudentController";
 
 class SolicitationController {
   // metodo assincrono para o cadastro de phones
@@ -96,6 +97,11 @@ class SolicitationController {
       throw new AppError(Message.USER_ROLE_NOT_FOUND, 406);
     } else if (!roles.some((role) => role.type === "ADM")) {
       throw new AppError(Message.USER_IS_NOT_ADM, 422);
+    }
+
+    if (status === "SOLICITATION_ACCEPTED") {
+      const studentController = new StudentController();
+      studentController.createFromController(solicitation.userID);
     }
 
     await solicitationsRepository.update(id, {

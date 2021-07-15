@@ -3,23 +3,29 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryColumn,
 } from "typeorm";
 import { v4 as uuid } from "uuid";
+import { InterestArea } from "./InterestArea";
 import { User } from "./User";
 
 // criando o modelo da tabela roles, especificando suas colunas e tipo de dado que será armazenado
-@Entity("solicitations")
-class Solicitation {
+@Entity("students")
+class Student {
   @PrimaryColumn()
   id: string;
 
-  @Column({ type: "bytea" })
-  file: Buffer;
+  @Column()
+  expiresIn: number;
 
   @Column()
-  status: string;
+  interestAreaID: string;
+
+  @ManyToOne(() => InterestArea)
+  @JoinColumn({ name: "interestAreaID" })
+  interestArea: InterestArea;
 
   @Column()
   userID: string;
@@ -28,14 +34,6 @@ class Solicitation {
   @OneToOne(() => User)
   @JoinColumn({ name: "userID" })
   user: User;
-
-  @Column()
-  admID: string;
-
-  // criando o relacionamento de muitos para um com a tabela User
-  @OneToOne(() => User)
-  @JoinColumn({ name: "admID" })
-  adm: User;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -48,4 +46,4 @@ class Solicitation {
 }
 
 // exportando a classe
-export { Solicitation };
+export { Student };
