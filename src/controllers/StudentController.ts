@@ -36,6 +36,10 @@ class StudentController {
   async update(req: Request, res: Response) {
     const { id } = req.body;
 
+    if (!id) {
+      throw new AppError(Message.ID_NOT_FOUND, 422);
+    }
+
     const studentRepository = getCustomRepository(StudentsRepository);
 
     let student = await studentRepository.findOne({ id });
@@ -44,13 +48,15 @@ class StudentController {
       throw new AppError(Message.STUDENT_NOT_FOUND, 406);
     }
 
-    const { interestAreaID } = req.body;
+    const { interestArea } = req.body;
 
     const interestAreaController = new InterestAreaController();
 
-    await interestAreaController.readFromController(interestAreaID);
+    const newInterestArea = await interestAreaController.readFromInterestArea(
+      interestArea
+    );
 
-    await studentRepository.update(id, { interestAreaID });
+    await studentRepository.update(id, { interestAreaID: newInterestArea.id });
 
     student = await studentRepository.findOne({ id });
 
@@ -68,7 +74,32 @@ class StudentController {
       throw new AppError(Message.STUDENT_NOT_FOUND, 406);
     }
 
-    return res.status(200).json({ Student: student });
+    const isExpired = dayjs().isAfter(dayjs.unix(student.expiresIn));
+
+    const newStudent = {
+      ...student,
+      isExpired,
+    };
+
+    return res.status(200).json({ Student: newStudent });
+  }
+
+  async readFromUserID(userID: string) {
+    const studentRepository = getCustomRepository(StudentsRepository);
+
+    const student = await studentRepository.find({
+      where: { userID },
+      order: { createdAt: "DESC" },
+      take: 1,
+    });
+
+    if (student.length > 0) {
+      if (dayjs().isAfter(dayjs.unix(student[0].expiresIn))) {
+        return true;
+      }
+      return false;
+    }
+    return true;
   }
 
   async delete(req: Request, res: Response) {
@@ -96,7 +127,15 @@ class StudentController {
       throw new AppError(Message.NOT_FOUND, 406);
     }
 
-    return res.status(200).json({ Student: students });
+    const newStudents = students.map((student) => {
+      const isExpired = dayjs().isAfter(dayjs.unix(student.expiresIn));
+      return {
+        ...student,
+        isExpired,
+      };
+    });
+
+    return res.status(200).json({ Student: newStudents });
   }
 }
 

@@ -39,13 +39,44 @@ class SolicitationController {
       SolicitationsRepository
     );
 
+    const solicitationAlreadyExist = await solicitationsRepository.find({
+      where: { userID },
+      order: { createdAt: "DESC" },
+      take: 1,
+    });
+
     let solicitation = solicitationsRepository.create({
       status,
       file,
       userID,
     });
 
-    solicitation = await solicitationsRepository.save(solicitation);
+    if (solicitationAlreadyExist.length > 0) {
+      if (
+        solicitationAlreadyExist[0].status ===
+        SolicitationStatus.SOLICITATION_PENDING
+      ) {
+        throw new AppError(Message.USER_HAVE_SOLICITATION_PENDING, 401);
+      } else if (
+        solicitationAlreadyExist[0].status ===
+        SolicitationStatus.SOLICITATION_ACCEPTED
+      ) {
+        const studentController = new StudentController();
+
+        if (!(await studentController.readFromUserID(userID))) {
+          throw new AppError(Message.USER_ALREADY_IS_STUDENT, 409);
+        }
+
+        solicitation = await solicitationsRepository.save(solicitation);
+      } else if (
+        solicitationAlreadyExist[0].status ===
+        SolicitationStatus.SOLICITATION_DENIED
+      ) {
+        solicitation = await solicitationsRepository.save(solicitation);
+      }
+    } else {
+      solicitation = await solicitationsRepository.save(solicitation);
+    }
 
     return res.status(201).json({ Solicitation: solicitation });
   }
@@ -87,6 +118,10 @@ class SolicitationController {
 
     if (!solicitation) {
       throw new AppError(Message.SOLICITATION_NOT_FOUND, 406);
+    } else if (
+      solicitation.status !== SolicitationStatus.SOLICITATION_PENDING
+    ) {
+      throw new AppError(Message.UNAUTHORIZED, 401);
     }
 
     const userRoleController = new UserRoleController();
@@ -101,6 +136,7 @@ class SolicitationController {
 
     if (status === "SOLICITATION_ACCEPTED") {
       const studentController = new StudentController();
+
       studentController.createFromController(solicitation.userID);
     }
 
