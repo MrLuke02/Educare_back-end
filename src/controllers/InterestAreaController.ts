@@ -48,16 +48,18 @@ class InterestAreaController {
     return res.status(201).json({ InterestArea: interestArea });
   }
 
-  async readFromController(id: string) {
+  async readFromInterestArea(interestArea: string) {
     const interestAreaRepository = getCustomRepository(InterestAreaRepository);
 
-    const interestArea = await interestAreaRepository.findOne({ id });
+    const interestAreaExists = await interestAreaRepository.findOne({
+      interestArea,
+    });
 
-    if (!interestArea) {
+    if (!interestAreaExists) {
       throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 406);
     }
 
-    return interestArea;
+    return interestAreaExists;
   }
 
   async update(req: Request, res: Response) {
