@@ -7,6 +7,7 @@ import { StudentsRepository } from "../repositories/StudentRepository";
 import { UserController } from "./UserController";
 import { InterestAreaController } from "./InterestAreaController";
 import dayjs from "dayjs";
+import { verifyExpiredStudent } from "../services/verifyExpiredStudent";
 
 class StudentController {
   // metodo assincrono para o cadastro de phones
@@ -21,7 +22,7 @@ class StudentController {
 
     const studentRepository = getCustomRepository(StudentsRepository);
 
-    const expiresIn = dayjs().add(2, "minute").unix();
+    const expiresIn = dayjs().add(30, "seconds").unix();
 
     let student = studentRepository.create({
       userID,
@@ -102,6 +103,21 @@ class StudentController {
     return true;
   }
 
+  async readStudentExpires(userID: string) {
+    const studentRepository = getCustomRepository(StudentsRepository);
+
+    const student = await studentRepository.find({
+      where: { userID },
+      order: { createdAt: "DESC" },
+      take: 1,
+    });
+
+    if (dayjs().isAfter(dayjs.unix(student[0].expiresIn))) {
+      return true;
+    }
+    return false;
+  }
+
   async delete(req: Request, res: Response) {
     const { id } = req.params;
 
@@ -129,6 +145,8 @@ class StudentController {
 
     const newStudents = students.map((student) => {
       const isExpired = dayjs().isAfter(dayjs.unix(student.expiresIn));
+
+      // verifyExpiredStudent(student.userID);
       return {
         ...student,
         isExpired,
