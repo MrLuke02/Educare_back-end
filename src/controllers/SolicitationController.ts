@@ -9,6 +9,8 @@ import * as validation from "../util/user/Validations";
 import { UserController } from "./UserController";
 import { UserRoleController } from "./UserRoleController";
 import { StudentController } from "./StudentController";
+import { RoleController } from "./RoleController";
+import { verifyExpiredStudent } from "../services/verifyExpiredStudent";
 
 class SolicitationController {
   // metodo assincrono para o cadastro de phones
@@ -137,7 +139,28 @@ class SolicitationController {
     if (status === "SOLICITATION_ACCEPTED") {
       const studentController = new StudentController();
 
-      studentController.createFromController(solicitation.userID);
+      // tipo padrão de usuário
+      const type = "Student";
+
+      const roleController = new RoleController();
+
+      const role = await roleController.readFromType(type);
+
+      if (!role) {
+        throw new AppError(Message.ROLE_NOT_FOUND, 406);
+      }
+
+      await verifyExpiredStudent(solicitation.userID);
+
+      const student = await studentController.createFromController(
+        solicitation.userID
+      );
+
+      // instanciando o UserRoleController
+      const userRoleController = new UserRoleController();
+
+      // criando e salvando a userRole
+      await userRoleController.createFromController(student.userID, role.id);
     }
 
     await solicitationsRepository.update(id, {
