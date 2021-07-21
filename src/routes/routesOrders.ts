@@ -1,10 +1,7 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 import multer from "multer";
-import { VerifyTokenCompany } from "../auth/middleware/company/verifyTokenCompany";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
 import { OrderController } from "../controllers/OrderController";
-import { Message } from "../env/message";
-import { AppError } from "../errors/AppErrors";
 
 const routerOrder = Router();
 const orderController = new OrderController();

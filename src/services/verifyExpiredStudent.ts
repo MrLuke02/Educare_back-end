@@ -30,16 +30,15 @@ async function verifyExpiredStudent(userID: string) {
           userID
         );
 
-        console.log(studentIsExpired);
-
         if (studentIsExpired) {
-          console.log("aki");
-
           await userRoleController.deleteFromController(userRole.id);
         }
+
+        return studentIsExpired;
       }
     }
   }
+  return true;
 }
 
 export { verifyExpiredStudent };
