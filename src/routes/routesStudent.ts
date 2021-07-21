@@ -8,9 +8,17 @@ const verifyTokenUser = new VerifyTokenUser();
 
 const routerStudent = Router();
 
-routerStudent.get("/student/:id", studentController.read);
+routerStudent.get(
+  "/student/:id",
+  verifyTokenUser.verifyADMUserByStudentID,
+  studentController.read
+);
 
-routerStudent.put("/student", studentController.update);
+routerStudent.put(
+  "/student",
+  verifyTokenUser.verifyADMUserByStudentID,
+  studentController.update
+);
 
 routerStudent.get(
   "/showStudents",
@@ -18,6 +26,10 @@ routerStudent.get(
   studentController.show
 );
 
-routerStudent.delete("/student/:id", studentController.delete);
+routerStudent.delete(
+  "/student/:id",
+  verifyTokenUser.verifyADMUserByStudentID,
+  studentController.delete
+);
 
 export { routerStudent };

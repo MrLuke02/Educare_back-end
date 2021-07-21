@@ -33,6 +33,10 @@ routerSolicitation.get(
   solicitationController.show
 );
 
-routerSolicitation.delete("/solicitation/:id", solicitationController.delete);
+routerSolicitation.delete(
+  "/solicitation/:id",
+  verifyTokenUser.verifyADMUserBySolicitationID,
+  solicitationController.delete
+);
 
 export { routerSolicitation };

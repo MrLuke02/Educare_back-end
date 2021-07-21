@@ -7,6 +7,7 @@ import { Message } from "../env/message";
 import { AppError } from "../errors/AppErrors";
 import { UserDTO } from "../models/DTOs/UserDTO";
 import { UsersRepository } from "../repositories/UserRepository";
+import { verifyExpiredStudent } from "../services/verifyExpiredStudent";
 import * as validation from "../util/user/Validations";
 import { AddressController } from "./AddressController";
 import { CompanyController } from "./CompanyController";
@@ -131,6 +132,8 @@ class UserController {
     if (!user) {
       throw new AppError(Message.USER_NOT_FOUND, 406);
     }
+
+    await verifyExpiredStudent(user.id);
 
     const userRoleController = new UserRoleController();
 

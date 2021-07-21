@@ -7,7 +7,6 @@ import { StudentsRepository } from "../repositories/StudentRepository";
 import { UserController } from "./UserController";
 import { InterestAreaController } from "./InterestAreaController";
 import dayjs from "dayjs";
-import { verifyExpiredStudent } from "../services/verifyExpiredStudent";
 
 class StudentController {
   // metodo assincrono para o cadastro de phones
@@ -22,7 +21,7 @@ class StudentController {
 
     const studentRepository = getCustomRepository(StudentsRepository);
 
-    const expiresIn = dayjs().add(30, "seconds").unix();
+    const expiresIn = dayjs().add(5, "minutes").unix();
 
     let student = studentRepository.create({
       userID,
@@ -61,7 +60,14 @@ class StudentController {
 
     student = await studentRepository.findOne({ id });
 
-    return res.status(200).json({ Student: student });
+    const isExpired = dayjs().isAfter(dayjs.unix(student.expiresIn));
+
+    const newStudent = {
+      ...student,
+      isExpired,
+    };
+
+    return res.status(200).json({ Student: newStudent });
   }
 
   async read(req: Request, res: Response) {
@@ -112,8 +118,11 @@ class StudentController {
       take: 1,
     });
 
-    if (dayjs().isAfter(dayjs.unix(student[0].expiresIn))) {
-      return true;
+    if (student.length > 0) {
+      if (dayjs().isAfter(dayjs.unix(student[0].expiresIn))) {
+        return true;
+      }
+      return false;
     }
     return false;
   }
@@ -154,6 +163,25 @@ class StudentController {
     });
 
     return res.status(200).json({ Student: newStudents });
+  }
+
+  async readFromStudent(studentID: string) {
+    const studentRepository = getCustomRepository(StudentsRepository);
+
+    const order_user = await studentRepository.find({
+      // select -> o que quero de retorno
+      // where -> condição
+      // relations -> para trazer também as informações da tabela que se relaciona
+      select: ["id"],
+      where: { id: studentID },
+      relations: ["user"],
+    });
+
+    const user = order_user.map((student) => {
+      return student.user;
+    });
+
+    return user[0];
   }
 }
 

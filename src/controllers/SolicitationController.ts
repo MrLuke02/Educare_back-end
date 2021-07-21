@@ -198,6 +198,25 @@ class SolicitationController {
 
     return res.status(200).json({ Solicitations: solicitations });
   }
+
+  async readFromSolicitation(solicitationID: string) {
+    const solicitationRepository = getCustomRepository(SolicitationsRepository);
+
+    const order_user = await solicitationRepository.find({
+      // select -> o que quero de retorno
+      // where -> condição
+      // relations -> para trazer também as informações da tabela que se relaciona
+      select: ["id"],
+      where: { id: solicitationID },
+      relations: ["user"],
+    });
+
+    const user = order_user.map((solicitation) => {
+      return solicitation.user;
+    });
+
+    return user[0];
+  }
 }
 
 export { SolicitationController };

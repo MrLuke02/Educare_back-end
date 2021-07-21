@@ -2,8 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import { AddressController } from "../../../controllers/AddressController";
 import { OrderController } from "../../../controllers/OrderController";
 import { PhoneController } from "../../../controllers/PhoneController";
+import { SolicitationController } from "../../../controllers/SolicitationController";
+import { StudentController } from "../../../controllers/StudentController";
 import { Message } from "../../../env/message";
 import { AppError } from "../../../errors/AppErrors";
+import { verifyExpiredStudent } from "../../../services/verifyExpiredStudent";
 import { verifyToken } from "../../token/token.auth";
 
 // classe para a verificação dos tokens
@@ -155,6 +158,89 @@ class VerifyTokenUser {
         next();
       } else {
         // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
+        throw new AppError(Message.INVALID_TOKEN, 401);
+      }
+    }
+  }
+
+  async verifyADMUserBySolicitationID(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { id } = req.params;
+
+    if (!id) {
+      throw new AppError(Message.ID_NOT_FOUND, 422);
+    }
+
+    const solicitationController = new SolicitationController();
+
+    const user = await solicitationController.readFromSolicitation(id);
+
+    if (!user) {
+      throw new AppError(Message.USER_NOT_FOUND, 406);
+    }
+
+    // armazenando o token retornado da função
+    if (!req.headers.authorization) {
+      throw new AppError(Message.REQUIRED_TOKEN, 401);
+    } else {
+      const token = await verifyToken(req.headers.authorization.split(" ")[1]);
+
+      // verifica se o token enviado pertence ao proprio usuário ou a um administrador
+      if (token.sub === user.id || token.roles.includes("ADM")) {
+        // avança para o proximo middleware
+        next();
+      } else {
+        // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
+        throw new AppError(Message.INVALID_TOKEN, 401);
+      }
+    }
+  }
+
+  async verifyADMUserByStudentID(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    let id: string;
+    if (!req.body.id) {
+      id = req.params.id;
+    } else {
+      id = req.body.id;
+    }
+
+    if (!id) {
+      throw new AppError(Message.ID_NOT_FOUND, 422);
+    }
+
+    const studentController = new StudentController();
+
+    const user = await studentController.readFromStudent(id);
+
+    if (!user) {
+      throw new AppError(Message.USER_NOT_FOUND, 406);
+    }
+
+    const studentExpired = await verifyExpiredStudent(user.id);
+
+    // armazenando o token retornado da função
+    if (!req.headers.authorization) {
+      throw new AppError(Message.REQUIRED_TOKEN, 401);
+    } else {
+      const token = await verifyToken(req.headers.authorization.split(" ")[1]);
+
+      // verifica se o token enviado pertence ao proprio usuário ou a um administrador
+      if (
+        (token.sub === user.id && !studentExpired) ||
+        token.roles.includes("ADM")
+      ) {
+        // avança para o proximo middleware
+        next();
+      } else {
+        // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
+        throw new AppError(Message.INVALID_TOKEN, 401);
       }
     }
   }
