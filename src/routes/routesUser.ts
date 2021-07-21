@@ -57,6 +57,12 @@ routerUser.get(
 );
 
 routerUser.get(
+  "/userSolicitations/:userID",
+  verifyTokenUser.verifyADMUser,
+  userController.readSolicitationsFromUser
+);
+
+routerUser.get(
   "/userAll/:userID",
   verifyTokenUser.verifyADMUser,
   userController.readAllFromUser

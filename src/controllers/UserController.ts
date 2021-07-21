@@ -14,6 +14,7 @@ import { CompanyController } from "./CompanyController";
 import { OrderController } from "./OrderController";
 import { PhoneController } from "./PhoneController";
 import { RoleController } from "./RoleController";
+import { SolicitationController } from "./SolicitationController";
 import { UserRoleController } from "./UserRoleController";
 
 class UserController {
@@ -358,6 +359,20 @@ class UserController {
     return res.status(200).json({ Orders: ordersDTO });
   }
 
+  async readSolicitationsFromUser(req: Request, res: Response) {
+    const { userID } = req.params;
+
+    const solicitationController = new SolicitationController();
+
+    const solicitations = await solicitationController.readFromUserID(userID);
+
+    if (solicitations.length === 0) {
+      throw new AppError(Message.NOT_FOUND, 406);
+    }
+
+    return res.status(200).json({ Solicitations: solicitations });
+  }
+
   async readAllFromUser(req: Request, res: Response) {
     const { userID } = req.params;
 
@@ -377,7 +392,9 @@ class UserController {
     const addressController = new AddressController();
     const companyController = new CompanyController();
     const orderController = new OrderController();
+    const solicitationController = new SolicitationController();
 
+    const solicitations = await solicitationController.readFromUserID(userID);
     const ordersDTO = await orderController.readOrdersUser(userID);
     const rolesDTO = await userRoleController.readFromUser(userID);
     const phonesDTO = await phoneController.readFromUser(userID);
@@ -392,6 +409,10 @@ class UserController {
       Companies:
         companiesDTO.length === 0 ? Message.COMPANY_NOT_FOUND : companiesDTO,
       Orders: ordersDTO.length === 0 ? Message.ORDER_NOT_FOUND : ordersDTO,
+      Solicitations:
+        solicitations.length === 0
+          ? Message.SOLICITATION_NOT_FOUND
+          : solicitations,
     };
 
     return res.status(200).json({ User: userDTO });
