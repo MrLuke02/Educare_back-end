@@ -168,7 +168,7 @@ class StudentController {
   async readFromStudent(studentID: string) {
     const studentRepository = getCustomRepository(StudentsRepository);
 
-    const order_user = await studentRepository.find({
+    const student_user = await studentRepository.find({
       // select -> o que quero de retorno
       // where -> condição
       // relations -> para trazer também as informações da tabela que se relaciona
@@ -177,7 +177,7 @@ class StudentController {
       relations: ["user"],
     });
 
-    const user = order_user.map((student) => {
+    const user = student_user.map((student) => {
       return student.user;
     });
 

@@ -199,10 +199,18 @@ class SolicitationController {
     return res.status(200).json({ Solicitations: solicitations });
   }
 
+  async readFromUserID(userID: string) {
+    const solicitationRepository = getCustomRepository(SolicitationsRepository);
+
+    const solicitations = await solicitationRepository.find({ userID });
+
+    return solicitations;
+  }
+
   async readFromSolicitation(solicitationID: string) {
     const solicitationRepository = getCustomRepository(SolicitationsRepository);
 
-    const order_user = await solicitationRepository.find({
+    const solicitation_user = await solicitationRepository.find({
       // select -> o que quero de retorno
       // where -> condição
       // relations -> para trazer também as informações da tabela que se relaciona
@@ -211,7 +219,7 @@ class SolicitationController {
       relations: ["user"],
     });
 
-    const user = order_user.map((solicitation) => {
+    const user = solicitation_user.map((solicitation) => {
       return solicitation.user;
     });
 
