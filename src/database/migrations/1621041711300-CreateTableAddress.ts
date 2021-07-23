@@ -10,6 +10,8 @@ export class CreateTableAddress1621041711300 implements MigrationInterface {
             name: "id",
             type: "uuid",
             isPrimary: true,
+            generationStrategy: "uuid",
+            default: "gen_random_uuid()",
           },
           {
             name: "street",

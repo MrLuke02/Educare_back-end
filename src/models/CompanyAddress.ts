@@ -2,17 +2,16 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  PrimaryColumn,
   OneToOne,
   JoinColumn,
+  PrimaryGeneratedColumn,
 } from "typeorm";
-import { v4 as uuid } from "uuid";
 import { Company } from "./Company";
 
 // criando o modelo da tabela phones, especificando suas colunas e tipo de dado que será armazenado
 @Entity("company_addresses")
 class CompanyAddress {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: string;
 
   @Column()
@@ -49,12 +48,6 @@ class CompanyAddress {
   @OneToOne(() => Company)
   @JoinColumn({ name: "companyID" })
   company: Company;
-
-  constructor() {
-    if (!this.id) {
-      this.id = uuid();
-    }
-  }
 }
 
 // exportando a classe

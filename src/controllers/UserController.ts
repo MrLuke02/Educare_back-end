@@ -303,6 +303,18 @@ class UserController {
     return user;
   }
 
+  async readFromEmail(email: string) {
+    // pegando o repositorio customizado/personalizado
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    // pesquisando um usuário pelo email e senha
+    const user = await usersRepository.findOne({
+      email,
+    });
+
+    return user;
+  }
+
   async readAddressFromUser(req: Request, res: Response) {
     const { userID } = req.params;
 
