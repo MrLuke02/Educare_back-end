@@ -10,6 +10,8 @@ export class CreatePlan1621550116291 implements MigrationInterface {
             name: "id",
             type: "uuid",
             isPrimary: true,
+            generationStrategy: "uuid",
+            default: "gen_random_uuid()",
           },
           {
             name: "name",

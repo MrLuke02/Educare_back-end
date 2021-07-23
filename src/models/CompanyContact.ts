@@ -2,16 +2,15 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  PrimaryColumn,
   OneToOne,
   JoinColumn,
+  PrimaryGeneratedColumn,
 } from "typeorm";
-import { v4 as uuid } from "uuid";
 import { Company } from "./Company";
 
 @Entity("company_contacts")
 class CompanyContact {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: string;
 
   @Column()
@@ -30,12 +29,6 @@ class CompanyContact {
   @OneToOne(() => Company)
   @JoinColumn({ name: "companyID" })
   company: Company;
-
-  constructor() {
-    if (!this.id) {
-      this.id = uuid();
-    }
-  }
 }
 
 export { CompanyContact };

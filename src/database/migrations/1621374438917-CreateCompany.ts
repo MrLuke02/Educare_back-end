@@ -10,6 +10,8 @@ export class CreateCompany1621374438917 implements MigrationInterface {
             name: "id",
             type: "uuid",
             isPrimary: true,
+            generationStrategy: "uuid",
+            default: "gen_random_uuid()",
           },
           {
             name: "cnpj",
