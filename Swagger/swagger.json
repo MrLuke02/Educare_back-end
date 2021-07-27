@@ -52,6 +52,14 @@
         {
             "name": "userRole",
             "description": "Permite o cadastro, edição, pesquisa e exclusão das Roles do Usuario."
+        },
+        {
+            "name": "order",
+            "description": "rotas relacionadas ao pedido"
+        },
+        {
+            "name": "document",
+            "description": "rotas relacionadas ao documento enviado"
         }
     ],
     "paths": {
@@ -219,8 +227,8 @@
                                 },
                                 "Adm": {
                                     "value": {
-                                        "email": "adm@gmail.com.br",
-                                        "password": "Admin12@"
+                                        "email": "adm@gmail.com",
+                                        "password": "Adm1234@"
                                     }
                                 }
                             }
@@ -1249,7 +1257,6 @@
                 "tags": ["company"],
                 "summary": "Permite a Exclusão da empresa a partir do id | role:[ADM]",
                 "description": "Isso só pode ser feito com o Usuario Conectado",
-                "operationId": "deleteCompany",
                 "parameters": [{
                     "name": "companyID",
                     "in": "path",
@@ -1284,11 +1291,10 @@
                 "tags": ["company"],
                 "summary": "Permite a pesquisa da Empresa, a partir da Categoria | role:[ADM]",
                 "description": "Isso só pode ser feito com o Usuario",
-                "operationId": "apiV1CompanycompanyCategoryGET",
                 "parameters": [{
                     "name": "companyCategory",
                     "in": "path",
-                    "description": "O ID do telefone que deseja pesquisar",
+                    "description": "O Categoria da empresa que deseja pesquisar",
                     "required": true,
                     "style": "simple",
                     "explode": false,
@@ -1331,7 +1337,6 @@
                 "tags": ["company"],
                 "summary": "Permite a pesquisa da Empresa, a partir do Cnpj | role:[ADM]",
                 "description": "Isso só pode ser feito com o Usuario",
-                "operationId": "apiV1CompanycompanyCnpjGET",
                 "parameters": [{
                     "name": "cnpj",
                     "in": "path",
@@ -2304,7 +2309,7 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "tipo": {
+                                    "type": {
                                         "type": "string"
                                     }
                                 }
@@ -2501,7 +2506,6 @@
                 "tags": ["userRole"],
                 "summary": "Permite a criação de roles no sistema | role:[ADM ]",
                 "description": "Criação de um nova Role no sistema",
-                "operationId": "createUserRole",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -2544,7 +2548,6 @@
                 "tags": ["userRole"],
                 "summary": "Permite o acesso a lista de roles | role:[ADM]",
                 "description": "Passa nada Paramentro, retona",
-                "operationId": "listUserRole",
                 "responses": {
                     "200": {
                         "description": "Sucesso!",
@@ -2580,7 +2583,6 @@
                 "tags": ["userRole"],
                 "summary": "Permite a pesquisa, a partir do ID , das roles  | role:[ADM]",
                 "description": "Isso só pode ser feito com o Usuario conectado",
-                "operationId": "pesquisaUserRoleID",
                 "parameters": [{
                     "name": "userRoleID",
                     "in": "path",
@@ -2621,7 +2623,6 @@
                 "tags": ["userRole"],
                 "summary": "Permite a Exclusão de roles a partir do id | role:[ADM]",
                 "description": "Isso só pode ser feito com o Usuario Conectado",
-                "operationId": "deleteUserRole",
                 "parameters": [{
                     "name": "userRoleID",
                     "in": "path",
@@ -2647,7 +2648,570 @@
                 }],
                 "x-swagger-router-controller": "role"
             }
+        },
+        "/api/v1/order": {
+            "post": {
+                "tags": ["order"],
+                "summary": "Permite o Cadastro de pedido no sistema | role:[ADM|USER]",
+                "description": "Criação do perdido no sistema",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "userID": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "categoryID": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "copyNumber": {
+                                        "type": "number"
+                                    },
+                                    "price": {
+                                        "type": "number"
+                                    },
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "order": {
+                                            "type": "object",
+                                            "$ref": "#/components/schemas/order"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "pedido já existe!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "order"
+
+            },
+            "put": {
+                "tags": ["order"],
+                "summary": "Permite a edição dos Pedidos ao ADM do sistema role:[ADM]",
+                "description": "Isso só pode ser feito com o Usuario Conectado",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "userID": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "categoryID": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "copyNumber": {
+                                        "type": "number"
+                                    },
+                                    "price": {
+                                        "type": "number"
+                                    },
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "id": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "order": {
+                                            "type": "object",
+                                            "$ref": "#/components/schemas/order"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "pedido já existe!"
+                    },
+                    "406": {
+                        "description": "pedido Não Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "order"
+            }
+        },
+        "/api/v1/updateStatus": {
+            "put": {
+                "tags": ["order"],
+                "summary": "Permite a edição dos status dos pedidos ao ADM do sistema role:[ADM]",
+                "description": "Isso só pode ser feito com o Usuario Conectado",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "format": "uuid",
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "order": {
+                                            "type": "object",
+                                            "$ref": "#/components/schemas/order"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "pedido já existe!"
+                    },
+                    "406": {
+                        "description": "pedido Não Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "order"
+            }
+        },
+        "/api/v1/showOrders": {
+            "get": {
+                "tags": ["order"],
+                "summary": "Permite o acesso a lista de pedidos | role:[ADM]",
+                "description": "Passa nada Paramentro, retona",
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "order": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/order"
+                                            }
+                                        }
+                                    },
+                                    "x-content-type": "application/json"
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Nenhum order Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "order"
+            }
+        },
+        "/api/v1/order/{orderID}": {
+            "get": {
+                "tags": ["order"],
+                "summary": "Permite a pesquisa, a partir do ID , dos pedidos  | role:[ADM]",
+                "description": "Isso só pode ser feito com o Usuario conectado",
+                "parameters": [{
+                    "name": "orderID",
+                    "in": "path",
+                    "description": "O ID do pedido",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "role": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/order"
+                                            }]
+                                        }
+                                    },
+                                    "x-content-type": "application/json"
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Nenhum order Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "order"
+            },
+            "delete": {
+                "tags": ["order"],
+                "summary": "Permite a Exclusão dos pedidos a partir do id | role:[ADM]",
+                "description": "Isso só pode ser feito com o Usuario Conectado",
+                "parameters": [{
+                    "name": "order",
+                    "in": "path",
+                    "description": "O ID que precisa ser excluído",
+                    "required": true,
+                    "style": "simple",
+                    "explode": false,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!"
+                    },
+                    "406": {
+                        "description": "Nenhum order Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "order"
+            }
+        },
+
+        "/api/v1/document": {
+            "post": {
+                "tags": ["document"],
+                "summary": "Permite o cadastro do Documento, enviado no pedido, no sistema | role:[ADM|USER]",
+                "description": "Essa rota permite o envio do documento ao sistema",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "pageNumber": {
+                                        "type": "integer"
+                                    },
+                                    "categoryID": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                }
+                            }
+                        },
+
+                        "required": true
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "document": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/document"
+                                            }],
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "file": {
+                                                    "type": "string",
+                                                    "data": {
+                                                        "type": "string",
+                                                        "format": "array"
+                                                    }
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "order já existe!"
+                    }
+
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "document"
+            },
+            "put": {
+                "tags": ["document"],
+                "summary": "Permite a troca e alteração do documento enviado",
+                "description": "Isso só pode ser feito com o Usuario Conectado",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "pageNumber": {
+                                        "type": "integer"
+                                    },
+                                    "categoryID": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "application/json": {
+                                    "schema": {
+                                        "properties": {
+                                            "document": {
+                                                "type": "object",
+                                                "allOf": [{
+                                                    "$ref": "#/components/schemas/document"
+                                                }],
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "x-content-type": "application/json"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Documento já existe!"
+                    },
+                    "406": {
+                        "description": "Documento Não Encontrado!"
+                    }
+                }
+            }
+        },
+        "/api/v1/showDocuments": {
+            "get": {
+                "tags": ["document"],
+                "summary": "Permite o acesso a lista dos documentos cadastrados | role:[ADM]",
+                "description": "Passa nada Paramentro, retona",
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "document": {
+                                            "type": "array",
+                                            "items": {
+                                                "allOf": [{
+                                                    "$ref": "#/components/schemas/document"
+                                                }],
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "categoryID": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "x-content-type": "application/json"
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Nenhum Documento Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "documento"
+            }
+        },
+        "/api/v1/document/{documentID}": {
+            "get": {
+                "tags": ["document"],
+                "summary": "Permite a pesquisa, a partir do ID , dos documentos cadastrados  | role:[ADM]",
+                "description": "Isso só pode ser feito com o Adm conectado",
+                "parameters": [{
+                    "name": "documentID",
+                    "in": "path",
+                    "description": "O ID do document",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "application/json": {
+                                    "schema": {
+                                        "properties": {
+                                            "document": {
+                                                "type": "object",
+                                                "allOf": [{
+                                                    "$ref": "#/components/schemas/document"
+                                                }],
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "size": {
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "x-content-type": "application/json"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Nenhum documento Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "document"
+            },
+
+            "delete": {
+                "tags": ["document"],
+                "summary": "Permite a Exclusão de documentos a partir do id | role:[ADM]",
+                "description": "Isso só pode ser feito com o Usuario Conectado",
+                "parameters": [{
+                    "name": "documentID",
+                    "in": "path",
+                    "description": "O ID que precisa ser excluído",
+                    "required": true,
+                    "style": "simple",
+                    "explode": false,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!"
+                    },
+                    "406": {
+                        "description": "Nenhum documento Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "document"
+            }
         }
+
+
     },
 
     "components": {
@@ -3052,6 +3616,28 @@
                     }
                 }
             },
+            "order": {
+                "required": ["userID", "categoryID", "copyNumber", "price", "file"],
+                "properties": {
+                    "userID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "categoryID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "copyNumber": {
+                        "type": "number"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "file": {
+                        "type": "form-date"
+                    }
+                }
+            },
 
             "userRole": {
                 "required": ["ID"],
@@ -3078,8 +3664,25 @@
                         "format": "uuid"
                     }
                 }
+            },
+            "document": {
+                "required": ["id", "type", "size", "pageNumber", "file"],
+                "properties": {
+                    "type": {
+                        "type": "string"
+                    },
+                    "size": {
+                        "type": "number"
+                    },
+                    "pageNumber": {
+                        "type": "integer"
+                    }
+                }
             }
+
+
         },
+
 
         "securitySchemes": {
             "bearerAuth": {

@@ -34,7 +34,7 @@ routerCompany.get("/companyByCpnj", (req: Request, res: Response) => {
 });
 
 routerCompany.get(
-  "/companiesByCategory/:category",
+  "/companiesByCategory/:companyCategory",
   verifyTokenUser.verifyTokenAuth,
   companyController.readFromCategory
 );
