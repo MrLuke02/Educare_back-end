@@ -28,7 +28,8 @@ app.use(
   routes.routerDocument,
   routes.routerSolicitation,
   routes.routerInterestArea,
-  routes.routerStudent
+  routes.routerStudent,
+  routes.routerToken
 );
 
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
