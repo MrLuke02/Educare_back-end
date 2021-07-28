@@ -58,7 +58,7 @@ class SolicitationController {
         solicitationAlreadyExist[0].status ===
         SolicitationStatus.SOLICITATION_PENDING
       ) {
-        throw new AppError(Message.USER_HAVE_SOLICITATION_PENDING, 401);
+        throw new AppError(Message.USER_HAVE_SOLICITATION_PENDING, 409);
       } else if (
         solicitationAlreadyExist[0].status ===
         SolicitationStatus.SOLICITATION_ACCEPTED

@@ -51,7 +51,13 @@ const verifyToken = (token: string): Promise<TokenType> => {
       // função para retornar o token caso ocorra tudo bem, caso de algo errado retorna um json de error
       function (err: VerifyErrors, token: TokenType) {
         if (err) {
-          throw new AppError(Message.EXPIRED_SESSION, 401);
+          if (err.name === "TokenExpiredError") {
+            throw new AppError(Message.EXPIRED_SESSION, 401);
+          } else if (err.name === "JsonWebTokenError") {
+            throw new AppError(Message.INVALID_TOKEN, 401);
+          } else {
+            throw new AppError(err.name, 401);
+          }
         }
         resolve(token);
       }

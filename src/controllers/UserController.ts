@@ -159,7 +159,7 @@ class UserController {
     const token = await createToken(payload);
 
     // retornando o token criado
-    return res.status(200).json({ token });
+    return res.status(200).json({ token, User: UserDTO.convertUserToDTO(user) });
   }
 
   // metodo assincrono para a atualização de usuários
