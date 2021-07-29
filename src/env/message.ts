@@ -48,6 +48,7 @@ const Message = {
   USER_ALREADY_HAVE_PHONE: "Usuário já possui telefone!",
   COMPANY_ALREADY_HAVE_PHONE: "Empresa já possui telefone!",
   ORDER_ALREADY_EXIST: "Pedido já existe!",
+  ORDER_STATUS_ALREADY_EXIST: "Status de pedido já existe!",
   INTEREST_AREA_ALREADY_EXIST: "Área de interesse já existe!",
   USER_HAVE_SOLICITATION_PENDING: "Usuário já possui uma solicitação pendente!",
   USER_ALREADY_IS_STUDENT: "Usuário já é um estudante!",
