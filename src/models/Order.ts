@@ -5,9 +5,11 @@ import {
   OneToOne,
   JoinColumn,
   PrimaryGeneratedColumn,
+  ManyToOne,
 } from "typeorm";
 import { Category } from "./Category";
 import { Document } from "./Document";
+import { OrderStatus } from "./OrderStatus";
 import { User } from "./User";
 
 @Entity("orders")
@@ -19,7 +21,7 @@ class Order {
   copyNumber: number;
 
   @Column()
-  status: string;
+  statusID: string;
 
   @Column()
   price: number;
@@ -39,6 +41,11 @@ class Order {
   @OneToOne(() => Document)
   @JoinColumn({ name: "documentID" })
   document: Document;
+
+  // criando o relacionamento de um para um com a tabela User
+  @ManyToOne(() => OrderStatus)
+  @JoinColumn({ name: "statusID" })
+  status: OrderStatus;
 
   @Column()
   categoryID: string;
