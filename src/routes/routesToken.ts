@@ -1,5 +1,8 @@
 import { Router } from "express";
 import { verifyToken } from "../auth/token/token.auth";
+import { TokenRefreshController } from "../controllers/TokenRefreshController";
+
+const tokenRefreshController = new TokenRefreshController();
 
 const routerToken = Router();
 
@@ -11,6 +14,8 @@ routerToken.post("/validationToken", async (req, res) => {
 
   return res.status(200).json({ tokenDecrypted: newToken });
 });
+
+routerToken.post("/tokenRefresh", tokenRefreshController.create);
 
 // exportando o router
 export { routerToken };

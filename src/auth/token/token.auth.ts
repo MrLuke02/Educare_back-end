@@ -5,13 +5,14 @@ import { AppError } from "../../errors/AppErrors";
 type TokenType = {
   sub: string;
   roles: string[];
+  exp: number;
 };
 
 // codigo usado para a criação da chave secreta
 // node -e "console.log(require('crypto').randomBytes(256).toString('base64'));
 
 // criando o metodo de geração do token, com retorno em forma de promise
-const createToken = (payload: Object): Promise<string> => {
+const createToken = (payload: Object, expiresIn: string): Promise<string> => {
   return new Promise((resolve) => {
     // chamando o metodo sign do JWT responsável por criar o token
     JWT.sign(
@@ -22,7 +23,7 @@ const createToken = (payload: Object): Promise<string> => {
       // opções/configurações, aqui no caso foi passado o algoritmo usado e o tempo de expiração
       {
         algorithm: "HS512",
-        expiresIn: "1h",
+        expiresIn: expiresIn,
       },
       // função para retornar o token caso ocorra tudo bem, caso de algo errado retorna um json de error
       function (err: Error, token: string) {

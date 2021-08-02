@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import md5 from "md5";
 import { getCustomRepository } from "typeorm";
 
-import { createToken } from "../auth/token/token.auth";
+import { createToken, verifyToken } from "../auth/token/token.auth";
 import { Message } from "../env/message";
 import { AppError } from "../errors/AppErrors";
 import { UserDTO } from "../models/DTOs/UserDTO";
@@ -15,6 +15,7 @@ import { OrderController } from "./OrderController";
 import { PhoneController } from "./PhoneController";
 import { RoleController } from "./RoleController";
 import { SolicitationController } from "./SolicitationController";
+import { TokenRefreshController } from "./TokenRefreshController";
 import { UserRoleController } from "./UserRoleController";
 
 class UserController {
@@ -156,10 +157,27 @@ class UserController {
       roles: rolesTypes,
     };
 
-    const token = await createToken(payload);
+    const token = await createToken(payload, "1h");
+
+    const tokenRefreshController = new TokenRefreshController();
+
+    await tokenRefreshController.deleteFromController(user.id);
+
+    const tokenDecrypted = await verifyToken(token);
+
+    const expiresIn = tokenDecrypted.exp;
+
+    const tokenRefresh = await tokenRefreshController.createFromController(
+      user.id,
+      expiresIn
+    );
 
     // retornando o token criado
-    return res.status(200).json({ token, User: UserDTO.convertUserToDTO(user) });
+    return res.status(200).json({
+      Token: token,
+      User: UserDTO.convertUserToDTO(user),
+      TokenRefreshID: tokenRefresh.id,
+    });
   }
 
   // metodo assincrono para a atualização de usuários
