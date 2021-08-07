@@ -21,6 +21,9 @@ class User {
   @Column()
   password: string;
 
+  @Column()
+  biography: string;
+
   @CreateDateColumn()
   createdAt: Date;
 }
