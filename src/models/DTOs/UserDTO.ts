@@ -10,6 +10,8 @@ class UserDTO {
 
   public readonly address: string;
 
+  public readonly biography: string;
+
   // criando o cronstrutor do UserResponseDTO a ser retornado, passando para ele o usuário
   constructor(user: User) {
     // capturando todos os atributos da usuário, menos a senha, a data de criação e o id

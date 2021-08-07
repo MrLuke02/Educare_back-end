@@ -16,7 +16,6 @@ class AddressController {
       state,
       city,
       cep,
-      referencePoint,
       complement,
       userID,
     } = req.body;
@@ -56,7 +55,6 @@ class AddressController {
       state,
       city,
       cep,
-      referencePoint,
       complement,
       userID,
     });
@@ -102,7 +100,6 @@ class AddressController {
       state = address.state,
       city = address.city,
       cep = address.cep,
-      referencePoint = address.referencePoint,
       complement = address.complement,
     } = req.body;
 
@@ -113,7 +110,6 @@ class AddressController {
       state,
       city,
       cep,
-      referencePoint,
       complement,
     });
 
