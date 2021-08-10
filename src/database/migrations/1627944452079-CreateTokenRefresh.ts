@@ -10,8 +10,6 @@ export class CreateTokenRefresh1627944452079 implements MigrationInterface {
             name: "id",
             type: "uuid",
             isPrimary: true,
-            generationStrategy: "uuid",
-            default: "gen_random_uuid()",
           },
           {
             name: "expiresIn",

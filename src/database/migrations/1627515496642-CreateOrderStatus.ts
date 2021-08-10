@@ -10,8 +10,6 @@ export class CreateOrderStatus1627515496642 implements MigrationInterface {
             name: "id",
             type: "uuid",
             isPrimary: true,
-            generationStrategy: "uuid",
-            default: "gen_random_uuid()",
           },
           {
             name: "key",

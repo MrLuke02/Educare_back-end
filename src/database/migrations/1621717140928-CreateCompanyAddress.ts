@@ -10,8 +10,6 @@ export class CreateCompanyAddress1621717140928 implements MigrationInterface {
             name: "id",
             type: "uuid",
             isPrimary: true,
-            generationStrategy: "uuid",
-            default: "gen_random_uuid()",
           },
           {
             name: "street",

@@ -4,13 +4,14 @@ import {
   Entity,
   OneToOne,
   JoinColumn,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
 } from "typeorm";
 import { Company } from "./Company";
+import { v4 as uuid } from "uuid";
 
 @Entity("company_contacts")
 class CompanyContact {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   id: string;
 
   @Column()
@@ -29,6 +30,12 @@ class CompanyContact {
   @OneToOne(() => Company)
   @JoinColumn({ name: "companyID" })
   company: Company;
+
+  constructor() {
+    if (!this.id) {
+      this.id = uuid();
+    }
+  }
 }
 
 export { CompanyContact };

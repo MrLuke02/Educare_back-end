@@ -1,11 +1,10 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-import { RoleController } from "../../controllers/RoleController";
-import { UserController } from "../../controllers/UserController";
 import { Attributes } from "../../env/attributes";
 import { Role } from "../../models/Role";
 import { User } from "../../models/User";
 import { UserRole } from "../../models/UserRole";
+import { v4 as uuid } from "uuid";
 
 export class CreateUserInstanceOnUserRole1627079464043
   implements MigrationInterface
@@ -31,6 +30,7 @@ export class CreateUserInstanceOnUserRole1627079464043
       .into(UserRole)
       .values([
         {
+          id: uuid(),
           userID: user.id,
           roleID: role.id,
         },

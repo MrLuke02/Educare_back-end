@@ -10,8 +10,6 @@ export class CreatePhones1620870084728 implements MigrationInterface {
             name: "id",
             type: "uuid",
             isPrimary: true,
-            generationStrategy: "uuid",
-            default: "gen_random_uuid()",
           },
           {
             name: "phoneNumber",

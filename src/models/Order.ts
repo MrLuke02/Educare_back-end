@@ -4,17 +4,18 @@ import {
   Entity,
   OneToOne,
   JoinColumn,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   ManyToOne,
 } from "typeorm";
 import { Category } from "./Category";
 import { Document } from "./Document";
 import { OrderStatus } from "./OrderStatus";
 import { User } from "./User";
+import { v4 as uuid } from "uuid";
 
 @Entity("orders")
 class Order {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   id: string;
 
   @Column()
@@ -57,6 +58,12 @@ class Order {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  constructor() {
+    if (!this.id) {
+      this.id = uuid();
+    }
+  }
 }
 
 // exportando a classe

@@ -4,14 +4,15 @@ import {
   Entity,
   JoinColumn,
   OneToOne,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
 } from "typeorm";
 import { User } from "./User";
+import { v4 as uuid } from "uuid";
 
 // criando o modelo da tabela roles, especificando suas colunas e tipo de dado que será armazenado
 @Entity("token_refresh")
 class TokenRefresh {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   id: string;
 
   @Column()
@@ -26,6 +27,12 @@ class TokenRefresh {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  constructor() {
+    if (!this.id) {
+      this.id = uuid();
+    }
+  }
 }
 
 // exportando a classe
