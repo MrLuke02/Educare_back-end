@@ -9,7 +9,7 @@ export class CreateUserInstance1627077869481 implements MigrationInterface {
     await queryRunner.manager
       .createQueryBuilder()
       .insert()
-      .into("users")
+      .into("users", ["name", "email", "password", "createdAt"])
       .values([
         {
           name: Attributes.ADM_NAME,
