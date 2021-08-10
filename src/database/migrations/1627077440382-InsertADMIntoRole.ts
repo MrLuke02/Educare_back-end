@@ -1,5 +1,6 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 import { Role } from "../../models/Role";
+import { v4 as uuid } from "uuid";
 
 export class InsertADMIntoRole1627077440382 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -9,6 +10,7 @@ export class InsertADMIntoRole1627077440382 implements MigrationInterface {
       .into("roles")
       .values([
         {
+          id: uuid(),
           type: "ADM",
         },
       ])

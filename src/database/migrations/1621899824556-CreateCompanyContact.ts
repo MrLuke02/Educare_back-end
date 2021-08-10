@@ -10,8 +10,6 @@ export class CreateCompanyContact1621899824556 implements MigrationInterface {
             name: "id",
             type: "uuid",
             isPrimary: true,
-            generationStrategy: "uuid",
-            default: "gen_random_uuid()",
           },
           {
             name: "email",

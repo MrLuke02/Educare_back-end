@@ -10,8 +10,6 @@ export class CreateInterestArea1626375969322 implements MigrationInterface {
             name: "id",
             type: "uuid",
             isPrimary: true,
-            generationStrategy: "uuid",
-            default: "gen_random_uuid()",
           },
           {
             name: "interestArea",

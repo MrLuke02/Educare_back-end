@@ -10,8 +10,6 @@ export class CreateStudents1626375991379 implements MigrationInterface {
             name: "id",
             type: "uuid",
             isPrimary: true,
-            generationStrategy: "uuid",
-            default: "gen_random_uuid()",
           },
           {
             name: "interestAreaID",

@@ -4,15 +4,16 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
 } from "typeorm";
 import { Role } from "./Role";
 import { User } from "./User";
+import { v4 as uuid } from "uuid";
 
 // criando o modelo da tabela user_roles, especificando suas colunas e tipo de dado que será armazenado
 @Entity("user_roles")
 class UserRole {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   id: string;
 
   @Column()
@@ -33,6 +34,12 @@ class UserRole {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  constructor() {
+    if (!this.id) {
+      this.id = uuid();
+    }
+  }
 }
 
 // exportando a classe
