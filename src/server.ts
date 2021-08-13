@@ -30,7 +30,8 @@ app.use(
   routes.routerInterestArea,
   routes.routerStudent,
   routes.routerToken,
-  routes.routerOrderStatus
+  routes.routerOrderStatus,
+  routes.routerBranch
 );
 
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
