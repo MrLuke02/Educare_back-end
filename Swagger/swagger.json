@@ -60,6 +60,22 @@
         {
             "name": "document",
             "description": "rotas relacionadas ao documento enviado"
+        },
+        {
+            "name": "refreshtoken",
+            "description": "rotas relacionadas ao documento enviado"
+        },
+        {
+            "name": "solicitation",
+            "description": "rotas relacionadas a Socilicitação do Estudante "
+        },
+        {
+            "name": "interestarea",
+            "description": "rotas relacionadas a Area de Interesse do Estudante "
+        },
+        {
+            "name": "student",
+            "description": "rotas relacionadas ao Estudante "
         }
     ],
     "paths": {
@@ -91,7 +107,7 @@
                                         "email": "wellingtonvictoralves@hotmail.com",
                                         "name": "Weliton",
                                         "password": "9781av.9L",
-                                        "phoneNumber": "97812345"
+                                        "phoneNumber": "+55 (88) 9.9781-2345"
                                     }
                                 }
                             }
@@ -135,7 +151,7 @@
                         "description": "Usuario já Existe! Telefone já existe!"
                     },
                     "422": {
-                        "description": "Campos Obrigatorios! Email, senha e telefone invalido!"
+                        "description": "Campo obrigatório(s) vazio(s)!"
                     }
                 },
                 "x-swagger-router-controller": "User"
@@ -3220,11 +3236,603 @@
                 }],
                 "x-swagger-router-controller": "document"
             }
+        },
+        "/api/v1/refreshToken": {
+            "post": {
+                "tags": ["refreshtoken"],
+                "summary": "Permite a criação de token no sistema | role:[ADM ]",
+                "description": "Criação de um novo token no sistema",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "Solicitition": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/document"
+                                            }]
+
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Token já existe!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "Token"
+            }
+
+        },
+        "/api/v1/solicitation": {
+            "post": {
+                "tags": ["solicitation"],
+                "summary": "Permite a criação de uma solicitação no sistema | role:[ADM|]",
+                "description": "Essa rota permite ao usuario a socilitação para ser estudante no sistema",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "userID": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                }
+                            }
+                        },
+                        "required": true
+                    }
+
+                },
+                "responses": {
+                    "201": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "solicitation": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/solicition"
+                                            }],
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "file": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "type": {
+                                                            "type": "string"
+                                                        },
+                                                        "data": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "number",
+                                                                "format": "binary"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "status": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    },
+                    "400": {
+                        "description": "Solicitação já existe!"
+                    },
+                    "422": {
+                        "description": "Solicitação já existe!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "Token"
+            },
+            "put": {
+                "tags": ["solicitation"],
+                "summary": "Permite a troca e alteração do documento enviado",
+                "description": "Isso só pode ser feito com o Usuario Conectado",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "status": {
+                                        "type": "string"
+
+                                    },
+                                    "admID": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "solicitation": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/solicition"
+                                            }],
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "file": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "type": {
+                                                            "type": "string"
+                                                        },
+                                                        "data": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "number",
+                                                                "format": "binary"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "status": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    },
+                    "400": {
+                        "description": "Pedido já existe!"
+                    },
+                    "406": {
+                        "description": "Pedido Não Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "solicitition"
+            }
+        },
+        "/api/v1/solicitation/{solicitationID}": {
+            "delete": {
+                "tags": ["solicitation"],
+                "summary": "Permite a Exclusão das solicitação a partir do id | role:[ADM]",
+                "description": "Solicitação é o pedido para ser tornar aluno no sistema",
+                "parameters": [{
+                    "name": "solicitationID",
+                    "in": "path",
+                    "description": "O ID que precisa ser excluído",
+                    "required": true,
+                    "style": "simple",
+                    "explode": false,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!"
+                    },
+                    "406": {
+                        "description": "Nenhum Solicitação Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "order"
+            },
+
+
+            "get": {
+                "tags": ["solicitation"],
+                "summary": "Permite a pesquisa, a partir do ID , dos pedido cadastrados  | role:[ADM]",
+                "description": "Isso só pode ser feito com o Adm conectado",
+                "parameters": [{
+                    "name": "solicitationID",
+                    "in": "path",
+                    "description": "O ID da solicitação",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "application/json": {
+                                    "schema": {
+                                        "properties": {
+                                            "solicitation": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "status": {
+                                                        "type": "string"
+                                                    },
+                                                    "admid": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "x-content-type": "application/json"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Nenhum Pedido Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "solicitation"
+            }
+        },
+        "/api/v1/showSolicitations": {
+            "get": {
+                "tags": ["solicitation"],
+                "summary": "Permite o acesso a lista dos documentos cadastrados | role:[ADM]",
+                "description": "Passa nada Paramentro, retona",
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "solicitation": {
+                                            "type": "array",
+                                            "items": {
+                                                "allOf": [{
+                                                    "$ref": "#/components/schemas/solicition"
+                                                }],
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "file": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string"
+                                                            },
+                                                            "data": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "number",
+                                                                    "format": "binary"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "status": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "x-content-type": "application/json"
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Nenhum Documento Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "documento"
+            }
+        },
+        "/api/v1/showStudents": {
+            "get": {
+                "tags": ["student"],
+                "summary": "Permite o acesso a lista dos estudantes cadastrados | role:[ADM]",
+                "description": "Passa nada Paramentro, retona",
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "solicitation": {
+                                            "type": "array",
+                                            "items": {
+                                                "allOf": [{
+                                                    "$ref": "#/components/schemas/solicition"
+                                                }],
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "file": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "type": {
+                                                                "type": "string"
+                                                            },
+                                                            "data": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "number",
+                                                                    "format": "binary"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "status": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "x-content-type": "application/json"
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Nenhum Estudante Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "student"
+            }
+        },
+        "/api/v1/student/{studentID}": {
+            "delete": {
+                "tags": ["student"],
+                "summary": "Permite a Exclusão das solicitação a partir do id | role:[ADM]",
+                "description": "Solicitação é o pedido para ser tornar aluno no sistema",
+                "parameters": [{
+                    "name": "studentID",
+                    "in": "path",
+                    "description": "O ID que precisa ser excluído",
+                    "required": true,
+                    "style": "simple",
+                    "explode": false,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!"
+                    },
+                    "406": {
+                        "description": "Nenhum Solicitação Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "order"
+            },
+
+
+            "get": {
+                "tags": ["student"],
+                "summary": "Permite a pesquisa, a partir do ID , dos pedido cadastrados  | role:[ADM]",
+                "description": "Isso só pode ser feito com o Adm conectado",
+                "parameters": [{
+                    "name": "studentID",
+                    "in": "path",
+                    "description": "O ID da solicitação",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "application/json": {
+                                    "schema": {
+                                        "properties": {
+                                            "solicitation": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "status": {
+                                                        "type": "string"
+                                                    },
+                                                    "admid": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "x-content-type": "application/json"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Nenhum Pedido Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "solicitation"
+            }
+        },
+        "/api/v1/student": {
+            "put": {
+                "tags": ["student"],
+                "summary": "Permite a troca e alteração do documento enviado",
+                "description": "Isso só pode ser feito com o Usuario Conectado",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "status": {
+                                        "type": "string"
+
+                                    },
+                                    "admID": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "solicitation": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/solicition"
+                                            }],
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "file": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "type": {
+                                                            "type": "string"
+                                                        },
+                                                        "data": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "number",
+                                                                "format": "binary"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "status": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    },
+                    "400": {
+                        "description": "Pedido já existe!"
+                    },
+                    "406": {
+                        "description": "Pedido Não Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "solicitition"
+            }
         }
-
-
     },
-
     "components": {
         "schemas": {
             "user": {
@@ -3729,6 +4337,61 @@
                         "type": "integer"
                     }
                 }
+            },
+            "file": {
+                "required": ["type", "data"],
+                "properties": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string"
+                        },
+                        "data": {
+                            "type": "array",
+                            "items": {
+                                "type": "number",
+                                "format": "binary"
+                            }
+                        }
+                    }
+                }
+
+            },
+            "solicition": {
+                "required": ["userID", "status", "id"],
+                "properties": {
+
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+
+                    "status": {
+                        "type": "string"
+
+                    },
+                    "userID": {
+                        "type": "string",
+                        "format": "uuid"
+
+                    },
+                    "admID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date"
+
+                    }
+                },
+                "file": {
+                    "type": "object",
+                    "allOf": [{
+                        "$ref": "#/components/schemas/file"
+                    }]
+                }
+
             }
 
 
