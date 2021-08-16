@@ -183,14 +183,14 @@ class OrderController {
     }
 
     const ordersDTO = orders.map((order) => {
-      const { createdAt, userID, statusID, status, user, ...props } = order;
+      const { userID, statusID, status, user, ...props } = order;
 
-      let orderDto = {};
+      let orderDTO = {};
 
-      Object.assign(orderDto, props);
+      Object.assign(orderDTO, props);
 
       return {
-        ...orderDto,
+        ...orderDTO,
         status,
         user: UserDTO.convertUserToDTO(user),
       };
