@@ -9,6 +9,7 @@ import { CategoryController } from "./CategoryController";
 import { DocumentController } from "./DocumentController";
 import { UserController } from "./UserController";
 import { OrderStatusController } from "./OrderStatusController";
+import { UserDTO } from "../models/DTOs/UserDTO";
 
 class OrderController {
   async create(req: Request, res: Response) {
@@ -43,7 +44,9 @@ class OrderController {
 
     const orderStatusController = new OrderStatusController();
 
-    const orderStatus = await orderStatusController.readFromController(statusKey);
+    const orderStatus = await orderStatusController.readFromController(
+      statusKey
+    );
 
     if (!orderStatus) {
       throw new AppError(Message.ORDER_NOT_FOUND, 406);
@@ -137,7 +140,9 @@ class OrderController {
 
     const orderStatusController = new OrderStatusController();
 
-    const orderStatus = await orderStatusController.readFromController(statusKey);
+    const orderStatus = await orderStatusController.readFromController(
+      statusKey
+    );
 
     if (!orderStatus) {
       throw new AppError(Message.ORDER_STATUS_NOT_FOUND, 406);
@@ -169,14 +174,26 @@ class OrderController {
   async show(req: Request, res: Response) {
     const orderRepository = getCustomRepository(OrdersRepository);
 
-    const orders = await orderRepository.find();
+    const orders = await orderRepository.find({
+      relations: ["status", "user"],
+    });
 
-    if (!orders) {
+    if (orders.length === 0) {
       throw new AppError(Message.NOT_FOUND, 406);
     }
 
     const ordersDTO = orders.map((order) => {
-      return OrderDTO.convertOrderToDTO(order);
+      const { createdAt, userID, statusID, status, user, ...props } = order;
+
+      let orderDto = {};
+
+      Object.assign(orderDto, props);
+
+      return {
+        ...orderDto,
+        status,
+        user: UserDTO.convertUserToDTO(user),
+      };
     });
 
     return res.status(200).json({ Orders: ordersDTO });
