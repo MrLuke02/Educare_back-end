@@ -2,13 +2,13 @@ import { Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
 import { v4 as uuid } from "uuid";
 
 // criando o modelo da tabela roles, especificando suas colunas e tipo de dado que será armazenado
-@Entity("branches")
-class Branch {
+@Entity("courses")
+class Course {
   @PrimaryColumn()
   id: string;
 
   @Column()
-  branch: string;
+  course: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -21,4 +21,4 @@ class Branch {
 }
 
 // exportando a classe
-export { Branch };
+export { Course };
