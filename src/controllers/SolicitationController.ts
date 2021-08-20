@@ -29,7 +29,7 @@ class SolicitationController {
 
     const userController = new UserController();
 
-    const user = userController.readFromController(userID);
+    const user = await userController.readFromController(userID);
 
     if (!user) {
       throw new AppError(Message.USER_NOT_FOUND, 406);

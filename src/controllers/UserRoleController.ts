@@ -6,6 +6,8 @@ import { AppError } from "../errors/AppErrors";
 import { RoleDTO } from "../models/DTOs/RoleDTO";
 import { UserRoleDTO } from "../models/DTOs/UserRoleDTO";
 import { UserRoleRepository } from "../repositories/UserRoleRepository";
+import { RoleController } from "./RoleController";
+import { UserController } from "./UserController";
 
 class UserRoleController {
   // metodo assincrono para a criação de user_roles
@@ -15,6 +17,22 @@ class UserRoleController {
 
     if (!userID || !roleID) {
       throw new AppError(Message.REQUIRED_FIELD, 422);
+    }
+
+    const userController = new UserController();
+
+    const user = await userController.readFromController(userID);
+
+    if (!user) {
+      throw new AppError(Message.USER_NOT_FOUND, 406);
+    }
+
+    const roleController = new RoleController();
+
+    const role = await roleController.readFromId(roleID);
+
+    if (!role) {
+      throw new AppError(Message.ROLE_NOT_FOUND, 406);
     }
 
     // pegando o repositorio customizado/personalizado
@@ -108,10 +126,18 @@ class UserRoleController {
     // capturando o tipo de userRole passado no corpo da requisição, caso não seja passado nada, pega o valor que ja está cadastrado na userRole
     const { roleID = userRole.roleID } = req.body;
 
+    const roleController = new RoleController();
+
+    const role = await roleController.readFromId(roleID);
+
+    if (!role) {
+      throw new AppError(Message.ROLE_NOT_FOUND, 406);
+    }
+
     const userID = userRole.userID;
 
     // verificando se o roleID da userRole passado e igual ao da userRole sendo editada
-    if (!userRole.roleID === roleID) {
+    if (userRole.roleID !== roleID) {
       // pesquisando uma userRole pelo roleID
       const userRoleExists = await userRolesRepository.findOne({
         userID,

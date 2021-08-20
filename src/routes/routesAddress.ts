@@ -26,7 +26,7 @@ routerAddress.put(
 
 // criando a rota de listagem de todos as Roles
 routerAddress.get(
-  "/showAddress",
+  "/showAddresses",
   verifyTokenUser.verifyTokenADM,
   addressController.show
 );
