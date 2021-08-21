@@ -93,6 +93,18 @@ class CourseController {
 
     return res.status(200).json({ Courses: courses });
   }
+
+  async readFromCourse(course: string) {
+    const coursesRepository = getCustomRepository(CoursesRepository);
+
+    const courseExist = await coursesRepository.findOne({ course });
+
+    if (!courseExist) {
+      throw new AppError(Message.COURSE_NOT_FOUND, 406);
+    }
+
+    return courseExist;
+  }
 }
 
 export { CourseController };

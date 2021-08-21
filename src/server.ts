@@ -27,7 +27,6 @@ app.use(
   routes.routerCompanyContact,
   routes.routerDocument,
   routes.routerSolicitation,
-  routes.routerInterestArea,
   routes.routerStudent,
   routes.routerToken,
   routes.routerOrderStatus,
