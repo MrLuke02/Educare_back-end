@@ -22,7 +22,7 @@ routerOrder.put(
 );
 
 routerOrder.put(
-  "/updateStatus",
+  "/orderStatus",
   verifyTokenUser.verifyTokenADM,
   orderController.updateStatus
 );

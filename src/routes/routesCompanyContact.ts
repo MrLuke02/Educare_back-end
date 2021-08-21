@@ -33,7 +33,7 @@ routerCompanyContact.get("/companyContact/", (req: Request, res: Response) => {
   throw new AppError(Message.ID_NOT_FOUND, 422);
 });
 routerCompanyContact.get(
-  "/showCompaniesContacts",
+  "/showCompanyContacts",
   verifyTokenUser.verifyTokenADM,
   companyContactController.show
 );

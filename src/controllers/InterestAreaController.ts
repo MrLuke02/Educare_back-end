@@ -3,9 +3,8 @@ import { getCustomRepository } from "typeorm";
 
 import { Message } from "../env/message";
 import { AppError } from "../errors/AppErrors";
-import { DocumentDTO } from "../models/DTOs/DocumentDTO";
+
 import { InterestAreaRepository } from "../repositories/InterestAreaRepository";
-import { CategoryController } from "./CategoryController";
 
 class InterestAreaController {
   async create(req: Request, res: Response) {
