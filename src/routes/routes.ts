@@ -11,7 +11,6 @@ import { routerApiDocs } from "./routesApiDocs";
 import { routerDocument } from "./routesDocument";
 import { routerOrder } from "./routesOrders";
 import { routerSolicitation } from "./routesSolicitation";
-import { routerInterestArea } from "./routesInterestArea";
 import { routerStudent } from "./routesStudent";
 import { routerToken } from "./routesToken";
 import { routerOrderStatus } from "./routesOrderStatus";
@@ -32,7 +31,6 @@ export {
   routerDocument,
   routerOrder,
   routerSolicitation,
-  routerInterestArea,
   routerStudent,
   routerToken,
   routerOrderStatus,

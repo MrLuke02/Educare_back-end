@@ -5,8 +5,9 @@ import { Message } from "../env/message";
 import { AppError } from "../errors/AppErrors";
 import { StudentsRepository } from "../repositories/StudentRepository";
 import { UserController } from "./UserController";
-import { InterestAreaController } from "./InterestAreaController";
+
 import dayjs from "dayjs";
+import { CourseController } from "./CourseController";
 
 class StudentController {
   // metodo assincrono para o cadastro de phones
@@ -48,15 +49,13 @@ class StudentController {
       throw new AppError(Message.STUDENT_NOT_FOUND, 406);
     }
 
-    const { interestArea } = req.body;
+    const { course } = req.body;
 
-    const interestAreaController = new InterestAreaController();
+    const courseController = new CourseController();
 
-    const newInterestArea = await interestAreaController.readFromInterestArea(
-      interestArea
-    );
+    const newCourse = await courseController.readFromCourse(course);
 
-    await studentRepository.update(id, { interestAreaID: newInterestArea.id });
+    await studentRepository.update(id, { courseID: newCourse.id });
 
     student = await studentRepository.findOne({ id });
 

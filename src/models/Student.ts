@@ -7,9 +7,10 @@ import {
   OneToOne,
   PrimaryColumn,
 } from "typeorm";
-import { InterestArea } from "./InterestArea";
+
 import { User } from "./User";
 import { v4 as uuid } from "uuid";
+import { Course } from "./Course";
 
 // criando o modelo da tabela roles, especificando suas colunas e tipo de dado que será armazenado
 @Entity("students")
@@ -21,11 +22,11 @@ class Student {
   expiresIn: number;
 
   @Column()
-  interestAreaID: string;
+  courseID: string;
 
-  @ManyToOne(() => InterestArea)
-  @JoinColumn({ name: "interestAreaID" })
-  interestArea: InterestArea;
+  @ManyToOne(() => Course)
+  @JoinColumn({ name: "courseID" })
+  course: Course;
 
   @Column()
   userID: string;
