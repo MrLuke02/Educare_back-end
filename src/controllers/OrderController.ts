@@ -2,20 +2,20 @@ import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 
 import { Message } from "../env/message";
+import { OrderStatus } from "../env/orderStaus";
 import { AppError } from "../errors/AppErrors";
 import { OrderDTO } from "../models/DTOs/OrderDTO";
 import { OrdersRepository } from "../repositories/OrderRepository";
 import { CategoryController } from "./CategoryController";
 import { DocumentController } from "./DocumentController";
 import { UserController } from "./UserController";
-import { OrderStatusController } from "./OrderStatusController";
 import { UserDTO } from "../models/DTOs/UserDTO";
+import { verifyStatus } from "../util/user/StatusValidation";
 
 class OrderController {
   async create(req: Request, res: Response) {
     const docs = req.file;
     const { userID, categoryID, copyNumber, price, pageNumber } = req.body;
-    const statusKey = "ORDER_CREATED";
 
     if (
       !userID ||
@@ -42,16 +42,6 @@ class OrderController {
       throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
     }
 
-    const orderStatusController = new OrderStatusController();
-
-    const orderStatus = await orderStatusController.readFromController(
-      statusKey
-    );
-
-    if (!orderStatus) {
-      throw new AppError(Message.ORDER_NOT_FOUND, 406);
-    }
-
     const document = await documentController.createFromController(
       docs,
       pageNumber,
@@ -60,7 +50,7 @@ class OrderController {
 
     const order = orderRepository.create({
       copyNumber,
-      statusID: orderStatus.id,
+      status: OrderStatus.ORDER_CREATED,
       price,
       userID,
       categoryID,
@@ -138,17 +128,11 @@ class OrderController {
       throw new AppError(Message.ORDER_NOT_FOUND, 406);
     }
 
-    const orderStatusController = new OrderStatusController();
-
-    const orderStatus = await orderStatusController.readFromController(
-      statusKey
-    );
-
-    if (!orderStatus) {
+    if (!verifyStatus(statusKey, OrderStatus)) {
       throw new AppError(Message.ORDER_STATUS_NOT_FOUND, 406);
     }
 
-    await orderRepository.update(id, { statusID: orderStatus.id });
+    await orderRepository.update(id, { status: OrderStatus[statusKey] });
 
     order = await orderRepository.findOne({ id });
 
@@ -175,7 +159,7 @@ class OrderController {
     const orderRepository = getCustomRepository(OrdersRepository);
 
     const orders = await orderRepository.find({
-      relations: ["status", "user"],
+      relations: ["user"],
     });
 
     if (orders.length === 0) {
@@ -183,7 +167,7 @@ class OrderController {
     }
 
     const ordersDTO = orders.map((order) => {
-      const { userID, statusID, status, user, ...props } = order;
+      const { userID, user, ...props } = order;
 
       let orderDTO = {};
 
@@ -191,7 +175,6 @@ class OrderController {
 
       return {
         ...orderDTO,
-        status,
         user: UserDTO.convertUserToDTO(user),
       };
     });

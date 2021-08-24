@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, TableColumn } from "typeorm";
+import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class AlterTableInterestArea1629580869189 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
