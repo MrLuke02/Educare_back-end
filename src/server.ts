@@ -29,7 +29,6 @@ app.use(
   routes.routerSolicitation,
   routes.routerStudent,
   routes.routerToken,
-  routes.routerOrderStatus,
   routes.routerCourse
 );
 

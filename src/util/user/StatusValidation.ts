@@ -1,7 +1,7 @@
 function verifyStatus(status: string, obj: Object) {
-  const arrayOrderStatus = Object.keys(obj);
+  const arrayStatus = Object.keys(obj);
 
-  return arrayOrderStatus.includes(status);
+  return arrayStatus.includes(status);
 }
 
 export { verifyStatus };
