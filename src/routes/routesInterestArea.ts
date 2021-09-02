@@ -2,39 +2,39 @@ import { Router } from "express";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
 import { InterestAreaController } from "../controllers/InterestAreaController";
 
-const courseController = new InterestAreaController();
+const interestAreaController = new InterestAreaController();
 const verifyTokenUser = new VerifyTokenUser();
 
 const routerInterestArea = Router();
 
 routerInterestArea.post(
-  "/course",
+  "/interestArea",
   verifyTokenUser.verifyTokenADM,
-  courseController.create
+  interestAreaController.create
 );
 
 routerInterestArea.put(
-  "/course",
+  "/interestArea",
   verifyTokenUser.verifyTokenADM,
-  courseController.update
+  interestAreaController.update
 );
 
 routerInterestArea.get(
-  "/course/:id",
+  "/interestArea/:id",
   verifyTokenUser.verifyTokenADM,
-  courseController.read
+  interestAreaController.read
 );
 
 routerInterestArea.delete(
-  "/course/:id",
+  "/interestArea/:id",
   verifyTokenUser.verifyTokenADM,
-  courseController.delete
+  interestAreaController.delete
 );
 
 routerInterestArea.get(
-  "/showCourses",
+  "/showInterestArea",
   verifyTokenUser.verifyTokenADM,
-  courseController.show
+  interestAreaController.show
 );
 
 export { routerInterestArea };
