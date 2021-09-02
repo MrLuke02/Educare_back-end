@@ -1,40 +1,40 @@
 import { Router } from "express";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
-import { CourseController } from "../controllers/CourseController";
+import { InterestAreaController } from "../controllers/InterestAreaController";
 
-const courseController = new CourseController();
+const courseController = new InterestAreaController();
 const verifyTokenUser = new VerifyTokenUser();
 
-const routerCourse = Router();
+const routerInterestArea = Router();
 
-routerCourse.post(
+routerInterestArea.post(
   "/course",
   verifyTokenUser.verifyTokenADM,
   courseController.create
 );
 
-routerCourse.put(
+routerInterestArea.put(
   "/course",
   verifyTokenUser.verifyTokenADM,
   courseController.update
 );
 
-routerCourse.get(
+routerInterestArea.get(
   "/course/:id",
   verifyTokenUser.verifyTokenADM,
   courseController.read
 );
 
-routerCourse.delete(
+routerInterestArea.delete(
   "/course/:id",
   verifyTokenUser.verifyTokenADM,
   courseController.delete
 );
 
-routerCourse.get(
+routerInterestArea.get(
   "/showCourses",
   verifyTokenUser.verifyTokenADM,
   courseController.show
 );
 
-export { routerCourse };
+export { routerInterestArea };

@@ -202,7 +202,6 @@ class UserController {
       name = user.name,
       email = user.email,
       password = user.password,
-      biography = user.biography,
     } = req.body;
 
     // verificando se o email é valido
@@ -233,7 +232,6 @@ class UserController {
       name,
       email,
       password: passwordCrypted,
-      biography,
     });
 
     // pesquisando o usuário pelo id

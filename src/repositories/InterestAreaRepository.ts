@@ -1,10 +1,10 @@
 import { EntityRepository, Repository } from "typeorm";
-import { Course } from "../models/Course";
+import { InterestArea } from "../models/InterestArea";
 
 // criando o repositorio customizado/personalizado passando o model
-@EntityRepository(Course)
+@EntityRepository(InterestArea)
 // extendendo a classe Repository, passando também o model
-class CoursesRepository extends Repository<Course> {}
+class InterestAreaRepository extends Repository<InterestArea> {}
 
 // exportando a classe
-export { CoursesRepository };
+export { InterestAreaRepository };
