@@ -73,6 +73,18 @@ class TokenRefreshController {
     return res.status(204).json();
   }
 
+  async validation(req: Request, res: Response) {
+    const { token } = req.body;
+
+    const newToken = await verifyToken(token);
+
+    const userController = new UserController();
+
+    const user = userController.readFromController(newToken.sub);
+
+    return res.status(200).json({ User: user });
+  }
+
   async createFromController(userID: string, expiresIn: number) {
     const tokenRefreshRepository = getCustomRepository(TokenRefreshRepository);
 

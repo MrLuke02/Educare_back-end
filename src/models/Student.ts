@@ -10,7 +10,7 @@ import {
 
 import { User } from "./User";
 import { v4 as uuid } from "uuid";
-import { Course } from "./Course";
+import { InterestArea } from "./InterestArea";
 
 // criando o modelo da tabela roles, especificando suas colunas e tipo de dado que será armazenado
 @Entity("students")
@@ -22,11 +22,17 @@ class Student {
   expiresIn: number;
 
   @Column()
-  courseID: string;
+  course: string;
 
-  @ManyToOne(() => Course)
-  @JoinColumn({ name: "courseID" })
-  course: Course;
+  @Column()
+  institution: string;
+
+  @Column()
+  interestAreaID: string;
+
+  @ManyToOne(() => InterestArea)
+  @JoinColumn({ name: "interestAreaID" })
+  interestArea: InterestArea;
 
   @Column()
   userID: string;

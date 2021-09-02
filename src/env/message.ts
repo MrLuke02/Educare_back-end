@@ -22,7 +22,6 @@ const Message = {
   STUDENT_NOT_FOUND: "Estudante não encontrado!",
   INTEREST_AREA_NOT_FOUND: "Área de interesse não encontrado!",
   TOKEN_REFRESH_NOT_FOUND: "Token refresh não encontrado!",
-  COURSE_NOT_FOUND: "Curso não encontrado!",
 
   // REQUIRED_FIELD
   REQUIRED_FIELD: "Campo obrigatório(s) vazio(s)!",
@@ -54,7 +53,6 @@ const Message = {
   INTEREST_AREA_ALREADY_EXIST: "Área de interesse já existe!",
   USER_HAVE_SOLICITATION_PENDING: "Usuário já possui uma solicitação pendente!",
   USER_ALREADY_IS_STUDENT: "Usuário já é um estudante!",
-  COURSE_ALREADY_EXIST: "Curso já existe!",
 
   //AUTHORIZATION
   USER_IS_NOT_ADM: "Usuário não é administrador",
