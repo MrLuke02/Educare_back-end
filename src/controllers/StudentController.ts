@@ -5,7 +5,7 @@ import { Message } from "../env/message";
 import { AppError } from "../errors/AppErrors";
 import { StudentsRepository } from "../repositories/StudentRepository";
 import { UserController } from "./UserController";
-import { InterestAreaController } from "./InterestAreaController";
+import { StudentInterestAreaController } from "./StudentInterestAreaController";
 
 import dayjs from "dayjs";
 
@@ -49,13 +49,14 @@ class StudentController {
       throw new AppError(Message.STUDENT_NOT_FOUND, 406);
     }
 
-    const { interestArea } = req.body;
+    const { studentInterestArea } = req.body;
 
-    const interestAreaController = new InterestAreaController();
+    const studentInterestAreaController = new StudentInterestAreaController();
 
-    const newInterestArea = await interestAreaController.readFromInterestArea(
-      interestArea
-    );
+    const newInterestArea =
+      await studentInterestAreaController.readFromStudentInterestArea(
+        studentInterestArea
+      );
 
     await studentRepository.update(id, { interestAreaID: newInterestArea.id });
 
