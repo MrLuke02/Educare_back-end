@@ -36,7 +36,7 @@ class StudentInterestAreaController {
 
     return res
       .status(201)
-      .json({ studentInterestArea: studentInterestAreaSaved });
+      .json({ StudentInterestArea: studentInterestAreaSaved });
   }
 
   async read(req: Request, res: Response) {
@@ -118,7 +118,7 @@ class StudentInterestAreaController {
 
     const studentInterestArea = await studentInterestAreaRepository.find();
 
-    if (studentInterestArea.length < 0) {
+    if (studentInterestArea.length === 0) {
       throw new AppError(Message.NOT_FOUND, 406);
     }
 
