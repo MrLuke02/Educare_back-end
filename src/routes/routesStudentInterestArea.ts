@@ -8,13 +8,13 @@ const verifyTokenUser = new VerifyTokenUser();
 const routerStudentInterestArea = Router();
 
 routerStudentInterestArea.post(
-  "/userInterestArea",
+  "/studentInterestArea",
   verifyTokenUser.verifyTokenADM,
   studentInterestAreaController.create
 );
 
 routerStudentInterestArea.put(
-  "/userInterestArea",
+  "/studentInterestArea",
   verifyTokenUser.verifyTokenADM,
   studentInterestAreaController.update
 );
