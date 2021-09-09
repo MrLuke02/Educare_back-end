@@ -51,6 +51,8 @@ const Message = {
   ORDER_ALREADY_EXIST: "Pedido já existe!",
   ORDER_STATUS_ALREADY_EXIST: "Status de pedido já existe!",
   INTEREST_AREA_ALREADY_EXIST: "Área de interesse já existe!",
+  INTEREST_AREA_RELATION_ALREADY_EXIST:
+    "Relação de área de interesse já existe!",
   USER_HAVE_SOLICITATION_PENDING: "Usuário já possui uma solicitação pendente!",
   USER_ALREADY_IS_STUDENT: "Usuário já é um estudante!",
 

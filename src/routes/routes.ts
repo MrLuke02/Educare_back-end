@@ -15,6 +15,7 @@ import { routerStudent } from "./routesStudent";
 import { routerToken } from "./routesToken";
 import { routerStudentInterestArea } from "./routesStudentInterestArea";
 import { routerUserInterestArea } from "./routesUserInterestArea";
+import { routerUserInterestAreaRelationUser } from "./routesUserInterestAreaRelationUser";
 
 // importando e exportando as rotas de usuário
 export {
@@ -35,4 +36,5 @@ export {
   routerToken,
   routerStudentInterestArea,
   routerUserInterestArea,
+  routerUserInterestAreaRelationUser,
 };

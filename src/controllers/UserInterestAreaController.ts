@@ -8,6 +8,7 @@ import { UserInterestAreaRepository } from "../repositories/UserInterestAreaRepo
 class UserInterestAreaController {
   async create(req: Request, res: Response) {
     const { userInterestArea } = req.body;
+    console.log(userInterestArea);
 
     if (!userInterestArea) {
       throw new AppError(Message.REQUIRED_FIELD, 422);
@@ -132,6 +133,18 @@ class UserInterestAreaController {
     if (!userInterestAreaExist) {
       throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 406);
     }
+
+    return userInterestAreaExist;
+  }
+
+  async readFromController(userInterestAreaID: string) {
+    const userInterestAreaRepository = getCustomRepository(
+      UserInterestAreaRepository
+    );
+
+    const userInterestAreaExist = await userInterestAreaRepository.findOne({
+      id: userInterestAreaID,
+    });
 
     return userInterestAreaExist;
   }
