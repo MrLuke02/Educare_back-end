@@ -157,7 +157,7 @@ class UserInterestAreaRelationUserController {
       .json({ UserInterestAreaRelationUser: userInterestAreaRelationUser });
   }
 
-  async readFromUser(userID: string) {
+  async readFromUserID(userID: string) {
     // pegando o repositorio customizado/personalizado
     const userInterestAreaRelationUserRepository = getCustomRepository(
       UserInterestAreaRelationUserRepository
@@ -175,7 +175,14 @@ class UserInterestAreaRelationUserController {
       });
 
     // retornando a userRole pesquisada
-    return user_userInterestArea;
+
+    const userInterestAreaList = user_userInterestArea.map(
+      (userInterestArea) => {
+        return userInterestArea.userInterestArea;
+      }
+    );
+
+    return userInterestAreaList;
   }
 }
 
