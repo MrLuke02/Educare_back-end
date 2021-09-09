@@ -28,11 +28,11 @@ class Student {
   institution: string;
 
   @Column()
-  interestAreaID: string;
+  studentInterestAreaID: string;
 
   @ManyToOne(() => StudentInterestArea)
-  @JoinColumn({ name: "interestAreaID" })
-  interestArea: StudentInterestArea;
+  @JoinColumn({ name: "studentInterestAreaID" })
+  studentInterestArea: StudentInterestArea;
 
   @Column()
   userID: string;

@@ -69,6 +69,13 @@ routerUser.get(
 );
 routerUser.get("/userAll", verifyTokenUser.verifyADMUser);
 
+routerUser.get(
+  "/userInterestAreas/:userID",
+  verifyTokenUser.verifyADMUser,
+  userController.readUserInterestArea
+);
+routerUser.get("/userInterestAreas", verifyTokenUser.verifyADMUser);
+
 // criando a rota de deleção de usuários
 routerUser.delete(
   "/user/:userID",

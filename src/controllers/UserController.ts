@@ -16,6 +16,7 @@ import { PhoneController } from "./PhoneController";
 import { RoleController } from "./RoleController";
 import { SolicitationController } from "./SolicitationController";
 import { TokenRefreshController } from "./TokenRefreshController";
+import { UserInterestAreaRelationUserController } from "./UserInterestAreaRelationUserController";
 import { UserRoleController } from "./UserRoleController";
 
 class UserController {
@@ -403,6 +404,27 @@ class UserController {
     return res.status(200).json({ Solicitations: solicitations });
   }
 
+  async readUserInterestArea(req: Request, res: Response) {
+    const { userID } = req.params;
+
+    // manipulando o usuario
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const user = await usersRepository.findOne({ id: userID });
+
+    if (!user) {
+      throw new AppError(Message.USER_NOT_FOUND, 406);
+    }
+
+    const userInterestAreaRelationUserController =
+      new UserInterestAreaRelationUserController();
+
+    const userInterestAreaList =
+      await userInterestAreaRelationUserController.readFromUserID(userID);
+
+    return res.status(200).json({ UserInterestArea: userInterestAreaList });
+  }
+
   async readAllFromUser(req: Request, res: Response) {
     const { userID } = req.params;
 
@@ -412,7 +434,7 @@ class UserController {
     const user = await usersRepository.findOne({ id: userID });
 
     if (!user) {
-      throw new AppError(Message.ROLE_NOT_FOUND, 406);
+      throw new AppError(Message.USER_NOT_FOUND, 406);
     }
 
     let userDTO = UserDTO.convertUserToDTO(user) as Object;
