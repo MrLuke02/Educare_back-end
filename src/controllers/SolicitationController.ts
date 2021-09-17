@@ -11,18 +11,19 @@ import { UserRoleController } from "./UserRoleController";
 import { StudentController } from "./StudentController";
 import { RoleController } from "./RoleController";
 import { verifyExpiredStudent } from "../services/verifyExpiredStudent";
+import { StudentInterestAreaController } from "./StudentInterestAreaController";
 
 class SolicitationController {
   // metodo assincrono para o cadastro de phones
   async create(req: Request, res: Response) {
     const { buffer: file, size } = req.file;
 
-    const { userID } = req.body;
+    const { userID, course, institution, studentInterestAreaID } = req.body;
 
     if (!file) {
       throw new AppError(Message.REQUIRED_FIELD, 422);
-    } else if (!userID) {
-      throw new AppError(Message.USER_ID_NOT_FOUND, 422);
+    } else if (!userID || !course || !institution || !studentInterestAreaID) {
+      throw new AppError(Message.REQUIRED_FIELD, 422);
     } else if (size > 10 * 1024 * 1024) {
       throw new AppError(Message.FILE_TOO_LARGE, 422);
     }
@@ -34,6 +35,12 @@ class SolicitationController {
     if (!user) {
       throw new AppError(Message.USER_NOT_FOUND, 406);
     }
+
+    const studentInterestAreaController = new StudentInterestAreaController();
+
+    await studentInterestAreaController.readFromStudentInterestAreaID(
+      studentInterestAreaID
+    );
 
     const status = SolicitationStatus.SOLICITATION_PENDING;
 
@@ -51,6 +58,9 @@ class SolicitationController {
       status,
       file,
       userID,
+      course,
+      institution,
+      studentInterestAreaID,
     });
 
     if (solicitationAlreadyExist.length > 0) {
@@ -153,7 +163,10 @@ class SolicitationController {
       await verifyExpiredStudent(solicitation.userID);
 
       const student = await studentController.createFromController(
-        solicitation.userID
+        solicitation.userID,
+        solicitation.course,
+        solicitation.institution,
+        solicitation.studentInterestAreaID
       );
 
       // instanciando o UserRoleController

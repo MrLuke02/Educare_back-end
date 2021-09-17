@@ -34,7 +34,7 @@ export class CreateUserInterestAreaRelationUser1631136397318
         // criando as chaves esrangeiras
         foreignKeys: [
           {
-            name: "FKUser",
+            name: "FKUserUserInterestArea",
             referencedTableName: "users",
             referencedColumnNames: ["id"],
             columnNames: ["userID"],

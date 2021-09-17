@@ -57,7 +57,7 @@ export class CreateTableAddress1621041711300 implements MigrationInterface {
         ],
         foreignKeys: [
           {
-            name: "FKUser",
+            name: "FKUserAddress",
             referencedTableName: "users",
             referencedColumnNames: ["id"],
             columnNames: ["userID"],

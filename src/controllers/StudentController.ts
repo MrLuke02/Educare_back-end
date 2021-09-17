@@ -11,7 +11,12 @@ import dayjs from "dayjs";
 
 class StudentController {
   // metodo assincrono para o cadastro de phones
-  async createFromController(userID: string) {
+  async createFromController(
+    userID: string,
+    course: string,
+    institution: string,
+    studentInterestAreaID: string
+  ) {
     const userController = new UserController();
 
     const user = await userController.readFromController(userID);
@@ -20,12 +25,21 @@ class StudentController {
       throw new AppError(Message.USER_NOT_FOUND, 406);
     }
 
+    const studentInterestAreaController = new StudentInterestAreaController();
+
+    await studentInterestAreaController.readFromStudentInterestAreaID(
+      studentInterestAreaID
+    );
+
     const studentRepository = getCustomRepository(StudentsRepository);
 
     const expiresIn = dayjs().add(5, "minutes").unix();
 
     let student = studentRepository.create({
       userID,
+      course,
+      institution,
+      studentInterestAreaID,
       expiresIn,
     });
 
@@ -36,6 +50,8 @@ class StudentController {
 
   async update(req: Request, res: Response) {
     const { id } = req.body;
+
+    console.log(id);
 
     if (!id) {
       throw new AppError(Message.ID_NOT_FOUND, 422);
@@ -49,16 +65,23 @@ class StudentController {
       throw new AppError(Message.STUDENT_NOT_FOUND, 406);
     }
 
-    const { studentInterestArea } = req.body;
+    const {
+      studentInterestAreaID = student.studentInterestAreaID,
+      course = student.course,
+      institution = student.institution,
+    } = req.body;
 
     const studentInterestAreaController = new StudentInterestAreaController();
 
-    const newInterestArea =
-      await studentInterestAreaController.readFromStudentInterestArea(
-        studentInterestArea
-      );
+    await studentInterestAreaController.readFromStudentInterestAreaID(
+      studentInterestAreaID
+    );
 
-    await studentRepository.update(id, { interestAreaID: newInterestArea.id });
+    await studentRepository.update(id, {
+      studentInterestAreaID,
+      course,
+      institution,
+    });
 
     student = await studentRepository.findOne({ id });
 
@@ -182,6 +205,10 @@ class StudentController {
     const user = student_user.map((student) => {
       return student.user;
     });
+
+    if (user.length === 0) {
+      throw new AppError(Message.STUDENT_NOT_FOUND, 406);
+    }
 
     return user[0];
   }

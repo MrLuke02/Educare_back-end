@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import md5 from "md5";
 import { getCustomRepository } from "typeorm";
-
 import { createToken, verifyToken } from "../auth/token/token.auth";
 import { Message } from "../env/message";
 import { AppError } from "../errors/AppErrors";

@@ -5,9 +5,11 @@ import {
   JoinColumn,
   OneToOne,
   PrimaryColumn,
+  ManyToOne,
 } from "typeorm";
 import { User } from "./User";
 import { v4 as uuid } from "uuid";
+import { StudentInterestArea } from "./StudentInterestArea";
 
 // criando o modelo da tabela roles, especificando suas colunas e tipo de dado que será armazenado
 @Entity("solicitations")
@@ -20,6 +22,19 @@ class Solicitation {
 
   @Column()
   status: string;
+
+  @Column()
+  course: string;
+
+  @Column()
+  institution: string;
+
+  @Column()
+  studentInterestAreaID: string;
+
+  @ManyToOne(() => StudentInterestArea)
+  @JoinColumn({ name: "studentInterestAreaID" })
+  studentInterestArea: StudentInterestArea;
 
   @Column()
   userID: string;

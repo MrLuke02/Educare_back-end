@@ -125,14 +125,14 @@ class StudentInterestAreaController {
     return res.status(200).json({ StudentInterestArea: studentInterestArea });
   }
 
-  async readFromStudentInterestArea(studentInterestArea: string) {
+  async readFromStudentInterestAreaID(studentInterestAreaID: string) {
     const studentInterestAreaRepository = getCustomRepository(
       StudentInterestAreaRepository
     );
 
     const studentInterestAreaExist =
       await studentInterestAreaRepository.findOne({
-        studentInterestArea,
+        id: studentInterestAreaID,
       });
 
     if (!studentInterestAreaExist) {

@@ -32,7 +32,7 @@ export class CreateStudents1626375991379 implements MigrationInterface {
         ],
         foreignKeys: [
           {
-            name: "FKUser",
+            name: "FKUserStudent",
             referencedTableName: "users",
             referencedColumnNames: ["id"],
             columnNames: ["userID"],

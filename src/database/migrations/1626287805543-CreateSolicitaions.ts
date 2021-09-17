@@ -36,7 +36,7 @@ export class CreateSolicitaions1626287805543 implements MigrationInterface {
         ],
         foreignKeys: [
           {
-            name: "FKUser",
+            name: "FKUserSolicitation",
             referencedTableName: "users",
             referencedColumnNames: ["id"],
             columnNames: ["userID"],
