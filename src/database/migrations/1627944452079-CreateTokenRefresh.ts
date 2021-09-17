@@ -27,7 +27,7 @@ export class CreateTokenRefresh1627944452079 implements MigrationInterface {
         ],
         foreignKeys: [
           {
-            name: "FKUser",
+            name: "FKUserTokenRefresh",
             referencedTableName: "users",
             referencedColumnNames: ["id"],
             columnNames: ["userID"],

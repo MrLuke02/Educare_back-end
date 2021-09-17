@@ -33,7 +33,7 @@ export class CreateCompany1621374438917 implements MigrationInterface {
         ],
         foreignKeys: [
           {
-            name: "FKUser",
+            name: "FKUserCompanies",
             referencedTableName: "users",
             referencedColumnNames: ["id"],
             columnNames: ["userID"],

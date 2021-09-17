@@ -31,7 +31,7 @@ export class CreateCompanyContact1621899824556 implements MigrationInterface {
         ],
         foreignKeys: [
           {
-            name: "FKCompanies",
+            name: "FKCompaniesContact",
             referencedTableName: "companies",
             referencedColumnNames: ["id"],
             columnNames: ["companyID"],

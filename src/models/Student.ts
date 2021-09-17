@@ -3,7 +3,6 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  ManyToOne,
   OneToOne,
   PrimaryColumn,
 } from "typeorm";
@@ -30,7 +29,7 @@ class Student {
   @Column()
   studentInterestAreaID: string;
 
-  @ManyToOne(() => StudentInterestArea)
+  @OneToOne(() => StudentInterestArea)
   @JoinColumn({ name: "studentInterestAreaID" })
   studentInterestArea: StudentInterestArea;
 

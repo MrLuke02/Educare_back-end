@@ -43,7 +43,7 @@ export class CreateOrder1625512181686 implements MigrationInterface {
         ],
         foreignKeys: [
           {
-            name: "FKUser",
+            name: "FKUserOrder",
             referencedTableName: "users",
             referencedColumnNames: ["id"],
             columnNames: ["userID"],

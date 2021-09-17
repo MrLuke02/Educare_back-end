@@ -28,7 +28,7 @@ export class CreatePhones1620870084728 implements MigrationInterface {
         ],
         foreignKeys: [
           {
-            name: "FKUser",
+            name: "FKUserPhone",
             referencedTableName: "users",
             referencedColumnNames: ["id"],
             columnNames: ["userID"],
