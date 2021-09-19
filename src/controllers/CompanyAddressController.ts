@@ -31,7 +31,7 @@ class CompanyAddressController {
     const companyExists = await companyController.readCompanyFromID(companyID);
 
     if (!companyExists) {
-      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
+      throw new AppError(Message.COMPANY_NOT_FOUND, 404);
     }
 
     const companyAddressExist = await companyAddressRepository.findOne({
@@ -51,7 +51,7 @@ class CompanyAddressController {
       !companyID
     ) {
       // retornando um json de erro personalizado
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
     const companyAddress = companyAddressRepository.create({
@@ -86,7 +86,7 @@ class CompanyAddressController {
     const companyAddress = await companyAddressRepository.findOne(id);
 
     if (!companyAddress) {
-      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 404);
     }
 
     return res.status(200).json({
@@ -105,7 +105,7 @@ class CompanyAddressController {
     let companyAddress = await companyAddressRepository.findOne(id);
 
     if (!companyAddress) {
-      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 404);
     }
 
     const {
@@ -148,7 +148,7 @@ class CompanyAddressController {
     const companyAddress = await companyAddressRepository.findOne(id);
 
     if (!companyAddress) {
-      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 404);
     }
 
     await companyAddressRepository.delete({ id });
@@ -162,7 +162,7 @@ class CompanyAddressController {
     const companyAddresses = await addressRepository.find();
 
     if (companyAddresses.length == 0) {
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     const companyAddressesDTO = companyAddresses.map((companyAddress) => {

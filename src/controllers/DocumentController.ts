@@ -28,13 +28,13 @@ class DocumentController {
       !categoryID ||
       (!pageNumber && pageNumber !== 0)
     ) {
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
     if (size > 10 * 1024 * 1024) {
-      throw new AppError(Message.FILE_TOO_LARGE, 422);
+      throw new AppError(Message.FILE_TOO_LARGE, 400);
     } else if (!mimetypes.includes(type)) {
-      throw new AppError(Message.INVALID_DATA, 422);
+      throw new AppError(Message.INVALID_DATA, 400);
     }
 
     const categoryController = new CategoryController();
@@ -42,12 +42,12 @@ class DocumentController {
     const category = await categoryController.readFromController(categoryID);
 
     if (!category) {
-      throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
+      throw new AppError(Message.CATEGORY_NOT_FOUND, 404);
     } else if (
       category.qtdMinPage > pageNumber ||
       (category.qtdMaxPage && category.qtdMaxPage < pageNumber)
     ) {
-      throw new AppError(Message.INVALID_PAGE_COUNT, 422);
+      throw new AppError(Message.INVALID_PAGE_COUNT, 400);
     }
 
     const documentRepository = getCustomRepository(DocumentsRepository);
@@ -89,13 +89,13 @@ class DocumentController {
       !categoryID ||
       (!pageNumber && pageNumber !== 0)
     ) {
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
     if (size > 10 * 1024 * 1024) {
-      throw new AppError(Message.FILE_TOO_LARGE, 422);
+      throw new AppError(Message.FILE_TOO_LARGE, 400);
     } else if (!mimetypes.includes(type)) {
-      throw new AppError(Message.INVALID_DATA, 422);
+      throw new AppError(Message.INVALID_DATA, 400);
     }
 
     const categoryController = new CategoryController();
@@ -103,12 +103,12 @@ class DocumentController {
     const category = await categoryController.readFromController(categoryID);
 
     if (!category) {
-      throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
+      throw new AppError(Message.CATEGORY_NOT_FOUND, 404);
     } else if (
       category.qtdMinPage > pageNumber ||
       (category.qtdMaxPage && category.qtdMaxPage < pageNumber)
     ) {
-      throw new AppError(Message.INVALID_PAGE_COUNT, 406);
+      throw new AppError(Message.INVALID_PAGE_COUNT, 404);
     }
 
     const documentRepository = getCustomRepository(DocumentsRepository);
@@ -134,7 +134,7 @@ class DocumentController {
     const document = await documentRepository.findOne({ id });
 
     if (!document) {
-      throw new AppError(Message.DOCUMENT_NOT_FOUND, 406);
+      throw new AppError(Message.DOCUMENT_NOT_FOUND, 404);
     }
 
     return res
@@ -146,7 +146,7 @@ class DocumentController {
     const { id } = req.body;
 
     if (!id) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
 
     const documentRepository = getCustomRepository(DocumentsRepository);
@@ -154,7 +154,7 @@ class DocumentController {
     let document = await documentRepository.findOne({ id });
 
     if (!document) {
-      throw new AppError(Message.DOCUMENT_NOT_FOUND, 406);
+      throw new AppError(Message.DOCUMENT_NOT_FOUND, 404);
     }
 
     const {
@@ -172,13 +172,13 @@ class DocumentController {
     ];
 
     if (!categoryID) {
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
     if (size > 10 * 1024 * 1024) {
-      throw new AppError(Message.FILE_TOO_LARGE, 422);
+      throw new AppError(Message.FILE_TOO_LARGE, 400);
     } else if (!mimetypes.includes(type)) {
-      throw new AppError(Message.INVALID_DATA, 422);
+      throw new AppError(Message.INVALID_DATA, 400);
     }
 
     const categoryController = new CategoryController();
@@ -186,12 +186,12 @@ class DocumentController {
     const category = await categoryController.readFromController(categoryID);
 
     if (!category) {
-      throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
+      throw new AppError(Message.CATEGORY_NOT_FOUND, 404);
     } else if (
       category.qtdMinPage > pageNumber ||
       (category.qtdMaxPage && category.qtdMaxPage < pageNumber)
     ) {
-      throw new AppError(Message.INVALID_PAGE_COUNT, 422);
+      throw new AppError(Message.INVALID_PAGE_COUNT, 400);
     }
 
     await documentRepository.update(id, {
@@ -217,7 +217,7 @@ class DocumentController {
     const document = await documentRepository.findOne({ id });
 
     if (!document) {
-      throw new AppError(Message.DOCUMENT_NOT_FOUND, 406);
+      throw new AppError(Message.DOCUMENT_NOT_FOUND, 404);
     }
 
     await documentRepository.delete({ id });
@@ -231,7 +231,7 @@ class DocumentController {
     const documents = await documentRepository.find();
 
     if (documents.length === 0) {
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     const documentsDTO = documents.map((document) => {

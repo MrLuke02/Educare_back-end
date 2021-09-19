@@ -1,9 +1,7 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 import multer from "multer";
-import { DocumentController } from "../controllers/DocumentController";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
-import { Message } from "../env/message";
-import { AppError } from "../errors/AppErrors";
+import { DocumentController } from "../controllers/DocumentController";
 
 const routerDocument = Router();
 const documentController = new DocumentController();
@@ -29,9 +27,6 @@ routerDocument.get(
   verifyTokenUser.verifyTokenADM,
   documentController.read
 );
-routerDocument.get("/document", (req: Request, res: Response) => {
-  throw new AppError(Message.ID_NOT_FOUND, 422);
-});
 
 routerDocument.get(
   "/showDocuments",
@@ -44,10 +39,6 @@ routerDocument.delete(
   verifyTokenUser.verifyTokenADM,
   documentController.delete
 );
-
-routerDocument.delete("/document", (req: Request, res: Response) => {
-  throw new AppError(Message.ID_NOT_FOUND, 422);
-});
 
 // exportando o router
 export { routerDocument };

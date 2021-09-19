@@ -31,7 +31,7 @@ class CategoryController {
       (!deliveryTimeInDays && deliveryTimeInDays !== 0) ||
       (!qtdMinPage && qtdMinPage !== 0)
     ) {
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
     const categoriesRepository = getCustomRepository(CategoriesRepository);
@@ -71,7 +71,7 @@ class CategoryController {
     const category = await categoriesRepository.findOne({ id });
 
     if (!category) {
-      throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
+      throw new AppError(Message.CATEGORY_NOT_FOUND, 404);
     }
 
     return res
@@ -86,7 +86,7 @@ class CategoryController {
     // verificando se o id da role não foi passada
     if (!id) {
       // retornando um json de erro personalizado
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
 
     // pegando o repositorio customizado/personalizado
@@ -98,7 +98,7 @@ class CategoryController {
     // verificando se a role não existe
     if (!category) {
       // retornando uma resposta de erro em json
-      throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
+      throw new AppError(Message.CATEGORY_NOT_FOUND, 404);
     }
 
     // capturando o tipo de role passado no corpo da requisição, caso não seja passado nada, pega o valor que ja está cadastrado na role
@@ -155,7 +155,7 @@ class CategoryController {
     const category = await categoriesRepository.findOne(id);
 
     if (!category) {
-      throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
+      throw new AppError(Message.CATEGORY_NOT_FOUND, 404);
     }
 
     await categoriesRepository.delete(id);
@@ -169,7 +169,7 @@ class CategoryController {
     const categories = await categoriesRepository.find();
 
     if (categories.length === 0) {
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     const categoriesDTO = categories.map((category) => {

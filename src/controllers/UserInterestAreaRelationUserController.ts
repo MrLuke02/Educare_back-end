@@ -14,7 +14,7 @@ class UserInterestAreaRelationUserController {
     const { userID, userInterestAreaIDList } = req.body;
 
     if (!userID || userInterestAreaIDList.length === 0) {
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
     const userController = new UserController();
@@ -22,7 +22,7 @@ class UserInterestAreaRelationUserController {
     const user = await userController.readFromController(userID);
 
     if (!user) {
-      throw new AppError(Message.USER_NOT_FOUND, 406);
+      throw new AppError(Message.USER_NOT_FOUND, 404);
     }
 
     const userInterestAreaController = new UserInterestAreaController();
@@ -39,7 +39,7 @@ class UserInterestAreaRelationUserController {
         await userInterestAreaController.readFromController(userInterestAreaID);
 
       if (!userInterestArea) {
-        return res.status(406).json({
+        return res.status(404).json({
           Message: Message.INTEREST_AREA_NOT_FOUND,
           AffectedObject: userInterestAreaID,
         });
@@ -98,7 +98,7 @@ class UserInterestAreaRelationUserController {
     // verificando se a userRole não existe
     if (!userInterestAreaRelationUser) {
       // retornando uma resposta de erro em json
-      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 406);
+      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 404);
     }
 
     // retornando a userRole pesquisada
@@ -124,7 +124,7 @@ class UserInterestAreaRelationUserController {
     // verificando se a userRole não existe
     if (!userInterestAreaRelationUser) {
       // retornando uma resposta de erro em json
-      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 406);
+      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 404);
     }
 
     // deletando a userRole a partir do id
@@ -148,7 +148,7 @@ class UserInterestAreaRelationUserController {
     // verificando se o DB possui userRoles cadastradas
     if (userInterestAreaRelationUser.length === 0) {
       // retornando uma resposta de erro em json
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     // retornando as userRoles encontradas no DB

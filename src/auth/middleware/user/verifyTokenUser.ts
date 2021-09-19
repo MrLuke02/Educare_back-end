@@ -21,7 +21,7 @@ class VerifyTokenUser {
     }
 
     if (!userID) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
 
     // armazenando o token retornado da função
@@ -36,7 +36,7 @@ class VerifyTokenUser {
         next();
       } else {
         // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-        throw new AppError(Message.INVALID_TOKEN, 401);
+        throw new AppError(Message.INVALID_TOKEN, 403);
       }
     }
   }
@@ -54,7 +54,7 @@ class VerifyTokenUser {
     }
 
     if (!id) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
 
     const addressController = new AddressController();
@@ -62,7 +62,7 @@ class VerifyTokenUser {
     const address = await addressController.readFromID(id);
 
     if (!address) {
-      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 404);
     }
 
     // armazenando o token retornado da função
@@ -76,7 +76,7 @@ class VerifyTokenUser {
         next();
       } else {
         // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-        throw new AppError(Message.INVALID_TOKEN, 401);
+        throw new AppError(Message.INVALID_TOKEN, 403);
       }
     }
   }
@@ -94,7 +94,7 @@ class VerifyTokenUser {
     }
 
     if (!id) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
 
     const phoneController = new PhoneController();
@@ -102,7 +102,7 @@ class VerifyTokenUser {
     const phone = await phoneController.readFromId(id);
 
     if (!phone) {
-      throw new AppError(Message.PHONE_NOT_FOUND, 406);
+      throw new AppError(Message.PHONE_NOT_FOUND, 404);
     }
 
     // armazenando o token retornado da função
@@ -117,7 +117,7 @@ class VerifyTokenUser {
         next();
       } else {
         // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-        throw new AppError(Message.INVALID_TOKEN, 401);
+        throw new AppError(Message.INVALID_TOKEN, 403);
       }
     }
   }
@@ -135,7 +135,7 @@ class VerifyTokenUser {
     }
 
     if (!id) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
 
     const orderController = new OrderController();
@@ -143,7 +143,7 @@ class VerifyTokenUser {
     const user = await orderController.readFromOrder(id);
 
     if (!user) {
-      throw new AppError(Message.USER_NOT_FOUND, 406);
+      throw new AppError(Message.USER_NOT_FOUND, 404);
     }
 
     // armazenando o token retornado da função
@@ -158,7 +158,7 @@ class VerifyTokenUser {
         next();
       } else {
         // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-        throw new AppError(Message.INVALID_TOKEN, 401);
+        throw new AppError(Message.INVALID_TOKEN, 403);
       }
     }
   }
@@ -171,7 +171,7 @@ class VerifyTokenUser {
     const { id } = req.params;
 
     if (!id) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
 
     const solicitationController = new SolicitationController();
@@ -179,7 +179,7 @@ class VerifyTokenUser {
     const user = await solicitationController.readFromSolicitation(id);
 
     if (!user) {
-      throw new AppError(Message.USER_NOT_FOUND, 406);
+      throw new AppError(Message.USER_NOT_FOUND, 404);
     }
 
     // armazenando o token retornado da função
@@ -194,7 +194,7 @@ class VerifyTokenUser {
         next();
       } else {
         // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-        throw new AppError(Message.INVALID_TOKEN, 401);
+        throw new AppError(Message.INVALID_TOKEN, 403);
       }
     }
   }
@@ -212,7 +212,7 @@ class VerifyTokenUser {
     }
 
     if (!id) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
 
     const studentController = new StudentController();
@@ -220,7 +220,7 @@ class VerifyTokenUser {
     const user = await studentController.readFromStudent(id);
 
     if (!user) {
-      throw new AppError(Message.USER_NOT_FOUND, 406);
+      throw new AppError(Message.USER_NOT_FOUND, 404);
     }
 
     const studentExpired = await verifyExpiredStudent(user.id);
@@ -240,7 +240,7 @@ class VerifyTokenUser {
         next();
       } else {
         // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-        throw new AppError(Message.INVALID_TOKEN, 401);
+        throw new AppError(Message.INVALID_TOKEN, 403);
       }
     }
   }
@@ -259,7 +259,7 @@ class VerifyTokenUser {
         next();
       } else {
         // caso o token não seja de um administrador, retorna um json de error
-        throw new AppError(Message.INVALID_TOKEN, 401);
+        throw new AppError(Message.INVALID_TOKEN, 403);
       }
     }
   }

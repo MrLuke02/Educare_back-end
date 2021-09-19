@@ -15,6 +15,8 @@ class OrderDTO {
 
   public readonly categoryID: string;
 
+  public readonly isDelivery: boolean;
+
   // criando o cronstrutor do RoleResponseDTO a ser retornado, passando para ele a role
   constructor(order: Order) {
     // capturando todos os atributos da role, menos a data de criação e o id

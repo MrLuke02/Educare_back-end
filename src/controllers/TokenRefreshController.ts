@@ -15,14 +15,14 @@ class TokenRefreshController {
     const { id, userID } = req.body;
 
     if (!id) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
     const tokenRefreshRepository = getCustomRepository(TokenRefreshRepository);
 
     const tokenRefresh = await tokenRefreshRepository.findOne({ id, userID });
 
     if (!tokenRefresh) {
-      throw new AppError(Message.TOKEN_REFRESH_NOT_FOUND, 406);
+      throw new AppError(Message.TOKEN_REFRESH_NOT_FOUND, 404);
     }
 
     const refreshTokenExpired = dayjs().isAfter(

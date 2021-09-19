@@ -11,7 +11,7 @@ class UserInterestAreaController {
     console.log(userInterestArea);
 
     if (!userInterestArea) {
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
     const userInterestAreaRepository = getCustomRepository(
@@ -50,7 +50,7 @@ class UserInterestAreaController {
     });
 
     if (!userInterestArea) {
-      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 406);
+      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 404);
     }
 
     return res.status(200).json({ UserInterestArea: userInterestArea });
@@ -60,7 +60,7 @@ class UserInterestAreaController {
     const { id } = req.body;
 
     if (!id) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
 
     const userInterestAreaRepository = getCustomRepository(
@@ -72,7 +72,7 @@ class UserInterestAreaController {
     });
 
     if (!userInterestAreaExists) {
-      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 406);
+      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 404);
     }
 
     const { userInterestArea = userInterestAreaExists.userInterestArea } =
@@ -99,7 +99,7 @@ class UserInterestAreaController {
     });
 
     if (!userInterestArea) {
-      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 406);
+      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 404);
     }
 
     await userInterestAreaRepository.delete({ id });
@@ -115,7 +115,7 @@ class UserInterestAreaController {
     const userInterestArea = await userInterestAreaRepository.find();
 
     if (userInterestArea.length === 0) {
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     return res.status(200).json({ UserInterestArea: userInterestArea });
@@ -131,7 +131,7 @@ class UserInterestAreaController {
     });
 
     if (!userInterestAreaExist) {
-      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 406);
+      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 404);
     }
 
     return userInterestAreaExist;

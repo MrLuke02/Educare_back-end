@@ -1,9 +1,6 @@
-import { Request, Response, Router } from "express";
-
-import { RoleController } from "../controllers/RoleController";
-import { Message } from "../env/message";
+import { Router } from "express";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
-import { AppError } from "../errors/AppErrors";
+import { RoleController } from "../controllers/RoleController";
 
 // criando um objeto de RoleController
 const roleController = new RoleController();
@@ -30,20 +27,12 @@ routerRole.get(
   roleController.read
 );
 
-routerRole.get("/role", (req: Request, res: Response) => {
-  throw new AppError(Message.ID_NOT_FOUND, 422);
-});
-
 // criando a rota de deleção de Roles
 routerRole.delete(
   "/role/:id",
   verifyTokenUser.verifyTokenADM,
   roleController.delete
 );
-
-routerRole.delete("/role", (req: Request, res: Response) => {
-  throw new AppError(Message.ID_NOT_FOUND, 422);
-});
 
 // exportando o router
 export { routerRole };

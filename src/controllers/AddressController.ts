@@ -37,7 +37,7 @@ class AddressController {
       !userID
     ) {
       // retornando um json de erro personalizado
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
     const userController = new UserController();
@@ -45,7 +45,7 @@ class AddressController {
     const user = await userController.readFromController(userID);
 
     if (!user) {
-      throw new AppError(Message.USER_NOT_FOUND, 406);
+      throw new AppError(Message.USER_NOT_FOUND, 404);
     }
 
     const address = addressRepository.create({
@@ -74,7 +74,7 @@ class AddressController {
     const address = await addressRepository.findOne({ id });
 
     if (!address) {
-      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 404);
     }
 
     return res
@@ -90,7 +90,7 @@ class AddressController {
     let address = await addressRepository.findOne(id);
 
     if (!address) {
-      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 404);
     }
 
     const {
@@ -128,7 +128,7 @@ class AddressController {
     const address = await addressRepository.findOne(id);
 
     if (!address) {
-      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 404);
     }
 
     await addressRepository.delete({ id });
@@ -142,7 +142,7 @@ class AddressController {
     const addresses = await addressRepository.find();
 
     if (addresses.length == 0) {
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     const addressDTO = addresses.map((address) => {

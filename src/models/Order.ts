@@ -23,10 +23,13 @@ class Order {
   price: number;
 
   @Column()
-  userID: string;
+  status: string;
 
   @Column()
-  status: string;
+  isDelivery: boolean;
+
+  @Column()
+  userID: string;
 
   // criando o relacionamento de um para um com a tabela User
   @OneToOne(() => User)

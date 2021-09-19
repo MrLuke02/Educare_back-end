@@ -13,11 +13,11 @@ class CompanyContactController {
     const { email, phone, companyID } = req.body;
 
     if (!email || !phone || !companyID) {
-      throw new AppError(Message.REQUIRED_FIELD, 244);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     } else if (!validation.validationEmail(email)) {
-      throw new AppError(Message.INVALID_EMAIL, 422);
+      throw new AppError(Message.INVALID_EMAIL, 400);
     } else if (!validation.validationPhone(phone)) {
-      throw new AppError(Message.INVALID_PHONE, 422);
+      throw new AppError(Message.INVALID_PHONE, 400);
     }
 
     const companyContactRepository = getCustomRepository(
@@ -41,7 +41,7 @@ class CompanyContactController {
     const companyExists = await companyController.readCompanyFromID(companyID);
 
     if (!companyExists) {
-      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
+      throw new AppError(Message.COMPANY_NOT_FOUND, 404);
     }
 
     const companyAlreadyHavePhone = await companyContactRepository.findOne({
@@ -99,7 +99,7 @@ class CompanyContactController {
     const companyContact = await companyContactRepository.findOne(id);
 
     if (!companyContact) {
-      throw new AppError(Message.COMPANY_CONTACT_NOT_FOUND, 406);
+      throw new AppError(Message.COMPANY_CONTACT_NOT_FOUND, 404);
     }
 
     return res.status(200).json({
@@ -118,7 +118,7 @@ class CompanyContactController {
     let companyContact = await companyContactRepository.findOne(id);
 
     if (!companyContact) {
-      throw new AppError(Message.COMPANY_CONTACT_NOT_FOUND, 406);
+      throw new AppError(Message.COMPANY_CONTACT_NOT_FOUND, 404);
     }
 
     const { email = companyContact.email, phone = companyContact.phone } =
@@ -139,9 +139,9 @@ class CompanyContactController {
       }
     }
     if (!validation.validationEmail(email)) {
-      throw new AppError(Message.INVALID_EMAIL, 422);
+      throw new AppError(Message.INVALID_EMAIL, 400);
     } else if (!validation.validationPhone(phone)) {
-      throw new AppError(Message.INVALID_PHONE, 422);
+      throw new AppError(Message.INVALID_PHONE, 400);
     }
 
     await companyContactRepository.update(id, {
@@ -197,7 +197,7 @@ class CompanyContactController {
     const companyContact = await companyContactRepository.findOne(id);
 
     if (!companyContact) {
-      throw new AppError(Message.COMPANY_CONTACT_NOT_FOUND, 406);
+      throw new AppError(Message.COMPANY_CONTACT_NOT_FOUND, 404);
     }
 
     await companyContactRepository.delete(id);
@@ -213,7 +213,7 @@ class CompanyContactController {
     const companyContacts = await companyContactRepository.find();
 
     if (companyContacts.length === 0) {
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     const companyContactsDTO = companyContacts.map((companyContact) => {

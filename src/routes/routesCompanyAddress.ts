@@ -1,9 +1,7 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 import { VerifyTokenCompany } from "../auth/middleware/company/verifyTokenCompany";
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
 import { CompanyAddressController } from "../controllers/CompanyAddressController";
-import { Message } from "../env/message";
-import { AppError } from "../errors/AppErrors";
 
 // criando um objeto de RoleController
 const companyAddressController = new CompanyAddressController();
@@ -39,20 +37,11 @@ routerCompanyAddress.get(
   companyAddressController.read
 );
 
-routerCompanyAddress.get("/companyAddress", (req: Request, res: Response) => {
-  throw new AppError(Message.ID_NOT_FOUND, 422);
-});
-
 // criando a rota de deleção de Roles
 routerCompanyAddress.delete(
   "/companyAddress/:id",
   verifyTokenCompany.verifyADMCompanyByAddressID,
   companyAddressController.delete
-);
-
-routerCompanyAddress.delete(
-  "/companyAddress",
-  verifyTokenCompany.verifyADMCompanyByAddressID
 );
 
 // exportando o router
