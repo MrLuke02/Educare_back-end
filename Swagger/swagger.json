@@ -62,20 +62,28 @@
             "description": "rotas relacionadas ao documento enviado"
         },
         {
-            "name": "refreshtoken",
-            "description": "rotas relacionadas ao documento enviado"
-        },
-        {
             "name": "solicitation",
             "description": "rotas relacionadas a Socilicitação do Estudante "
         },
         {
-            "name": "interestarea",
-            "description": "rotas relacionadas a Area de Interesse do Estudante "
-        },
-        {
             "name": "student",
             "description": "rotas relacionadas ao Estudante "
+        },
+        {
+            "name": "userInterestArea",
+            "description": "rotas relacionadas a Area de Interesse do Usuário"
+        },
+        {
+            "name": "token",
+            "description": "rota relacionadas a validação de token "
+        },
+        {
+            "name": "studentInterestArea",
+            "description": "rotas relacionadas a area de interesse do Estudante"
+        },
+        {
+            "name": "userInterestAreaRelationUser",
+            "description": "rotas aos interesses do Usuário do Sistema"
         }
     ],
     "paths": {
@@ -272,6 +280,16 @@
                                     "properties": {
                                         "token": {
                                             "type": "string"
+                                        },
+                                        "user": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/ResponseUser"
+                                            }]
+                                        },
+                                        "TokenRefreshID": {
+                                            "type": "string",
+                                            "format": "uuid"
                                         }
                                     }
                                 }
@@ -441,24 +459,30 @@
                                             "type": "array",
                                             "items": {
                                                 "allOf": [{
-                                                    "$ref": "#/components/schemas/NewCompany"
+                                                    "$ref": "#/components/schemas/ResponseCompany"
                                                 }],
                                                 "properties": {
                                                     "companyAddress": {
                                                         "type": "object",
                                                         "allOf": [{
-                                                            "$ref": "#/components/schemas/NewCompany_Address"
+                                                            "$ref": "#/components/schemas/ResponseCompany_Address"
                                                         }]
                                                     },
                                                     "contact": {
                                                         "type": "object",
                                                         "allOf": [{
-                                                            "$ref": "#/components/schemas/NewCompany_Contact"
+                                                            "$ref": "#/components/schemas/ResponseCompany_Contact"
                                                         }]
                                                     }
                                                 }
-                                            },
-                                            "x-content-type": "application/json"
+                                            }
+
+                                        },
+                                        "solicitation": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/solicitation"
+                                            }
                                         }
                                     }
                                 }
@@ -505,6 +529,102 @@
                                             "items": {
                                                 "allOf": [{
                                                     "$ref": "#/components/schemas/ResponsePhone"
+                                                }]
+                                            }
+                                        }
+                                    },
+                                    "x-content-type": "application/json"
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Nada Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "User"
+            }
+        },
+        "/api/v1/userOrders/{userID}": {
+            "get": {
+                "tags": ["user"],
+                "summary": "Permite a pesquisa, a partir do ID do usuario, dos pedidos  | role:[ADM | USER]",
+                "description": "Isso só pode ser feito com o Usuario",
+                "parameters": [{
+                    "name": "userID",
+                    "in": "path",
+                    "description": "O ID do usuario que deseja pesquisar os pedidos",
+                    "required": true,
+                    "style": "simple",
+                    "explode": false,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "userPhone": {
+                                            "type": "array",
+                                            "items": {
+                                                "allOf": [{
+                                                    "$ref": "#/components/schemas/ResponsePhone"
+                                                }]
+                                            }
+                                        }
+                                    },
+                                    "x-content-type": "application/json"
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Nada Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "User"
+            }
+        },
+        "/api/v1/userSolicitations/{userID}": {
+            "get": {
+                "tags": ["user"],
+                "summary": "Permite a pesquisa, a partir do ID do usuario, das Solicitação de usuario | role:[ADM | USER]",
+                "description": "Isso só pode ser feito com o Usuario cadastrado e que tenha enviado uma solicitação de estudante",
+                "parameters": [{
+                    "name": "userID",
+                    "in": "path",
+                    "description": "O ID do usuario que deseja pesquisar as solicitaçãoes",
+                    "required": true,
+                    "style": "simple",
+                    "explode": false,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "Solicitation": {
+                                            "type": "array",
+                                            "items": {
+                                                "allOf": [{
+                                                    "$ref": "#/components/schemas/solicitation"
                                                 }]
                                             }
                                         }
@@ -726,8 +846,11 @@
                             }
                         }
                     },
-                    "400": {
-                        "description": "Usuario já Existe!"
+                    "409": {
+                        "description": "Usuário já possui endereço!"
+                    },
+                    "422": {
+                        "description": "Campo obrigatório(s) vazio(s)!"
                     }
                 },
                 "security": [{
@@ -3004,24 +3127,7 @@
                                             "type": "object",
                                             "allOf": [{
                                                 "$ref": "#/components/schemas/document"
-                                            }],
-                                            "properties": {
-                                                "id": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "file": {
-                                                    "type": "string",
-                                                    "data": {
-                                                        "type": "string",
-                                                        "format": "array"
-                                                    }
-                                                },
-                                                "createdAt": {
-                                                    "type": "string",
-                                                    "format": "date"
-                                                }
-                                            }
+                                            }]
                                         }
                                     }
                                 }
@@ -3074,23 +3180,12 @@
                         "description": "Sucesso!",
                         "content": {
                             "application/json": {
-                                "application/json": {
-                                    "schema": {
-                                        "properties": {
-                                            "document": {
-                                                "type": "object",
-                                                "allOf": [{
-                                                    "$ref": "#/components/schemas/document"
-                                                }],
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "string",
-                                                        "format": "uuid"
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        "x-content-type": "application/json"
+                                "schema": {
+                                    "properties": {
+                                        "document": {
+                                            "type": "object",
+                                            "$ref": "#/components/schemas/document"
+                                        }
                                     }
                                 }
                             }
@@ -3127,11 +3222,6 @@
                                                     "id": {
                                                         "type": "string",
                                                         "format": "uuid"
-                                                    },
-                                                    "categoryID": {
-                                                        "type": "string",
-                                                        "format": "uuid"
-
                                                     }
                                                 }
                                             }
@@ -3172,33 +3262,23 @@
                         "description": "Sucesso!",
                         "content": {
                             "application/json": {
-                                "application/json": {
-                                    "schema": {
-                                        "properties": {
-                                            "document": {
-                                                "type": "object",
-                                                "allOf": [{
-                                                    "$ref": "#/components/schemas/document"
-                                                }],
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "string",
-                                                        "format": "uuid"
-                                                    },
-                                                    "size": {
-                                                        "type": "number"
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        "x-content-type": "application/json"
-                                    }
+                                "schema": {
+                                    "properties": {
+                                        "document": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/document"
+                                            }]
+
+                                        }
+                                    },
+                                    "x-content-type": "application/json"
                                 }
                             }
                         }
                     },
                     "406": {
-                        "description": "Nenhum documento Encontrado!"
+                        "description": "Nenhum order Encontrado!"
                     }
                 },
                 "security": [{
@@ -3237,57 +3317,6 @@
                 "x-swagger-router-controller": "document"
             }
         },
-        "/api/v1/refreshToken": {
-            "post": {
-                "tags": ["refreshtoken"],
-                "summary": "Permite a criação de token no sistema | role:[ADM ]",
-                "description": "Criação de um novo token no sistema",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "id": {
-                                        "type": "string",
-                                        "format": "uuid"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "201": {
-                        "description": "Sucesso!",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "Solicitition": {
-                                            "type": "object",
-                                            "allOf": [{
-                                                "$ref": "#/components/schemas/document"
-                                            }]
-
-
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Token já existe!"
-                    }
-                },
-                "security": [{
-                    "bearerAuth": []
-                }],
-                "x-swagger-router-controller": "Token"
-            }
-
-        },
         "/api/v1/solicitation": {
             "post": {
                 "tags": ["solicitation"],
@@ -3324,7 +3353,7 @@
                                         "solicitation": {
                                             "type": "object",
                                             "allOf": [{
-                                                "$ref": "#/components/schemas/solicition"
+                                                "$ref": "#/components/schemas/solicitation"
                                             }],
                                             "properties": {
                                                 "id": {
@@ -3407,7 +3436,7 @@
                                         "solicitation": {
                                             "type": "object",
                                             "allOf": [{
-                                                "$ref": "#/components/schemas/solicition"
+                                                "$ref": "#/components/schemas/solicitation"
                                             }],
                                             "properties": {
                                                 "id": {
@@ -3504,28 +3533,26 @@
                         "description": "Sucesso!",
                         "content": {
                             "application/json": {
-                                "application/json": {
-                                    "schema": {
-                                        "properties": {
-                                            "solicitation": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "string",
-                                                        "format": "uuid"
-                                                    },
-                                                    "status": {
-                                                        "type": "string"
-                                                    },
-                                                    "admid": {
-                                                        "type": "string",
-                                                        "format": "uuid"
-                                                    }
+                                "schema": {
+                                    "properties": {
+                                        "solicitation": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "status": {
+                                                    "type": "string"
+                                                },
+                                                "admid": {
+                                                    "type": "string",
+                                                    "format": "uuid"
                                                 }
                                             }
-                                        },
-                                        "x-content-type": "application/json"
-                                    }
+                                        }
+                                    },
+                                    "x-content-type": "application/json"
                                 }
                             }
                         }
@@ -3556,7 +3583,7 @@
                                             "type": "array",
                                             "items": {
                                                 "allOf": [{
-                                                    "$ref": "#/components/schemas/solicition"
+                                                    "$ref": "#/components/schemas/solicitation"
                                                 }],
                                                 "properties": {
                                                     "id": {
@@ -3616,32 +3643,8 @@
                                             "type": "array",
                                             "items": {
                                                 "allOf": [{
-                                                    "$ref": "#/components/schemas/solicition"
-                                                }],
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "string",
-                                                        "format": "uuid"
-                                                    },
-                                                    "file": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "type": {
-                                                                "type": "string"
-                                                            },
-                                                            "data": {
-                                                                "type": "array",
-                                                                "items": {
-                                                                    "type": "number",
-                                                                    "format": "binary"
-                                                                }
-                                                            }
-                                                        }
-                                                    },
-                                                    "status": {
-                                                        "type": "string"
-                                                    }
-                                                }
+                                                    "$ref": "#/components/schemas/ResponseStundent"
+                                                }]
                                             }
                                         }
                                     },
@@ -3690,8 +3693,6 @@
                 }],
                 "x-swagger-router-controller": "order"
             },
-
-
             "get": {
                 "tags": ["student"],
                 "summary": "Permite a pesquisa, a partir do ID , dos pedido cadastrados  | role:[ADM]",
@@ -3711,29 +3712,22 @@
                         "description": "Sucesso!",
                         "content": {
                             "application/json": {
-                                "application/json": {
-                                    "schema": {
-                                        "properties": {
-                                            "solicitation": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "string",
-                                                        "format": "uuid"
-                                                    },
-                                                    "status": {
-                                                        "type": "string"
-                                                    },
-                                                    "admid": {
-                                                        "type": "string",
-                                                        "format": "uuid"
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        "x-content-type": "application/json"
-                                    }
+                                "schema": {
+                                    "properties": {
+                                        "student": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/ResponseStundent"
+                                            }]
+
+
+
+
+                                        }
+                                    },
+                                    "x-content-type": "application/json"
                                 }
+
                             }
                         }
                     },
@@ -3744,7 +3738,7 @@
                 "security": [{
                     "bearerAuth": []
                 }],
-                "x-swagger-router-controller": "solicitation"
+                "x-swagger-router-controller": "stundent"
             }
         },
         "/api/v1/student": {
@@ -3786,32 +3780,8 @@
                                         "solicitation": {
                                             "type": "object",
                                             "allOf": [{
-                                                "$ref": "#/components/schemas/solicition"
-                                            }],
-                                            "properties": {
-                                                "id": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "file": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "type": {
-                                                            "type": "string"
-                                                        },
-                                                        "data": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "type": "number",
-                                                                "format": "binary"
-                                                            }
-                                                        }
-                                                    }
-                                                },
-                                                "status": {
-                                                    "type": "string"
-                                                }
-                                            }
+                                                "$ref": "#/components/schemas/ResponseStundent"
+                                            }]
                                         }
                                     }
                                 }
@@ -3830,6 +3800,717 @@
                     "bearerAuth": []
                 }],
                 "x-swagger-router-controller": "solicitition"
+            }
+        },
+        "/api/v1/validationToken": {
+            "post": {
+                "tags": ["token"],
+                "summary": "Permite a criação da validação de token | role:[ADM]",
+                "description": "Essa rota permite a criação da validação do token ",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "token": {
+                                        "type": "string"
+                                    }
+                                }
+
+                            }
+                        },
+                        "required": true
+                    }
+
+                },
+                "responses": {
+                    "201": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "tokenDecrypted": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/ResponseToken"
+                                            }]
+
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    },
+                    "400": {
+                        "description": "Validação já existe!"
+                    },
+                    "422": {
+                        "description": "Validação já existe!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "Token"
+            }
+        },
+
+        "/api/v1/refreshToken": {
+            "post": {
+                "tags": ["token"],
+                "summary": "Permite a criação de token no sistema | role:[ADM ]",
+                "description": "Criação de um novo token no sistema",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "Solicitition": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/document"
+                                            }]
+
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Token já existe!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "Token"
+            }
+
+        },
+        "/api/v1/studentInterestArea": {
+            "post": {
+                "tags": ["studentInterestArea"],
+                "summary": "Permite a criação de Status do pedido | role:[ADM]",
+                "description": "Essa rota permite a criação de status ",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "studentInterestArea": {
+                                        "type": "string"
+                                    }
+                                }
+
+                            }
+                        },
+                        "required": true
+                    }
+
+                },
+                "responses": {
+                    "201": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "tokenDecrypted": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/ResponseOrderStatus"
+                                            }]
+
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    },
+                    "400": {
+                        "description": "Status já existe!"
+                    },
+                    "422": {
+                        "description": "Status já existe!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "orderStatus"
+            },
+            "put": {
+                "tags": ["studentInterestArea"],
+                "summary": "Permite a alteração do status cadastrados | role:[ADM]",
+                "description": "Isso só pode ser feito com o Usuario Conectado",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "studentInterestArea": {
+                                        "type": "string"
+                                    }
+
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "orderStatus": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/ResponseOrderStatus"
+                                            }]
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    },
+                    "400": {
+                        "description": "Status já existe!"
+                    },
+                    "406": {
+                        "description": "Status Não Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "orderStatus"
+
+            }
+        },
+        "/api/v1/showStudentInterestArea": {
+            "get": {
+                "tags": ["studentInterestArea"],
+                "summary": "Permite o acesso a lista dos estudantes cadastrados | role:[ADM]",
+                "description": "Passa nada Paramentro, retona",
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "OrderStatus": {
+                                            "type": "array",
+                                            "items": {
+                                                "allOf": [{
+                                                    "$ref": "#/components/schemas/ResponseOrderStatus"
+                                                }]
+                                            }
+                                        }
+                                    },
+                                    "x-content-type": "application/json"
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Nenhum Status Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "orderStatus"
+            }
+        },
+        "/api/v1/studentInterestArea/{studentInterestAreaID}": {
+            "get": {
+                "tags": ["studentInterestArea"],
+                "summary": "Permite a pesquisa, a partir do ID , dos status cadastrados  | role:[ADM]",
+                "description": "Isso só pode ser feito com o Adm conectado",
+                "parameters": [{
+                    "name": "studentInterestAreaID",
+                    "in": "path",
+                    "description": "O ID do Status de Pedido",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "solicitation": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/ResponseUserInterestArea"
+                                            }]
+                                        }
+                                    },
+                                    "x-content-type": "application/json"
+                                }
+
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Nenhum Status Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "orderStatus"
+            },
+            "delete": {
+                "tags": ["studentInterestArea"],
+                "summary": "Permite a Exclusão dos Status a partir do id | role:[ADM]",
+                "description": "Status de pedido de impressão ",
+                "parameters": [{
+                    "name": "orderStatusID",
+                    "in": "path",
+                    "description": "O ID que precisa ser excluído",
+                    "required": true,
+                    "style": "simple",
+                    "explode": false,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!"
+                    },
+                    "406": {
+                        "description": "Nenhum Status Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "orderStatus"
+            }
+        },
+        "/api/v1/userInterestAreaRelationUser": {
+            "post": {
+                "tags": ["userInterestAreaRelationUser"],
+                "summary": "Permite a criação de Status do pedido | role:[ADM]",
+                "description": "Essa rota permite a criação de status ",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "userInterestArea": {
+                                        "type": "string"
+                                    }
+                                }
+
+                            }
+                        },
+                        "required": true
+                    }
+
+                },
+                "responses": {
+                    "201": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "tokenDecrypted": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/ResponseUserInterestArea"
+                                            }]
+
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    },
+                    "400": {
+                        "description": "Status já existe!"
+                    },
+                    "422": {
+                        "description": "Status já existe!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "orderStatus"
+            }
+        },
+
+        "/api/v1/showUserInterestAreaRelationUser": {
+            "get": {
+                "tags": ["userInterestAreaRelationUser"],
+                "summary": "Permite o acesso a lista dos estudantes cadastrados | role:[ADM]",
+                "description": "Passa nada Paramentro, retona",
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "OrderStatus": {
+                                            "type": "array",
+                                            "items": {
+                                                "allOf": [{
+                                                    "$ref": "#/components/schemas/ResponseUserInterestArea"
+                                                }]
+                                            }
+                                        }
+                                    },
+                                    "x-content-type": "application/json"
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Nenhum Status Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "orderStatus"
+            }
+        },
+        "/api/v1/userInterestAreaRelationUser/{userInterestAreaRelationUserID}": {
+            "get": {
+                "tags": ["userInterestAreaRelationUser"],
+                "summary": "Permite a pesquisa, a partir do ID , dos status cadastrados  | role:[ADM]",
+                "description": "Isso só pode ser feito com o Adm conectado",
+                "parameters": [{
+                    "name": "userInterestAreaRelationUserID",
+                    "in": "path",
+                    "description": "O ID do Status de Pedido",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "solicitation": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/ResponseUserInterestArea"
+                                            }]
+                                        }
+                                    },
+                                    "x-content-type": "application/json"
+                                }
+
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Nenhum Status Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "orderStatus"
+            },
+            "delete": {
+                "tags": ["userInterestAreaRelationUser"],
+                "summary": "Permite a Exclusão dos Status a partir do id | role:[ADM]",
+                "description": "Status de pedido de impressão ",
+                "parameters": [{
+                    "name": "userInterestAreaRelationUserID",
+                    "in": "path",
+                    "description": "O ID que precisa ser excluído",
+                    "required": true,
+                    "style": "simple",
+                    "explode": false,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!"
+                    },
+                    "406": {
+                        "description": "Nenhum Status Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "orderStatus"
+            }
+        },
+        "/api/v1/userInterestArea": {
+            "post": {
+                "tags": ["userInterestArea"],
+                "summary": "Permite o cadastro do interesse do usuario | role:[ADM|USER]",
+                "description": "Essa rota permite a criação de status ",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "userInterestArea": {
+                                        "type": "string"
+                                    }
+                                }
+
+                            }
+                        },
+                        "required": true
+                    }
+
+                },
+                "responses": {
+                    "201": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "tokenDecrypted": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/ResponseUserInterestArea"
+                                            }]
+
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    },
+                    "400": {
+                        "description": "Interesse já existe!"
+                    },
+                    "422": {
+                        "description": "Interesse já existe!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "userInterestArea"
+            },
+            "put": {
+                "tags": ["userInterestArea"],
+                "summary": "Permite a alteração dos interesses cadastrados | role:[ADM|USER]",
+                "description": "Isso só pode ser feito com o Usuario Conectado",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "userInterestArea": {
+                                        "type": "string"
+                                    }
+
+                                }
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "InterestArea": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/ResponseUserInterestArea"
+                                            }]
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    },
+                    "400": {
+                        "description": "Interesse já existe!"
+                    },
+                    "406": {
+                        "description": "Interesse Não Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "userInterestArea"
+
+            }
+        },
+        "/api/v1/showUserInterestArea": {
+            "get": {
+                "tags": ["userInterestArea"],
+                "summary": "Permite o acesso a lista dos interesses cadastrados | role:[ADM]",
+                "description": "Passa nada Paramentro, retona",
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "InterestArea": {
+                                            "type": "array",
+                                            "items": {
+                                                "allOf": [{
+                                                    "$ref": "#/components/schemas/ResponseUserInterestArea"
+                                                }]
+                                            }
+                                        }
+                                    },
+                                    "x-content-type": "application/json"
+                                }
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Nenhum Status Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "userInterestArea"
+            }
+        },
+        "/api/v1/userInterestArea/{userInterestAreaID}": {
+            "get": {
+                "tags": ["userInterestArea"],
+                "summary": "Permite a pesquisa, a partir do ID , das areas de interesse cadastradas  | role:[ADM]",
+                "description": "Isso só pode ser feito com o Adm conectado",
+                "parameters": [{
+                    "name": "userInterestAreaID",
+                    "in": "path",
+                    "description": "O ID do userInterestArea de Pedido",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Sucesso!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "InterestArea": {
+                                            "type": "object",
+                                            "allOf": [{
+                                                "$ref": "#/components/schemas/ResponseUserInterestArea"
+                                            }]
+                                        }
+                                    },
+                                    "x-content-type": "application/json"
+                                }
+
+                            }
+                        }
+                    },
+                    "406": {
+                        "description": "Nenhum Interesse Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "userInterestArea"
+            },
+            "delete": {
+                "tags": ["userInterestArea"],
+                "summary": "Permite a Exclusão dos Status a partir do id | role:[ADM]",
+                "description": "Status de pedido de impressão ",
+                "parameters": [{
+                    "name": "userInterestAreaID",
+                    "in": "path",
+                    "description": "O ID que precisa ser excluído",
+                    "required": true,
+                    "style": "simple",
+                    "explode": false,
+                    "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Interesse!"
+                    },
+                    "406": {
+                        "description": "Nenhum Interesse Encontrado!"
+                    }
+                },
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "x-swagger-router-controller": "userInterestArea"
             }
         }
     },
@@ -4138,6 +4819,32 @@
                     }
                 }
             },
+            "ResponseStundent": {
+                "required": ["id", "interestAreaID", "expiresIn", "userID", "createdAt"],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "interestAreaID": {
+                        "type": "string",
+                        "format": "binary"
+
+                    },
+                    "expiresIn": {
+                        "type": "integer"
+                    },
+                    "userID": {
+                        "type": "string",
+                        "format": "binary"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date"
+                    }
+                }
+
+            },
 
             "ResponseCompany_Address": {
                 "required": [
@@ -4324,7 +5031,7 @@
                 }
             },
             "document": {
-                "required": ["id", "type", "size", "pageNumber", "file"],
+                "required": ["id", "type", "size", "pageNumber", "file", "name"],
                 "properties": {
                     "type": {
                         "type": "string"
@@ -4335,30 +5042,50 @@
                     },
                     "pageNumber": {
                         "type": "integer"
+                    },
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "file": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string"
+                            },
+                            "data": {
+                                "type": "array",
+                                "items": {
+                                    "type": "number",
+                                    "format": "binary"
+                                }
+                            }
+                        }
                     }
                 }
             },
             "file": {
                 "required": ["type", "data"],
                 "properties": {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string"
-                        },
-                        "data": {
-                            "type": "array",
-                            "items": {
-                                "type": "number",
-                                "format": "binary"
-                            }
+                    "type": {
+                        "type": "string"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "number",
+                            "format": "binary"
                         }
                     }
+
                 }
 
             },
-            "solicition": {
-                "required": ["userID", "status", "id"],
+            "solicitation": {
+                "required": ["userID", "status", "id", "admID"],
                 "properties": {
 
                     "id": {
@@ -4383,19 +5110,65 @@
                         "type": "string",
                         "format": "date"
 
+                    },
+
+                    "file": {
+                        "type": "object",
+                        "allOf": [{
+                            "$ref": "#/components/schemas/file"
+                        }]
                     }
-                },
-                "file": {
-                    "type": "object",
-                    "allOf": [{
-                        "$ref": "#/components/schemas/file"
-                    }]
                 }
 
+            },
+            "ResponseToken": {
+                "required": ["userID", "status", "id"],
+                "properties": {
+                    "iss": {
+                        "type": "string"
+                    },
+                    "nameUser": {
+                        "type": "string"
+                    },
+                    "sub": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+
+                    },
+                    "iat": {
+                        "type": "integer"
+                    },
+                    "exp": {
+                        "type": "integer"
+                    }
+
+                }
+            },
+            "ResponseUserInterestArea": {
+                "required": ["id", "userInterestArea", "createdAt"],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "userInterestArea": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date"
+                    }
+
+                }
             }
-
-
         },
+
 
 
         "securitySchemes": {
