@@ -27,20 +27,20 @@ class UserController {
     // verificando se não foi passado um dos campos
     if (!name || !email || !password || !phoneNumber) {
       // retornando um json de erro personalizado
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
     // verificando se o email não é valido
     if (!validation.validationEmail(email)) {
       // retornando um json de erro personalizado
-      throw new AppError(Message.INVALID_EMAIL, 422);
+      throw new AppError(Message.INVALID_EMAIL, 400);
       // verificando se a senha não é valida
     } else if (!validation.validationPassword(password)) {
       // retornando um json de erro personalizado
-      throw new AppError(Message.INVALID_PASSWORD, 422);
+      throw new AppError(Message.INVALID_PASSWORD, 400);
     } else if (!validation.validationPhone(phoneNumber)) {
       // retornando um json de erro personalizado
-      throw new AppError(Message.INVALID_PHONE, 422);
+      throw new AppError(Message.INVALID_PHONE, 400);
     }
 
     // tranformando a senha em hash
@@ -83,7 +83,7 @@ class UserController {
     const role = await roleController.readFromType(type);
 
     if (!role) {
-      throw new AppError(Message.ROLE_NOT_FOUND, 406);
+      throw new AppError(Message.ROLE_NOT_FOUND, 404);
     }
     // savando o usuário criado a cima
     const userSaved = await usersRepository.save(user);
@@ -115,7 +115,7 @@ class UserController {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
     // tranformando a senha em hash
@@ -132,7 +132,7 @@ class UserController {
 
     // verificanddo se existe um usuário com o email e senha enviados
     if (!user) {
-      throw new AppError(Message.USER_NOT_FOUND, 406);
+      throw new AppError(Message.USER_NOT_FOUND, 404);
     }
 
     await verifyExpiredStudent(user.id);
@@ -142,7 +142,7 @@ class UserController {
     const rolesDTO = await userRoleController.readFromUser(user.id);
 
     if (rolesDTO.length === 0) {
-      throw new AppError(Message.ROLE_NOT_FOUND, 406);
+      throw new AppError(Message.ROLE_NOT_FOUND, 404);
     }
 
     const rolesTypes = rolesDTO.map((roleDTO) => {
@@ -194,7 +194,7 @@ class UserController {
     // verificanddo se existe um usuário com o id enviado
     if (!user) {
       // retornando uma resposta em json
-      throw new AppError(Message.USER_NOT_FOUND, 406);
+      throw new AppError(Message.USER_NOT_FOUND, 404);
     }
 
     // capturando e armazenando os dados do corpo da requisição, caso não seja passado algum dado, a constante receberá o atributo do usuário pesquisado
@@ -207,11 +207,11 @@ class UserController {
     // verificando se o email é valido
     if (!validation.validationEmail(email)) {
       // retornando um json de erro personalizado
-      throw new AppError(Message.INVALID_EMAIL, 422);
+      throw new AppError(Message.INVALID_EMAIL, 400);
       // verificando se a senha foi passada e se é valida
     } else if (!validation.validationPassword(password)) {
       // retornando um json de erro personalizado
-      throw new AppError(Message.INVALID_PASSWORD, 422);
+      throw new AppError(Message.INVALID_PASSWORD, 400);
     }
 
     // verificando se o email passado e igual ao do usuário
@@ -259,7 +259,7 @@ class UserController {
     // verificanddo se existe um usuário com o id enviado
     if (!userExist) {
       // retornando uma resposta em json
-      throw new AppError(Message.ROLE_NOT_FOUND, 406);
+      throw new AppError(Message.ROLE_NOT_FOUND, 404);
     }
 
     // deletando o usuário a partir do id
@@ -282,7 +282,7 @@ class UserController {
     // verificando se o DB possui usuários cadastrados
     if (users.length === 0) {
       // retornando uma resposta em json
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     const userRoleController = new UserRoleController();
@@ -341,7 +341,7 @@ class UserController {
     const addressDTO = await addressController.readFromUser(userID);
 
     if (!addressDTO) {
-      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 404);
     }
 
     return res.status(200).json({ Address: addressDTO });
@@ -355,7 +355,7 @@ class UserController {
     const phonesDTO = await phoneController.readFromUser(userID);
 
     if (phonesDTO.length === 0) {
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     return res.status(200).json({ Phones: phonesDTO });
@@ -369,7 +369,7 @@ class UserController {
     const companiesDTO = await companyController.readCompaniesUser(userID);
 
     if (companiesDTO.length === 0) {
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     return res.status(200).json({ Companies: companiesDTO });
@@ -383,7 +383,7 @@ class UserController {
     const ordersDTO = await orderController.readOrdersUser(userID);
 
     if (ordersDTO.length === 0) {
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     return res.status(200).json({ Orders: ordersDTO });
@@ -397,7 +397,7 @@ class UserController {
     const solicitations = await solicitationController.readFromUserID(userID);
 
     if (solicitations.length === 0) {
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     return res.status(200).json({ Solicitations: solicitations });
@@ -412,7 +412,7 @@ class UserController {
     const user = await usersRepository.findOne({ id: userID });
 
     if (!user) {
-      throw new AppError(Message.USER_NOT_FOUND, 406);
+      throw new AppError(Message.USER_NOT_FOUND, 404);
     }
 
     const userInterestAreaRelationUserController =
@@ -433,7 +433,7 @@ class UserController {
     const user = await usersRepository.findOne({ id: userID });
 
     if (!user) {
-      throw new AppError(Message.USER_NOT_FOUND, 406);
+      throw new AppError(Message.USER_NOT_FOUND, 404);
     }
 
     let userDTO = UserDTO.convertUserToDTO(user) as Object;

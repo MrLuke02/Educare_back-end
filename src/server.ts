@@ -39,9 +39,7 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
     return res.status(error.statusCode).json({ Message: error.message });
   }
 
-  return res
-    .status(500)
-    .json({ Message: `Erro interno do servidor ${error.message}` });
+  return res.status(500).json({ Message: error.message });
 });
 
 // Inicia o servidor da api na porta 3333

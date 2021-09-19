@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-
 import { Message } from "../env/message";
+import { AppError } from "../errors/AppErrors";
 import { CompanyDTO } from "../models/DTOs/CompanyDTO";
 import { CompaniesRepository } from "../repositories/CompanyRepository";
 import * as validation from "../util/user/Validations";
@@ -10,8 +10,6 @@ import { CompanyContactController } from "./CompanyContactController";
 import { RoleController } from "./RoleController";
 import { UserController } from "./UserController";
 import { UserRoleController } from "./UserRoleController";
-import { CompanyContact } from "../models/CompanyContact";
-import { AppError } from "../errors/AppErrors";
 
 class CompanyController {
   async create(req: Request, res: Response) {
@@ -19,15 +17,15 @@ class CompanyController {
       req.body;
 
     if (!companyName || !cnpj || !companyCategory || !email || !phone) {
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     } else if (!userID) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     } else if (!validation.validationCnpj(cnpj)) {
-      throw new AppError(Message.INVALID_CNPJ, 422);
+      throw new AppError(Message.INVALID_CNPJ, 400);
     } else if (!validation.validationEmail(email)) {
-      throw new AppError(Message.INVALID_EMAIL, 422);
+      throw new AppError(Message.INVALID_EMAIL, 400);
     } else if (!validation.validationPhone(phone)) {
-      throw new AppError(Message.INVALID_PHONE, 422);
+      throw new AppError(Message.INVALID_PHONE, 400);
     }
 
     const userController = new UserController();
@@ -35,7 +33,7 @@ class CompanyController {
     const user = await userController.readFromController(userID);
 
     if (!user) {
-      throw new AppError(Message.USER_NOT_FOUND, 406);
+      throw new AppError(Message.USER_NOT_FOUND, 404);
     }
 
     const companyRepository = getCustomRepository(CompaniesRepository);
@@ -61,7 +59,7 @@ class CompanyController {
     const role = await roleController.readFromType(type);
 
     if (!role) {
-      throw new AppError(Message.ROLE_NOT_FOUND, 406);
+      throw new AppError(Message.ROLE_NOT_FOUND, 404);
     }
 
     const companyContactController = new CompanyContactController();
@@ -108,7 +106,7 @@ class CompanyController {
     const { cnpj } = req.params;
 
     if (!cnpj) {
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
     const companyRepository = getCustomRepository(CompaniesRepository);
@@ -118,7 +116,7 @@ class CompanyController {
     });
 
     if (!company) {
-      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
+      throw new AppError(Message.COMPANY_NOT_FOUND, 404);
     }
 
     return res
@@ -138,7 +136,7 @@ class CompanyController {
     // verificando se a role não existe
     if (!company) {
       // retornando uma resposta de erro em json
-      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
+      throw new AppError(Message.COMPANY_NOT_FOUND, 404);
     }
 
     const companyContactController = new CompanyContactController();
@@ -148,7 +146,7 @@ class CompanyController {
     );
 
     if (!companyContact) {
-      throw new AppError(Message.COMPANY_CONTACT_NOT_FOUND, 406);
+      throw new AppError(Message.COMPANY_CONTACT_NOT_FOUND, 404);
     }
 
     // capturando o tipo de role passado no corpo da requisição, caso não seja passado nada, pega o valor que ja está cadastrado na role
@@ -161,11 +159,11 @@ class CompanyController {
     } = req.body;
 
     if (!validation.validationCnpj(cnpj)) {
-      throw new AppError(Message.INVALID_CNPJ, 422);
+      throw new AppError(Message.INVALID_CNPJ, 400);
     } else if (!validation.validationEmail(email)) {
-      throw new AppError(Message.INVALID_EMAIL, 422);
+      throw new AppError(Message.INVALID_EMAIL, 400);
     } else if (!validation.validationPhone(phone)) {
-      throw new AppError(Message.INVALID_PHONE, 422);
+      throw new AppError(Message.INVALID_PHONE, 400);
     }
 
     if (email !== companyContact.email) {
@@ -228,7 +226,7 @@ class CompanyController {
     const company = await companyRepository.findOne({ id: companyID });
 
     if (!company) {
-      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
+      throw new AppError(Message.COMPANY_NOT_FOUND, 404);
     }
 
     const userID = company.userID;
@@ -245,7 +243,7 @@ class CompanyController {
       const role = await roleController.readFromType(type);
 
       if (!role) {
-        throw new AppError(Message.ROLE_NOT_FOUND, 406);
+        throw new AppError(Message.ROLE_NOT_FOUND, 404);
       }
 
       const userRole = await userRoleController.readFromUserRole(
@@ -254,7 +252,7 @@ class CompanyController {
       );
 
       if (!userRole) {
-        throw new AppError(Message.USER_ROLE_NOT_FOUND, 406);
+        throw new AppError(Message.USER_ROLE_NOT_FOUND, 404);
       }
 
       const userRoleDeleted = await userRoleController.deleteFromController(
@@ -277,7 +275,7 @@ class CompanyController {
     const companies = await companyRepository.find();
 
     if (companies.length === 0) {
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     const companiesDTO = companies.map((company) => {
@@ -299,7 +297,7 @@ class CompanyController {
     });
 
     if (companies.length === 0) {
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     const companiesDTO = companies.map((company) => {
@@ -353,7 +351,7 @@ class CompanyController {
     const company = await companyRepository.findOne({ id: companyID });
 
     if (!company) {
-      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
+      throw new AppError(Message.COMPANY_NOT_FOUND, 404);
     }
 
     return res
@@ -371,7 +369,7 @@ class CompanyController {
     );
 
     if (!companyAddressDTO) {
-      throw new AppError(Message.ADDRESS_NOT_FOUND, 406);
+      throw new AppError(Message.ADDRESS_NOT_FOUND, 404);
     }
 
     return res.status(200).json({
@@ -389,7 +387,7 @@ class CompanyController {
     );
 
     if (!companyContactDTO) {
-      throw new AppError(Message.COMPANY_CONTACT_NOT_FOUND, 406);
+      throw new AppError(Message.COMPANY_CONTACT_NOT_FOUND, 404);
     }
 
     return res.status(200).json({
@@ -413,7 +411,7 @@ class CompanyController {
     const company = await companyRepository.findOne({ id: companyID });
 
     if (!company) {
-      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
+      throw new AppError(Message.COMPANY_NOT_FOUND, 404);
     }
 
     const companyAddressController = new CompanyAddressController();

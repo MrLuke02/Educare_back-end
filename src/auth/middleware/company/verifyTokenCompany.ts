@@ -19,7 +19,7 @@ class VerifyTokenCompany {
     }
 
     if (!companyID) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
 
     const companyController = new CompanyController();
@@ -27,7 +27,7 @@ class VerifyTokenCompany {
     const company = await companyController.readCompanyFromID(companyID);
 
     if (!company) {
-      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
+      throw new AppError(Message.COMPANY_NOT_FOUND, 404);
     }
 
     // armazenando o token retornado da função
@@ -42,7 +42,7 @@ class VerifyTokenCompany {
         next();
       } else {
         // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-        throw new AppError(Message.INVALID_TOKEN, 401);
+        throw new AppError(Message.INVALID_TOKEN, 403);
       }
     }
   }
@@ -60,7 +60,7 @@ class VerifyTokenCompany {
     }
 
     if (!id) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
 
     const companyAddressController = new CompanyAddressController();
@@ -68,7 +68,7 @@ class VerifyTokenCompany {
     const company = await companyAddressController.readFromAddress(id);
 
     if (!company) {
-      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
+      throw new AppError(Message.COMPANY_NOT_FOUND, 404);
     }
 
     // armazenando o token retornado da função
@@ -82,6 +82,7 @@ class VerifyTokenCompany {
         // avança para o proximo middleware
         next();
       } else {
+        throw new AppError(Message.INVALID_TOKEN, 403);
         // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
       }
     }
@@ -100,7 +101,7 @@ class VerifyTokenCompany {
     }
 
     if (!id) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
 
     const companyContactController = new CompanyContactController();
@@ -108,7 +109,7 @@ class VerifyTokenCompany {
     const company = await companyContactController.readFromContact(id);
 
     if (!company) {
-      throw new AppError(Message.COMPANY_NOT_FOUND, 406);
+      throw new AppError(Message.COMPANY_NOT_FOUND, 404);
     }
 
     // armazenando o token retornado da função
@@ -123,7 +124,7 @@ class VerifyTokenCompany {
         next();
       } else {
         // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
-        throw new AppError(Message.INVALID_TOKEN, 401);
+        throw new AppError(Message.INVALID_TOKEN, 403);
       }
     }
   }

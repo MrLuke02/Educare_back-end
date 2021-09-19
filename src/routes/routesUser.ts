@@ -34,21 +34,18 @@ routerUser.get(
   verifyTokenUser.verifyADMUser,
   userController.readAddressFromUser
 );
-routerUser.get("/userAddress", verifyTokenUser.verifyADMUser);
 
 routerUser.get(
   "/userPhones/:userID",
   verifyTokenUser.verifyADMUser,
   userController.readPhonesFromUser
 );
-routerUser.get("/userPhones", verifyTokenUser.verifyADMUser);
 
 routerUser.get(
   "/userCompanies/:userID",
   verifyTokenUser.verifyADMUser,
   userController.readCompaniesFromUser
 );
-routerUser.get("/userCompanies", verifyTokenUser.verifyADMUser);
 
 routerUser.get(
   "/userOrders/:userID",
@@ -67,14 +64,12 @@ routerUser.get(
   verifyTokenUser.verifyADMUser,
   userController.readAllFromUser
 );
-routerUser.get("/userAll", verifyTokenUser.verifyADMUser);
 
 routerUser.get(
   "/userInterestAreas/:userID",
   verifyTokenUser.verifyADMUser,
   userController.readUserInterestArea
 );
-routerUser.get("/userInterestAreas", verifyTokenUser.verifyADMUser);
 
 // criando a rota de deleção de usuários
 routerUser.delete(
@@ -82,7 +77,6 @@ routerUser.delete(
   verifyTokenUser.verifyADMUser,
   userController.delete
 );
-routerUser.delete("/user", verifyTokenUser.verifyADMUser);
 
 // exportando o router
 export { routerUser };

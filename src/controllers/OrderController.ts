@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getCustomRepository } from "typeorm";
+import { getCustomRepository, Repository } from "typeorm";
 
 import { Message } from "../env/message";
 import { OrderStatus } from "../env/orderStaus";
@@ -16,15 +16,21 @@ class OrderController {
   async create(req: Request, res: Response) {
     const docs = req.file;
     const { userID, categoryID, copyNumber, price, pageNumber } = req.body;
+    let { isDelivery } = req.body;
+
+    isDelivery = isDelivery === "true";
+
+    const isEmpty = ["", NaN, undefined, null];
 
     if (
       !userID ||
       !categoryID ||
       (!copyNumber && copyNumber !== 0) ||
       (!price && price !== 0) ||
-      (!pageNumber && pageNumber !== 0)
+      (!pageNumber && pageNumber !== 0) ||
+      isEmpty.includes(isDelivery)
     ) {
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
     const userController = new UserController();
@@ -37,9 +43,9 @@ class OrderController {
     const category = await categoryController.readFromController(categoryID);
 
     if (!user) {
-      throw new AppError(Message.USER_NOT_FOUND, 406);
+      throw new AppError(Message.USER_NOT_FOUND, 404);
     } else if (!category) {
-      throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
+      throw new AppError(Message.CATEGORY_NOT_FOUND, 404);
     }
 
     const document = await documentController.createFromController(
@@ -50,9 +56,10 @@ class OrderController {
 
     const order = orderRepository.create({
       copyNumber,
-      status: OrderStatus.ORDER_CREATED,
+      status: OrderStatus.ORDER_UNDER_ANALYSIS,
       price,
       userID,
+      isDelivery,
       categoryID,
       documentID: document.id,
     });
@@ -72,7 +79,7 @@ class OrderController {
     const order = await orderRepository.findOne({ id });
 
     if (!order) {
-      throw new AppError(Message.ORDER_NOT_FOUND, 406);
+      throw new AppError(Message.ORDER_NOT_FOUND, 404);
     }
 
     return res.status(200).json({ Order: OrderDTO.convertOrderToDTO(order) });
@@ -86,29 +93,35 @@ class OrderController {
     let order = await orderRepository.findOne({ id });
 
     if (!order) {
-      throw new AppError(Message.ORDER_NOT_FOUND, 406);
+      throw new AppError(Message.ORDER_NOT_FOUND, 404);
+    }
+
+    if (order.status !== OrderStatus.ORDER_UNDER_ANALYSIS) {
+      throw new AppError(Message.UNAUTHORIZED, 403);
     }
 
     const {
       categoryID = order.categoryID,
       copyNumber = order.copyNumber,
       price = order.price,
+      isDelivery = order.isDelivery,
     } = req.body;
 
     const categoryController = new CategoryController();
     const category = await categoryController.readFromController(categoryID);
 
     if (!category) {
-      throw new AppError(Message.CATEGORY_NOT_FOUND, 406);
+      throw new AppError(Message.CATEGORY_NOT_FOUND, 404);
     }
 
     await orderRepository.update(id, {
       categoryID,
       copyNumber,
       price,
+      isDelivery,
     });
 
-    order = await orderRepository.findOne({ id });
+    Object.assign(order, { categoryID, copyNumber, price, isDelivery });
 
     return res.status(200).json({ Order: OrderDTO.convertOrderToDTO(order) });
   }
@@ -117,7 +130,7 @@ class OrderController {
     const { id, statusKey } = req.body;
 
     if (!id || !statusKey) {
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
     const orderRepository = getCustomRepository(OrdersRepository);
@@ -125,16 +138,24 @@ class OrderController {
     let order = await orderRepository.findOne({ id });
 
     if (!order) {
-      throw new AppError(Message.ORDER_NOT_FOUND, 406);
+      throw new AppError(Message.ORDER_NOT_FOUND, 404);
+    }
+
+    if (
+      statusKey === OrderStatus.ORDER_FINISHED ||
+      statusKey === OrderStatus.ORDER_CANCELED ||
+      statusKey === OrderStatus.ORDER_IN_DELIVERY
+    ) {
+      throw new AppError(Message.UNAUTHORIZED, 403);
     }
 
     if (!verifyStatus(statusKey, OrderStatus)) {
-      throw new AppError(Message.ORDER_STATUS_NOT_FOUND, 406);
+      throw new AppError(Message.ORDER_STATUS_NOT_FOUND, 404);
     }
 
     await orderRepository.update(id, { status: OrderStatus[statusKey] });
 
-    order = await orderRepository.findOne({ id });
+    Object.assign(order, { statusKey });
 
     return res.status(200).json({ Order: OrderDTO.convertOrderToDTO(order) });
   }
@@ -147,7 +168,11 @@ class OrderController {
     const order = await orderRepository.findOne({ id });
 
     if (!order) {
-      throw new AppError(Message.ORDER_NOT_FOUND, 406);
+      throw new AppError(Message.ORDER_NOT_FOUND, 404);
+    }
+
+    if (order.status !== OrderStatus.ORDER_UNDER_ANALYSIS) {
+      throw new AppError(Message.UNAUTHORIZED, 403);
     }
 
     await orderRepository.delete({ id });
@@ -163,7 +188,7 @@ class OrderController {
     });
 
     if (orders.length === 0) {
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     const ordersDTO = orders.map((order) => {

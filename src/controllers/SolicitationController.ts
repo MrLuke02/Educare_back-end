@@ -21,11 +21,11 @@ class SolicitationController {
     const { userID, course, institution, studentInterestAreaID } = req.body;
 
     if (!file) {
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     } else if (!userID || !course || !institution || !studentInterestAreaID) {
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     } else if (size > 10 * 1024 * 1024) {
-      throw new AppError(Message.FILE_TOO_LARGE, 422);
+      throw new AppError(Message.FILE_TOO_LARGE, 400);
     }
 
     const userController = new UserController();
@@ -33,7 +33,7 @@ class SolicitationController {
     const user = await userController.readFromController(userID);
 
     if (!user) {
-      throw new AppError(Message.USER_NOT_FOUND, 406);
+      throw new AppError(Message.USER_NOT_FOUND, 404);
     }
 
     const studentInterestAreaController = new StudentInterestAreaController();
@@ -103,7 +103,7 @@ class SolicitationController {
     const solicitation = await solicitationsRepository.findOne({ id });
 
     if (!solicitation) {
-      throw new AppError(Message.SOLICITATION_NOT_FOUND, 406);
+      throw new AppError(Message.SOLICITATION_NOT_FOUND, 404);
     }
 
     return res.status(200).json({ Solicitation: solicitation });
@@ -113,13 +113,13 @@ class SolicitationController {
     const { id, status, admID } = req.body;
 
     if (!id) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     } else if (!admID) {
-      throw new AppError(Message.ADM_ID_NOT_FOUND, 422);
+      throw new AppError(Message.ADM_ID_NOT_FOUND, 400);
     } else if (!status) {
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     } else if (!validation.verifyStatus(status, SolicitationStatus)) {
-      throw new AppError(Message.SOLICITATION_STATUS_NOT_FOUND, 406);
+      throw new AppError(Message.SOLICITATION_STATUS_NOT_FOUND, 404);
     }
 
     const solicitationsRepository = getCustomRepository(
@@ -129,11 +129,11 @@ class SolicitationController {
     let solicitation = await solicitationsRepository.findOne({ id });
 
     if (!solicitation) {
-      throw new AppError(Message.SOLICITATION_NOT_FOUND, 406);
+      throw new AppError(Message.SOLICITATION_NOT_FOUND, 404);
     } else if (
       solicitation.status !== SolicitationStatus.SOLICITATION_PENDING
     ) {
-      throw new AppError(Message.UNAUTHORIZED, 401);
+      throw new AppError(Message.UNAUTHORIZED, 403);
     }
 
     const userRoleController = new UserRoleController();
@@ -141,9 +141,7 @@ class SolicitationController {
     const roles = await userRoleController.readFromUser(admID);
 
     if (roles.length === 0) {
-      throw new AppError(Message.USER_ROLE_NOT_FOUND, 406);
-    } else if (!roles.some((role) => role.type === "ADM")) {
-      throw new AppError(Message.USER_IS_NOT_ADM, 422);
+      throw new AppError(Message.USER_ROLE_NOT_FOUND, 404);
     }
 
     if (status === "SOLICITATION_ACCEPTED") {
@@ -157,7 +155,7 @@ class SolicitationController {
       const role = await roleController.readFromType(type);
 
       if (!role) {
-        throw new AppError(Message.ROLE_NOT_FOUND, 406);
+        throw new AppError(Message.ROLE_NOT_FOUND, 404);
       }
 
       await verifyExpiredStudent(solicitation.userID);
@@ -206,7 +204,7 @@ class SolicitationController {
     const solicitations = await solicitationsRepository.find();
 
     if (solicitations.length === 0) {
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     return res.status(200).json({ Solicitations: solicitations });

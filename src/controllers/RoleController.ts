@@ -15,7 +15,7 @@ class RoleController {
     // verificando se não foi passado o tipo de role
     if (!type) {
       // retornando um json de erro personalizado
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
     // pegando o repositorio customizado/personalizado
@@ -56,7 +56,7 @@ class RoleController {
     // verificando se a role não existe
     if (!role) {
       // retornando uma resposta de erro em json
-      throw new AppError(Message.ROLE_NOT_FOUND, 406);
+      throw new AppError(Message.ROLE_NOT_FOUND, 404);
     }
 
     // retornando o DTO da role pesquisada
@@ -71,7 +71,7 @@ class RoleController {
     // verificando se o id da role não foi passada
     if (!id) {
       // retornando um json de erro personalizado
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
 
     // pegando o repositorio customizado/personalizado
@@ -83,7 +83,7 @@ class RoleController {
     // verificando se a role não existe
     if (!role) {
       // retornando uma resposta de erro em json
-      throw new AppError(Message.ROLE_NOT_FOUND, 406);
+      throw new AppError(Message.ROLE_NOT_FOUND, 404);
     }
 
     // capturando o tipo de role passado no corpo da requisição, caso não seja passado nada, pega o valor que ja está cadastrado na role
@@ -125,7 +125,7 @@ class RoleController {
     // verificando se a role não existe
     if (!role) {
       // retornando uma resposta de erro em json
-      throw new AppError(Message.ROLE_NOT_FOUND, 406);
+      throw new AppError(Message.ROLE_NOT_FOUND, 404);
     }
 
     // deletando a role a partir do id
@@ -146,7 +146,7 @@ class RoleController {
     // verificando se o DB possui roles cadastradas
     if (roles.length === 0) {
       // retornando uma resposta de erro em json
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     const rolesDTO = roles.map((role) => {

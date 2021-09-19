@@ -16,7 +16,7 @@ class UserRoleController {
     const { userID, roleID } = req.body;
 
     if (!userID || !roleID) {
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
     const userController = new UserController();
@@ -24,7 +24,7 @@ class UserRoleController {
     const user = await userController.readFromController(userID);
 
     if (!user) {
-      throw new AppError(Message.USER_NOT_FOUND, 406);
+      throw new AppError(Message.USER_NOT_FOUND, 404);
     }
 
     const roleController = new RoleController();
@@ -32,7 +32,7 @@ class UserRoleController {
     const role = await roleController.readFromId(roleID);
 
     if (!role) {
-      throw new AppError(Message.ROLE_NOT_FOUND, 406);
+      throw new AppError(Message.ROLE_NOT_FOUND, 404);
     }
 
     // pegando o repositorio customizado/personalizado
@@ -93,7 +93,7 @@ class UserRoleController {
     // verificando se a userRole não existe
     if (!userRole) {
       // retornando uma resposta de erro em json
-      throw new AppError(Message.USER_ROLE_NOT_FOUND, 406);
+      throw new AppError(Message.USER_ROLE_NOT_FOUND, 404);
     }
 
     // retornando a userRole pesquisada
@@ -108,7 +108,7 @@ class UserRoleController {
     const { id } = req.body;
 
     if (!id) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
 
     // pegando o repositorio customizado/personalizado
@@ -120,7 +120,7 @@ class UserRoleController {
     // verificando se a userRole não existe
     if (!userRole) {
       // retornando uma resposta de erro em json
-      throw new AppError(Message.USER_ROLE_NOT_FOUND, 406);
+      throw new AppError(Message.USER_ROLE_NOT_FOUND, 404);
     }
 
     // capturando o tipo de userRole passado no corpo da requisição, caso não seja passado nada, pega o valor que ja está cadastrado na userRole
@@ -131,7 +131,7 @@ class UserRoleController {
     const role = await roleController.readFromId(roleID);
 
     if (!role) {
-      throw new AppError(Message.ROLE_NOT_FOUND, 406);
+      throw new AppError(Message.ROLE_NOT_FOUND, 404);
     }
 
     const userID = userRole.userID;
@@ -177,7 +177,7 @@ class UserRoleController {
     // verificando se a userRole não existe
     if (!userRole) {
       // retornando uma resposta de erro em json
-      throw new AppError(Message.USER_ROLE_NOT_FOUND, 406);
+      throw new AppError(Message.USER_ROLE_NOT_FOUND, 404);
     }
 
     // deletando a userRole a partir do id
@@ -210,7 +210,7 @@ class UserRoleController {
     // verificando se o DB possui userRoles cadastradas
     if (userRoles.length === 0) {
       // retornando uma resposta de erro em json
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     const userRolesDTO = userRoles.map((userRole) => {

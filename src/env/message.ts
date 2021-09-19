@@ -57,7 +57,6 @@ const Message = {
   USER_ALREADY_IS_STUDENT: "Usuário já é um estudante!",
 
   //AUTHORIZATION
-  USER_IS_NOT_ADM: "Usuário não é administrador",
   UNAUTHORIZED: "Ação não autorizada!",
 
   // ERROR

@@ -22,7 +22,7 @@ class StudentController {
     const user = await userController.readFromController(userID);
 
     if (!user) {
-      throw new AppError(Message.USER_NOT_FOUND, 406);
+      throw new AppError(Message.USER_NOT_FOUND, 404);
     }
 
     const studentInterestAreaController = new StudentInterestAreaController();
@@ -54,7 +54,7 @@ class StudentController {
     console.log(id);
 
     if (!id) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
 
     const studentRepository = getCustomRepository(StudentsRepository);
@@ -62,7 +62,7 @@ class StudentController {
     let student = await studentRepository.findOne({ id });
 
     if (!student) {
-      throw new AppError(Message.STUDENT_NOT_FOUND, 406);
+      throw new AppError(Message.STUDENT_NOT_FOUND, 404);
     }
 
     const {
@@ -103,7 +103,7 @@ class StudentController {
     const student = await studentRepository.findOne({ id });
 
     if (!student) {
-      throw new AppError(Message.STUDENT_NOT_FOUND, 406);
+      throw new AppError(Message.STUDENT_NOT_FOUND, 404);
     }
 
     const isExpired = dayjs().isAfter(dayjs.unix(student.expiresIn));
@@ -160,7 +160,7 @@ class StudentController {
     const student = await studentRepository.findOne({ id });
 
     if (!student) {
-      throw new AppError(Message.STUDENT_NOT_FOUND, 406);
+      throw new AppError(Message.STUDENT_NOT_FOUND, 404);
     }
 
     await studentRepository.delete({ id });
@@ -174,7 +174,7 @@ class StudentController {
     const students = await studentRepository.find();
 
     if (students.length === 0) {
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     const newStudents = students.map((student) => {
@@ -207,7 +207,7 @@ class StudentController {
     });
 
     if (user.length === 0) {
-      throw new AppError(Message.STUDENT_NOT_FOUND, 406);
+      throw new AppError(Message.STUDENT_NOT_FOUND, 404);
     }
 
     return user[0];

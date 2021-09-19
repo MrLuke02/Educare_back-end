@@ -10,7 +10,7 @@ class StudentInterestAreaController {
     const { studentInterestArea } = req.body;
 
     if (!studentInterestArea) {
-      throw new AppError(Message.REQUIRED_FIELD, 422);
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
     const studentInterestAreaRepository = getCustomRepository(
@@ -51,7 +51,7 @@ class StudentInterestAreaController {
     });
 
     if (!studentInterestArea) {
-      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 406);
+      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 404);
     }
 
     return res.status(200).json({ StudentInterestArea: studentInterestArea });
@@ -61,7 +61,7 @@ class StudentInterestAreaController {
     const { id } = req.body;
 
     if (!id) {
-      throw new AppError(Message.ID_NOT_FOUND, 422);
+      throw new AppError(Message.ID_NOT_FOUND, 400);
     }
 
     const studentInterestAreaRepository = getCustomRepository(
@@ -73,7 +73,7 @@ class StudentInterestAreaController {
     );
 
     if (!studentInterestAreaExists) {
-      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 406);
+      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 404);
     }
 
     const {
@@ -103,7 +103,7 @@ class StudentInterestAreaController {
     });
 
     if (!studentInterestArea) {
-      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 406);
+      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 404);
     }
 
     await studentInterestAreaRepository.delete({ id });
@@ -119,7 +119,7 @@ class StudentInterestAreaController {
     const studentInterestArea = await studentInterestAreaRepository.find();
 
     if (studentInterestArea.length === 0) {
-      throw new AppError(Message.NOT_FOUND, 406);
+      throw new AppError(Message.NOT_FOUND, 404);
     }
 
     return res.status(200).json({ StudentInterestArea: studentInterestArea });
@@ -136,7 +136,7 @@ class StudentInterestAreaController {
       });
 
     if (!studentInterestAreaExist) {
-      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 406);
+      throw new AppError(Message.INTEREST_AREA_NOT_FOUND, 404);
     }
 
     return studentInterestAreaExist;
