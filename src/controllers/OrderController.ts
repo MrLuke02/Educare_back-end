@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getCustomRepository, Repository } from "typeorm";
+import { getCustomRepository } from "typeorm";
 
 import { Message } from "../env/message";
 import { OrderStatus } from "../env/orderStaus";
@@ -11,6 +11,7 @@ import { DocumentController } from "./DocumentController";
 import { UserController } from "./UserController";
 import { UserDTO } from "../models/DTOs/UserDTO";
 import { verifyStatus } from "../util/user/StatusValidation";
+import { UserRoleController } from "./UserRoleController";
 
 class OrderController {
   async create(req: Request, res: Response) {
@@ -142,15 +143,28 @@ class OrderController {
     }
 
     if (
-      statusKey === OrderStatus.ORDER_FINISHED ||
-      statusKey === OrderStatus.ORDER_CANCELED ||
-      statusKey === OrderStatus.ORDER_IN_DELIVERY
+      order.status === OrderStatus.ORDER_FINISHED ||
+      order.status === OrderStatus.ORDER_CANCELED ||
+      order.status === OrderStatus.ORDER_IN_DELIVERY
     ) {
       throw new AppError(Message.UNAUTHORIZED, 403);
     }
 
     if (!verifyStatus(statusKey, OrderStatus)) {
       throw new AppError(Message.ORDER_STATUS_NOT_FOUND, 404);
+    }
+
+    const userRoleController = new UserRoleController();
+
+    const roles = await userRoleController.readFromUser(order.userID);
+
+    if (!roles.some((role) => role.type === "ADM")) {
+      if (
+        statusKey !== "ORDER_CANCEELD" ||
+        order.status !== OrderStatus.ORDER_UNDER_ANALYSIS
+      ) {
+        throw new AppError(Message.UNAUTHORIZED, 403);
+      }
     }
 
     await orderRepository.update(id, { status: OrderStatus[statusKey] });

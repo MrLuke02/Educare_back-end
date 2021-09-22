@@ -138,8 +138,18 @@ class CategoryController {
       qtdMinPage,
     });
 
-    // pesquisando a role pelo id
-    category = await categoriesRepository.findOne(id);
+    Object.assign(category, {
+      name,
+      description,
+      price,
+      colorful,
+      deliveryTimeInDays,
+      hasAd,
+      limiteCopiesMonthly,
+      limiteCopiesMonthlyUser,
+      qtdMaxPage,
+      qtdMinPage,
+    });
 
     // retornando o DTO da role atualizada
     return res

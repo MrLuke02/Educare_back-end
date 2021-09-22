@@ -144,8 +144,9 @@ class PhoneController {
       phoneNumber,
     });
 
-    // pesquisando o phone pelo id
-    phone = await phoneRepository.findOne(id);
+    Object.assign(phone, {
+      phoneNumber,
+    });
 
     // retornando o DTO do phone atualizado
     return res.status(200).json({ Phone: PhoneDTO.convertPhoneToDTO(phone) });

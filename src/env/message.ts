@@ -22,6 +22,7 @@ const Message = {
   STUDENT_NOT_FOUND: "Estudante não encontrado!",
   INTEREST_AREA_NOT_FOUND: "Área de interesse não encontrado!",
   TOKEN_REFRESH_NOT_FOUND: "Token refresh não encontrado!",
+  AD_NOT_FOUND: "Propaganda não encontrada!",
 
   // REQUIRED_FIELD
   REQUIRED_FIELD: "Campo obrigatório(s) vazio(s)!",

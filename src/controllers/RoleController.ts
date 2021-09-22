@@ -104,8 +104,9 @@ class RoleController {
       type,
     });
 
-    // pesquisando a role pelo id
-    role = await rolesRepository.findOne(id);
+    Object.assign(role, {
+      type,
+    });
 
     // retornando o DTO da role atualizada
     return res.status(200).json({ Role: RoleDTO.convertRoleToDTO(role) });

@@ -130,7 +130,16 @@ class CompanyAddressController {
       complement,
     });
 
-    companyAddress = await companyAddressRepository.findOne(id);
+    Object.assign(companyAddress, {
+      street,
+      houseNumber,
+      bairro,
+      state,
+      city,
+      cep,
+      referencePoint,
+      complement,
+    });
 
     return res.status(200).json({
       CompanyAddress:

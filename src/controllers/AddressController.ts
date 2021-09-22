@@ -113,7 +113,15 @@ class AddressController {
       complement,
     });
 
-    address = await addressRepository.findOne(id);
+    Object.assign(address, {
+      street,
+      houseNumber,
+      bairro,
+      state,
+      city,
+      cep,
+      complement,
+    });
 
     return res
       .status(200)

@@ -202,7 +202,13 @@ class DocumentController {
       file,
     });
 
-    document = await documentRepository.findOne({ id });
+    Object.assign(document, {
+      name,
+      size,
+      type,
+      pageNumber,
+      file,
+    });
 
     return res
       .status(200)
