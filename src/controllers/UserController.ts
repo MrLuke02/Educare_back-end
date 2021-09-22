@@ -234,8 +234,11 @@ class UserController {
       password: passwordCrypted,
     });
 
-    // pesquisando o usuário pelo id
-    user = await usersRepository.findOne({ id: userID });
+    Object.assign(user, {
+      name,
+      email,
+      password: passwordCrypted,
+    });
 
     const userSave = UserDTO.convertUserToDTO(user);
 

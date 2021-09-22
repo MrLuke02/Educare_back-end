@@ -154,8 +154,9 @@ class UserRoleController {
       roleID,
     });
 
-    // pesquisando a userRole pelo id
-    userRole = await userRolesRepository.findOne(id);
+    Object.assign(userRole, {
+      roleID,
+    });
 
     // retornando a userRole atualizada
     return res

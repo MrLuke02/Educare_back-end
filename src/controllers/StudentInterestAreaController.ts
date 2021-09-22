@@ -82,8 +82,8 @@ class StudentInterestAreaController {
 
     await studentInterestAreaRepository.update(id, { studentInterestArea });
 
-    studentInterestAreaExists = await studentInterestAreaRepository.findOne({
-      id: id,
+    Object.assign(studentInterestAreaExists, {
+      studentInterestArea,
     });
 
     return res

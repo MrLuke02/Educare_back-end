@@ -206,8 +206,11 @@ class CompanyController {
       companyCategory,
     });
 
-    // pesquisando a role pelo id
-    company = await companyRepository.findOne({ id: companyID });
+    Object.assign(company, {
+      companyName,
+      cnpj,
+      companyCategory,
+    });
 
     const companyDTO = {
       ...CompanyDTO.convertCompanyToDTO(company),

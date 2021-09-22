@@ -23,7 +23,7 @@ routerOrder.put(
 
 routerOrder.put(
   "/orderStatus",
-  verifyTokenUser.verifyTokenADM,
+  verifyTokenUser.verifyADMUserByOrderID,
   orderController.updateStatus
 );
 

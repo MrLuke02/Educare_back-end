@@ -179,7 +179,10 @@ class SolicitationController {
       admID,
     });
 
-    solicitation = await solicitationsRepository.findOne({ id });
+    Object.assign(solicitation, {
+      status: SolicitationStatus[status],
+      admID,
+    });
 
     return res.status(200).json({ Solicitation: solicitation });
   }

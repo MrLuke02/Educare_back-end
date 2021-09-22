@@ -83,7 +83,11 @@ class StudentController {
       institution,
     });
 
-    student = await studentRepository.findOne({ id });
+    Object.assign(student, {
+      studentInterestAreaID,
+      course,
+      institution,
+    });
 
     const isExpired = dayjs().isAfter(dayjs.unix(student.expiresIn));
 

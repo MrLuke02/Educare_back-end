@@ -31,7 +31,8 @@ app.use(
   routes.routerToken,
   routes.routerStudentInterestArea,
   routes.routerUserInterestArea,
-  routes.routerUserInterestAreaRelationUser
+  routes.routerUserInterestAreaRelationUser,
+  routes.routerAds
 );
 
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {

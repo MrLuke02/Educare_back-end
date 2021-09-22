@@ -149,7 +149,10 @@ class CompanyContactController {
       phone,
     });
 
-    companyContact = await companyContactRepository.findOne(id);
+    Object.assign(companyContact, {
+      email,
+      phone,
+    });
 
     return res.status(200).json({
       CompanyContact:
@@ -179,7 +182,11 @@ class CompanyContactController {
       companyID,
     });
 
-    companyContact = await companyContactRepository.findOne(id);
+    Object.assign(companyContact, {
+      email,
+      phone,
+      companyID,
+    });
 
     const companyContactDTO =
       CompanyContactDTO.convertCompanyContactToDTO(companyContact);

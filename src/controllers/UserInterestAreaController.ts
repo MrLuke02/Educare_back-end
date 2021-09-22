@@ -80,8 +80,8 @@ class UserInterestAreaController {
 
     await userInterestAreaRepository.update(id, { userInterestArea });
 
-    userInterestAreaExists = await userInterestAreaRepository.findOne({
-      id: id,
+    Object.assign(userInterestAreaExists, {
+      userInterestArea,
     });
 
     return res.status(200).json({ UserInterestArea: userInterestAreaExists });
