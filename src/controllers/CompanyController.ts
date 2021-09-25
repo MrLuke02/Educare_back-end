@@ -13,12 +13,12 @@ import { UserRoleController } from "./UserRoleController";
 
 class CompanyController {
   async create(req: Request, res: Response) {
-    const { companyName, cnpj, companyCategory, email, phone, userID } =
+    const { companyName, cnpj, companyCategory, email, phone, ownerEmail } =
       req.body;
 
     if (!companyName || !cnpj || !companyCategory || !email || !phone) {
       throw new AppError(Message.REQUIRED_FIELD, 400);
-    } else if (!userID) {
+    } else if (!ownerEmail) {
       throw new AppError(Message.ID_NOT_FOUND, 400);
     } else if (!validation.validationCnpj(cnpj)) {
       throw new AppError(Message.INVALID_CNPJ, 400);
@@ -30,7 +30,7 @@ class CompanyController {
 
     const userController = new UserController();
 
-    const user = await userController.readFromController(userID);
+    const user = await userController.readFromEmail(ownerEmail);
 
     if (!user) {
       throw new AppError(Message.USER_NOT_FOUND, 404);
@@ -48,7 +48,7 @@ class CompanyController {
       companyName,
       cnpj,
       companyCategory,
-      userID,
+      userID: user.id,
     });
 
     // tipo padrão de usuário
@@ -80,11 +80,14 @@ class CompanyController {
 
     const userRoleController = new UserRoleController();
 
-    const userRole = await userRoleController.readFromUserRole(userID, role.id);
+    const userRole = await userRoleController.readFromUserRole(
+      user.id,
+      role.id
+    );
 
     if (!userRole) {
       // criando e salvando a userRole
-      await userRoleController.createFromController(userID, role.id);
+      await userRoleController.createFromController(user.id, role.id);
     }
 
     const companyContactDTO =
