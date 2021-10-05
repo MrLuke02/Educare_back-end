@@ -66,6 +66,68 @@ class AddressController {
       .json({ Address: AddressDTO.convertAddressToDTO(addressSaved) });
   }
 
+  async createOrUpdateFromController(
+    street: string,
+    houseNumber: string,
+    bairro: string,
+    state: string,
+    city: string,
+    cep: string,
+    complement: string,
+    userID: string
+  ) {
+    const userController = new UserController();
+
+    const user = await userController.readFromController(userID);
+
+    if (!user) {
+      throw new AppError(Message.USER_NOT_FOUND, 404);
+    }
+
+    const addressRepository = getCustomRepository(AddressRepository);
+
+    const addressExist = await addressRepository.findOne({ userID });
+
+    let address = {};
+
+    if (addressExist) {
+      await addressRepository.update(addressExist.id, {
+        street,
+        houseNumber,
+        bairro,
+        state,
+        city,
+        cep,
+        complement,
+      });
+
+      Object.assign(address, {
+        street,
+        houseNumber,
+        bairro,
+        state,
+        city,
+        cep,
+        complement,
+      });
+    } else {
+      address = addressRepository.create({
+        street,
+        houseNumber,
+        bairro,
+        state,
+        city,
+        cep,
+        complement,
+        userID,
+      });
+
+      address = await addressRepository.save(address);
+    }
+
+    return address;
+  }
+
   async read(req: Request, res: Response) {
     const { id } = req.params;
 
