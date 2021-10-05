@@ -201,7 +201,15 @@ class UserController {
     const {
       name = user.name,
       email = user.email,
-      password = user.password,
+      phoneID,
+      phoneNumber,
+      street,
+      houseNumber,
+      bairro,
+      state,
+      city,
+      cep,
+      complement,
     } = req.body;
 
     // verificando se o email é valido
@@ -209,9 +217,10 @@ class UserController {
       // retornando um json de erro personalizado
       throw new AppError(Message.INVALID_EMAIL, 400);
       // verificando se a senha foi passada e se é valida
-    } else if (!validation.validationPassword(password)) {
+    } else if (!validation.validationPhone(phoneNumber)) {
       // retornando um json de erro personalizado
-      throw new AppError(Message.INVALID_PASSWORD, 400);
+      throw new AppError(Message.INVALID_PHONE, 400);
+      // verificando se a senha foi passada e se é valida
     }
 
     // verificando se o email passado e igual ao do usuário
@@ -224,26 +233,56 @@ class UserController {
       }
     }
 
-    // tranformando a senha em hash
-    const passwordCrypted = md5(password);
+    const phoneController = new PhoneController();
+
+    const phoneExists = await phoneController.readFromId(phoneID);
+
+    const phonesUser = await phoneController.readFromUser(userID);
+
+    let phone;
+
+    if (phoneExists) {
+      phone = await phoneController.updateFromController(phoneID, phoneNumber);
+    } else if (phonesUser.length < 2) {
+      phone = await phoneController.createFromController(phoneNumber, userID);
+    } else {
+      throw new AppError(Message.USER_ALREADY_HAVE_PHONE, 409);
+    }
+
+    const addressController = new AddressController();
+
+    const address = await addressController.createOrUpdateFromController(
+      street,
+      houseNumber,
+      bairro,
+      state,
+      city,
+      cep,
+      complement,
+      userID
+    );
 
     // atualizando o usuário a partir do id
     await usersRepository.update(userID, {
       name,
       email,
-      password: passwordCrypted,
     });
 
     Object.assign(user, {
       name,
       email,
-      password: passwordCrypted,
     });
 
-    const userSave = UserDTO.convertUserToDTO(user);
+    let userDTO = UserDTO.convertUserToDTO(user) as Object;
+
+    userDTO = {
+      ...userDTO,
+      Address: address,
+      Phones: [phone],
+    };
 
     // retornando o DTO do usuario salvo
-    return res.status(201).json({ User: userSave });
+    return res.status(200).json({ User: userDTO });
   }
 
   // metodo assincrono para a deleção de usuários

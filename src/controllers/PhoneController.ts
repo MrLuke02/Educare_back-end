@@ -152,6 +152,45 @@ class PhoneController {
     return res.status(200).json({ Phone: PhoneDTO.convertPhoneToDTO(phone) });
   }
 
+  async updateFromController(phoneID: string, phoneNumber: string) {
+    // pegando o repositorio customizado/personalizado
+    const phoneRepository = getCustomRepository(PhonesRepository);
+
+    // pesquisando um phone pelo id
+    let phone = await phoneRepository.findOne({ id: phoneID });
+
+    // verificando se o phone não existe
+    if (!phone) {
+      // retornando uma resposta de erro em json
+      throw new AppError(Message.PHONE_NOT_FOUND, 404);
+    }
+
+    // verificando se o numero de telefone passado e igual ao do phone sendo editado
+    if (phone.phoneNumber !== phoneNumber) {
+      // pesquisando um phone pelo numero
+      const phoneExist = await phoneRepository.findOne({ phoneNumber });
+      if (phoneExist) {
+        // se encontrar algo retorna um json de erro
+        throw new AppError(Message.PHONE_ALREADY_EXIST, 409);
+      } else if (!validation.validationPhone(phoneNumber)) {
+        // retornando um json de erro personalizado
+        throw new AppError(Message.INVALID_PHONE, 400);
+      }
+    }
+
+    // atualizando o phone a partir do id
+    await phoneRepository.update(phoneID, {
+      phoneNumber,
+    });
+
+    Object.assign(phone, {
+      phoneNumber,
+    });
+
+    // retornando o DTO do phone atualizado
+    return PhoneDTO.convertPhoneToDTO(phone);
+  }
+
   async delete(req: Request, res: Response) {
     // capturando e armazenando o id do phone do parametro da URL
     const { id } = req.params;
