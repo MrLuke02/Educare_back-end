@@ -183,7 +183,20 @@ class UserController {
   // metodo assincrono para a atualização de usuários
   async update(req: Request, res: Response) {
     // capturando e armazenando o id do corpo da requisição
-    const { userID } = req.body;
+    const {
+      userID,
+      name,
+      email,
+      phoneID,
+      phoneNumber,
+      street,
+      houseNumber,
+      bairro,
+      state,
+      city,
+      cep,
+      complement,
+    } = req.body;
 
     // pegando o repositorio customizado/personalizado
     const usersRepository = getCustomRepository(UsersRepository);
@@ -195,22 +208,19 @@ class UserController {
     if (!user) {
       // retornando uma resposta em json
       throw new AppError(Message.USER_NOT_FOUND, 404);
+    } else if (
+      !name ||
+      !email ||
+      !phoneNumber ||
+      !street ||
+      !houseNumber ||
+      !bairro ||
+      !state ||
+      !city ||
+      !cep
+    ) {
+      throw new AppError(Message.REQUIRED_FIELD, 400);
     }
-
-    // capturando e armazenando os dados do corpo da requisição, caso não seja passado algum dado, a constante receberá o atributo do usuário pesquisado
-    const {
-      name = user.name,
-      email = user.email,
-      phoneID,
-      phoneNumber,
-      street,
-      houseNumber,
-      bairro,
-      state,
-      city,
-      cep,
-      complement,
-    } = req.body;
 
     // verificando se o email é valido
     if (!validation.validationEmail(email)) {
@@ -235,15 +245,22 @@ class UserController {
 
     const phoneController = new PhoneController();
 
-    const phoneExists = await phoneController.readFromId(phoneID);
-
     const phonesUser = await phoneController.readFromUser(userID);
 
     let phone;
 
-    if (phoneExists) {
-      phone = await phoneController.updateFromController(phoneID, phoneNumber);
-    } else if (phonesUser.length < 2) {
+    if (phoneID) {
+      const phoneExists = await phoneController.readFromId(phoneID);
+
+      if (phoneExists) {
+        phone = await phoneController.updateFromController(
+          phoneID,
+          phoneNumber
+        );
+      } else {
+        throw new AppError(Message.INVALID_DATA, 400);
+      }
+    } else if (!phoneID && phonesUser.length < 2) {
       phone = await phoneController.createFromController(phoneNumber, userID);
     } else {
       throw new AppError(Message.USER_ALREADY_HAVE_PHONE, 409);
