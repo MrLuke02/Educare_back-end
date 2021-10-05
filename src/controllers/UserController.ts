@@ -339,15 +339,34 @@ class UserController {
   async readAddressFromUser(req: Request, res: Response) {
     const { userID } = req.params;
 
+    const userRepository = getCustomRepository(UsersRepository);
+
+    const user = await userRepository.findOne({ id: userID });
+
+    if (!user) {
+      throw new AppError(Message.USER_NOT_FOUND, 404);
+    }
+
     const addressController = new AddressController();
 
     const addressDTO = await addressController.readFromUser(userID);
 
-    if (!addressDTO) {
-      throw new AppError(Message.ADDRESS_NOT_FOUND, 404);
-    }
+    const phoneController = new PhoneController();
 
-    return res.status(200).json({ Address: addressDTO });
+    const phonesDTO = await phoneController.readFromUser(userID);
+
+    const userRoleController = new UserRoleController();
+
+    const rolesDTO = await userRoleController.readFromUser(userID);
+
+    const userResponse = {
+      ...UserDTO.convertUserToDTO(user),
+      Address: addressDTO || Message.ADDRESS_NOT_FOUND,
+      Phones: phonesDTO.length === 0 ? Message.PHONE_NOT_FOUND : phonesDTO,
+      Roles: rolesDTO,
+    };
+
+    return res.status(200).json({ User: userResponse });
   }
 
   async readPhonesFromUser(req: Request, res: Response) {
