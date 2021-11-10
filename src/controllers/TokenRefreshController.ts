@@ -80,7 +80,7 @@ class TokenRefreshController {
 
     const userController = new UserController();
 
-    const user = userController.readFromController(newToken.sub);
+    const user = await userController.readFromController(newToken.sub);
 
     return res.status(200).json({ User: user });
   }
