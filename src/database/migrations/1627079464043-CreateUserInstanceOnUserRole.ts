@@ -21,7 +21,7 @@ export class CreateUserInstanceOnUserRole1627079464043
       .createQueryBuilder()
       .select("roles.id")
       .from(Role, "roles")
-      .where("roles.type = :type", { type: "ADM" })
+      .where("roles.type = :type", { type: "User" })
       .getOne();
 
     await queryRunner.manager
@@ -50,7 +50,7 @@ export class CreateUserInstanceOnUserRole1627079464043
       .createQueryBuilder()
       .select("roles.id")
       .from(Role, "roles")
-      .where("roles.type = :type", { type: "ADM" })
+      .where("roles.type = :type", { type: "User" })
       .getOne();
 
     await queryRunner.manager

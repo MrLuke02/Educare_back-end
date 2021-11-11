@@ -172,10 +172,15 @@ class UserController {
       expiresIn
     );
 
+    const userRole = {
+      ...UserDTO.convertUserToDTO(user),
+      Roles: rolesDTO,
+    } as Object;
+
     // retornando o token criado
     return res.status(200).json({
       Token: token,
-      User: UserDTO.convertUserToDTO(user),
+      User: userRole,
       TokenRefreshID: tokenRefresh.id,
     });
   }
@@ -377,7 +382,7 @@ class UserController {
       id,
     });
 
-    return UserDTO.convertUserToDTO(user);
+    return user;
   }
 
   async readFromEmail(email: string) {
