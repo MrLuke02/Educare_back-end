@@ -382,7 +382,7 @@ class UserController {
       id,
     });
 
-    return user;
+    return UserDTO.convertUserToDTO(user);
   }
 
   async readFromEmail(email: string) {

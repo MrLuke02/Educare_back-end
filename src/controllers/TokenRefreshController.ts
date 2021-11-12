@@ -82,7 +82,16 @@ class TokenRefreshController {
 
     const user = await userController.readFromController(newToken.sub);
 
-    return res.status(200).json({ User: user });
+    const userRoleController = new UserRoleController();
+
+    const roles = await userRoleController.readFromUser(user.id);
+
+    const user_roles = {
+      ...user,
+      Roles: roles,
+    };
+
+    return res.status(200).json({ User: user_roles });
   }
 
   async createFromController(userID: string, expiresIn: number) {
