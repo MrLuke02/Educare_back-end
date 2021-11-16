@@ -1,4 +1,6 @@
 import { Router } from "express";
+import multer from "multer";
+
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
 import { UserController } from "../controllers/UserController";
 
@@ -17,6 +19,7 @@ routerUser.post("/auth", userController.read);
 // criando a rota de atualização de usuários
 routerUser.put(
   "/userUpdate",
+  multer().single("image"),
   verifyTokenUser.verifyADMUser,
   userController.update
 );

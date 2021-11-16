@@ -16,6 +16,9 @@ class User {
   @Column()
   password: string;
 
+  @Column({ type: "bytea" })
+  image: Buffer;
+
   @CreateDateColumn()
   createdAt: Date;
 
