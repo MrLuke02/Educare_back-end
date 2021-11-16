@@ -203,6 +203,8 @@ class UserController {
       complement,
     } = req.body;
 
+    const image = req.file;
+
     // pegando o repositorio customizado/personalizado
     const usersRepository = getCustomRepository(UsersRepository);
 
@@ -248,6 +250,16 @@ class UserController {
       }
     }
 
+    if (image) {
+      const mimetypes = ["image/png", "image/jpg", "image/jpeg"];
+
+      if (image.size > 5 * 1024 * 1024) {
+        throw new AppError(Message.FILE_TOO_LARGE, 401);
+      } else if (!mimetypes.includes(image.mimetype)) {
+        throw new AppError(Message.INVALID_DATA, 401);
+      }
+    }
+
     const phoneController = new PhoneController();
 
     const phonesUser = await phoneController.readFromUser(userID);
@@ -284,16 +296,31 @@ class UserController {
       userID
     );
 
-    // atualizando o usuário a partir do id
-    await usersRepository.update(userID, {
-      name,
-      email,
-    });
+    if (image) {
+      // atualizando o usuário a partir do id
+      await usersRepository.update(userID, {
+        name,
+        email,
+        image: image.buffer,
+      });
 
-    Object.assign(user, {
-      name,
-      email,
-    });
+      Object.assign(user, {
+        name,
+        email,
+        image: image.buffer,
+      });
+    } else {
+      // atualizando o usuário a partir do id
+      await usersRepository.update(userID, {
+        name,
+        email,
+      });
+
+      Object.assign(user, {
+        name,
+        email,
+      });
+    }
 
     let userDTO = UserDTO.convertUserToDTO(user) as Object;
 
