@@ -106,16 +106,18 @@ class CompanyController {
   }
 
   async read(req: Request, res: Response) {
-    const { cnpj } = req.params;
+    const { cnpj } = req.query;
 
     if (!cnpj) {
       throw new AppError(Message.REQUIRED_FIELD, 400);
+    } else if (!validation.validationCnpj(cnpj as string)) {
+      throw new AppError(Message.INVALID_CNPJ, 400);
     }
 
     const companyRepository = getCustomRepository(CompaniesRepository);
 
     const company = await companyRepository.findOne({
-      cnpj,
+      cnpj: cnpj as string,
     });
 
     if (!company) {

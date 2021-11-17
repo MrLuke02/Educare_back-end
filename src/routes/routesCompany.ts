@@ -23,7 +23,7 @@ routerCompany.put(
 );
 
 routerCompany.get(
-  "/companyByCpnj/:cnpj",
+  "/companyByCpnj",
   verifyTokenUser.verifyTokenAuth,
   companyController.read
 );
