@@ -1,5 +1,10 @@
 import cors from "cors";
-import express, { NextFunction, Request, Response } from "express";
+import express, {
+  NextFunction,
+  Request,
+  Response,
+  RequestHandler,
+} from "express";
 import "express-async-errors";
 import "reflect-metadata";
 import "./database";
@@ -11,7 +16,7 @@ const app = express();
 
 // configurações do servidor
 app.use(cors());
-app.use(express.json());
+app.use(express.json() as RequestHandler);
 app.use(
   "/api/v1",
   routes.routerOrder,
@@ -32,7 +37,8 @@ app.use(
   routes.routerStudentInterestArea,
   routes.routerUserInterestArea,
   routes.routerUserInterestAreaRelationUser,
-  routes.routerAds
+  routes.routerAds,
+  routes.routerSchool
 );
 
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {

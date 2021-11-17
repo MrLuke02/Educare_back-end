@@ -23,6 +23,7 @@ const Message = {
   INTEREST_AREA_NOT_FOUND: "Área de interesse não encontrado!",
   TOKEN_REFRESH_NOT_FOUND: "Token refresh não encontrado!",
   AD_NOT_FOUND: "Propaganda não encontrada!",
+  SCHOOL_NOT_FOUND: "Escola não encontrada!",
 
   // REQUIRED_FIELD
   REQUIRED_FIELD: "Campo obrigatório(s) vazio(s)!",
@@ -56,6 +57,7 @@ const Message = {
     "Relação de área de interesse já existe!",
   USER_HAVE_SOLICITATION_PENDING: "Usuário já possui uma solicitação pendente!",
   USER_ALREADY_IS_STUDENT: "Usuário já é um estudante!",
+  USER_ALREADY_IS_SCHOOL_OWNER: "Usuário já está relacionado a alguma escola!",
 
   //AUTHORIZATION
   UNAUTHORIZED: "Ação não autorizada!",
