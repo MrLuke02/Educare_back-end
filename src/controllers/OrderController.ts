@@ -4,7 +4,6 @@ import { getCustomRepository } from "typeorm";
 import { Message } from "../env/message";
 import { OrderStatus } from "../env/orderStaus";
 import { AppError } from "../errors/AppErrors";
-import { OrderDTO } from "../models/DTOs/OrderDTO";
 import { OrdersRepository } from "../repositories/OrderRepository";
 import { CategoryController } from "./CategoryController";
 import { DocumentController } from "./DocumentController";
@@ -67,9 +66,7 @@ class OrderController {
 
     const orderSaved = await orderRepository.save(order);
 
-    return res
-      .status(201)
-      .json({ Order: OrderDTO.convertOrderToDTO(orderSaved) });
+    return res.status(201).json({ Order: orderSaved });
   }
 
   async read(req: Request, res: Response) {
@@ -83,7 +80,7 @@ class OrderController {
       throw new AppError(Message.ORDER_NOT_FOUND, 404);
     }
 
-    return res.status(200).json({ Order: OrderDTO.convertOrderToDTO(order) });
+    return res.status(200).json({ Order: order });
   }
 
   async update(req: Request, res: Response) {
@@ -124,7 +121,7 @@ class OrderController {
 
     Object.assign(order, { categoryID, copyNumber, price, isDelivery });
 
-    return res.status(200).json({ Order: OrderDTO.convertOrderToDTO(order) });
+    return res.status(200).json({ Order: order });
   }
 
   async updateStatus(req: Request, res: Response) {
@@ -171,7 +168,7 @@ class OrderController {
 
     Object.assign(order, { statusKey });
 
-    return res.status(200).json({ Order: OrderDTO.convertOrderToDTO(order) });
+    return res.status(200).json({ Order: order });
   }
 
   async delete(req: Request, res: Response) {
@@ -249,7 +246,7 @@ class OrderController {
 
     if (orders.length > 0) {
       ordersDTO = orders.map((order) => {
-        return OrderDTO.convertOrderToDTO(order);
+        return order;
       });
     }
 
