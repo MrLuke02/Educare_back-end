@@ -34,9 +34,6 @@ class CompanyAddress {
   cep: string;
 
   @Column()
-  referencePoint: string;
-
-  @Column()
   complement: string;
 
   @CreateDateColumn()

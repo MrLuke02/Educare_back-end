@@ -36,11 +36,6 @@ export class CreateCompanyAddress1621717140928 implements MigrationInterface {
             type: "varchar",
           },
           {
-            name: "referencePoint",
-            type: "varchar",
-            isNullable: true,
-          },
-          {
             name: "complement",
             type: "varchar",
             isNullable: true,

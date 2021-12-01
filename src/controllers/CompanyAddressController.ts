@@ -3,6 +3,7 @@ import { getCustomRepository } from "typeorm";
 
 import { Message } from "../env/message";
 import { AppError } from "../errors/AppErrors";
+import { CompanyAddress } from "../models/CompanyAddress";
 import { AddressDTO } from "../models/DTOs/AddressDTO";
 import { CompanyAddressDTO } from "../models/DTOs/CompanyAddressDTO";
 import { CompanyAddressRepository } from "../repositories/CompanyAddressRepository";
@@ -17,7 +18,6 @@ class CompanyAddressController {
       state,
       city,
       cep,
-      referencePoint,
       complement,
       companyID,
     } = req.body;
@@ -61,7 +61,6 @@ class CompanyAddressController {
       state,
       city,
       cep,
-      referencePoint,
       complement,
       companyID,
     });
@@ -74,6 +73,75 @@ class CompanyAddressController {
       CompanyAddress:
         CompanyAddressDTO.convertCompanyAddressToDTO(companyAddressSaved),
     });
+  }
+
+  async createOrUpdateFromController(
+    street: string,
+    houseNumber: string,
+    bairro: string,
+    state: string,
+    city: string,
+    cep: string,
+    complement: string,
+    companyID: string
+  ) {
+    const companyAddressRepository = getCustomRepository(
+      CompanyAddressRepository
+    );
+
+    const companyController = new CompanyController();
+
+    const companyExists = await companyController.readCompanyFromID(companyID);
+
+    if (!companyExists) {
+      throw new AppError(Message.COMPANY_NOT_FOUND, 404);
+    }
+
+    const companyAddressExist = await companyAddressRepository.findOne({
+      companyID,
+    });
+
+    let companyAddress = {};
+
+    if (companyAddressExist) {
+      await companyAddressRepository.update(companyAddressExist.id, {
+        street,
+        houseNumber,
+        bairro,
+        state,
+        city,
+        cep,
+        complement,
+      });
+
+      Object.assign(companyAddress, {
+        id: companyAddressExist.id,
+        street,
+        houseNumber,
+        bairro,
+        state,
+        city,
+        cep,
+        complement,
+      });
+    } else {
+      companyAddress = companyAddressRepository.create({
+        street,
+        houseNumber,
+        bairro,
+        state,
+        city,
+        cep,
+        complement,
+        companyID,
+      });
+
+      companyAddress = await companyAddressRepository.save(companyAddress);
+    }
+
+    return CompanyAddressDTO.convertCompanyAddressToDTO(
+      companyAddress as CompanyAddress
+    );
   }
 
   async read(req: Request, res: Response) {
@@ -115,7 +183,6 @@ class CompanyAddressController {
       state = companyAddress.state,
       city = companyAddress.city,
       cep = companyAddress.cep,
-      referencePoint = companyAddress.referencePoint,
       complement = companyAddress.complement,
     } = req.body;
 
@@ -126,7 +193,6 @@ class CompanyAddressController {
       state,
       city,
       cep,
-      referencePoint,
       complement,
     });
 
@@ -137,7 +203,6 @@ class CompanyAddressController {
       state,
       city,
       cep,
-      referencePoint,
       complement,
     });
 
