@@ -19,7 +19,7 @@ class CompanyController {
     if (!companyName || !cnpj || !companyCategory || !email || !phone) {
       throw new AppError(Message.REQUIRED_FIELD, 400);
     } else if (!ownerEmail) {
-      throw new AppError(Message.ID_NOT_FOUND, 400);
+      throw new AppError(Message.EMAIL_NOT_FOUND, 400);
     } else if (!validation.validationCnpj(cnpj)) {
       throw new AppError(Message.INVALID_CNPJ, 400);
     } else if (!validation.validationEmail(email)) {
@@ -154,6 +154,12 @@ class CompanyController {
       throw new AppError(Message.COMPANY_CONTACT_NOT_FOUND, 404);
     }
 
+    const companyAddressController = new CompanyAddressController();
+
+    const companyAddress = await companyAddressController.readFromCompany(
+      companyID
+    );
+
     // capturando o tipo de role passado no corpo da requisição, caso não seja passado nada, pega o valor que ja está cadastrado na role
     const {
       companyName = company.companyName,
@@ -161,6 +167,13 @@ class CompanyController {
       companyCategory = company.companyCategory,
       email = companyContact.email,
       phone = companyContact.phone,
+      street = companyAddress.street || "",
+      houseNumber = companyAddress.street || "",
+      bairro = companyAddress.street || "",
+      state = companyAddress.street || "",
+      city = companyAddress.street || "",
+      cep = companyAddress.street || "",
+      complement = companyAddress.street || "",
     } = req.body;
 
     if (!validation.validationCnpj(cnpj)) {
@@ -196,6 +209,18 @@ class CompanyController {
       }
     }
 
+    const companyAddressDTO =
+      await companyAddressController.createOrUpdateFromController(
+        street,
+        houseNumber,
+        bairro,
+        state,
+        city,
+        cep,
+        complement,
+        companyID
+      );
+
     const companyContactDTO =
       await companyContactController.updateFromController(
         companyContact.id,
@@ -220,6 +245,7 @@ class CompanyController {
     const companyDTO = {
       ...CompanyDTO.convertCompanyToDTO(company),
       Contact: companyContactDTO,
+      Address: companyAddressDTO,
     };
 
     // retornando o DTO da role atualizada

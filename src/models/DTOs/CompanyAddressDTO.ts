@@ -16,8 +16,6 @@ class CompanyAddressDTO {
 
   public readonly cep: string;
 
-  public readonly referencePoint: string;
-
   public readonly complement: string;
 
   // criando o cronstrutor do RoleResponseDTO a ser retornado, passando para ele a role
