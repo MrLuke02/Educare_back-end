@@ -33,7 +33,7 @@ routerStudentInterestArea.delete(
 
 routerStudentInterestArea.get(
   "/showStudentInterestArea",
-  verifyTokenUser.verifyTokenADM,
+  verifyTokenUser.verifyTokenAuth,
   studentInterestAreaController.show
 );
 
