@@ -17,6 +17,7 @@ import { routerStudentInterestArea } from "./routesStudentInterestArea";
 import { routerUserInterestArea } from "./routesUserInterestArea";
 import { routerUserInterestAreaRelationUser } from "./routesUserInterestAreaRelationUser";
 import { routerAds } from "./routesAd";
+import { routerEmployee } from "./routesEmployee";
 
 // importando e exportando as rotas de usuário
 export {
@@ -39,4 +40,5 @@ export {
   routerUserInterestArea,
   routerUserInterestAreaRelationUser,
   routerAds,
+  routerEmployee,
 };
