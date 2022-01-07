@@ -95,6 +95,14 @@ class EmployeeController {
     return res.status(200).json({ Employee: employee });
   }
 
+  async readFromID(id: string) {
+    const employeeRepository = getCustomRepository(EmployeesRepository);
+
+    const employee = await employeeRepository.findOne({ id });
+
+    return employee;
+  }
+
   // metodo assincrono para a atualização de usuários
   async update(req: Request, res: Response) {
     // capturando e armazenando o id do corpo da requisição
