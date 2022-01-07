@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { AddressController } from "../../../controllers/AddressController";
+import { CompanyController } from "../../../controllers/CompanyController";
+import { EmployeeController } from "../../../controllers/EmployeeController";
 import { OrderController } from "../../../controllers/OrderController";
 import { PhoneController } from "../../../controllers/PhoneController";
 import { SolicitationController } from "../../../controllers/SolicitationController";
@@ -113,6 +115,57 @@ class VerifyTokenUser {
 
       // verifica se o token enviado pertence ao proprio usuário ou a um administrador
       if (token.sub === phone.userID || token.roles.includes("ADM")) {
+        // avança para o proximo middleware
+        next();
+      } else {
+        // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
+        throw new AppError(Message.INVALID_TOKEN, 403);
+      }
+    }
+  }
+
+  async verifyADMUserCompanyByEmployeeID(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    let id: string;
+    if (!req.body.id) {
+      id = req.params.id;
+    } else {
+      id = req.body.id;
+    }
+
+    if (!id) {
+      throw new AppError(Message.ID_NOT_FOUND, 400);
+    }
+
+    const employeeController = new EmployeeController();
+
+    const employee = await employeeController.readFromID(id);
+
+    if (!employee) {
+      throw new AppError(Message.EMPLOYEE_NOT_FOUND, 404);
+    }
+
+    const companyController = new CompanyController();
+
+    const company = await companyController.readCompanyFromID(
+      employee.companyID
+    );
+
+    // armazenando o token retornado da função
+    if (!req.headers.authorization) {
+      throw new AppError(Message.REQUIRED_TOKEN, 401);
+    } else {
+      const token = await verifyToken(req.headers.authorization.split(" ")[1]);
+
+      // verifica se o token enviado pertence ao proprio usuário ou a um administrador
+      if (
+        token.sub === employee.userID ||
+        token.roles.includes("ADM") ||
+        token.sub === company?.userID
+      ) {
         // avança para o proximo middleware
         next();
       } else {
