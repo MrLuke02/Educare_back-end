@@ -350,7 +350,7 @@ class UserController {
     // verificanddo se existe um usuário com o id enviado
     if (!userExist) {
       // retornando uma resposta em json
-      throw new AppError(Message.ROLE_NOT_FOUND, 404);
+      throw new AppError(Message.USER_NOT_FOUND, 404);
     }
 
     // deletando o usuário a partir do id
