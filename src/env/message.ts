@@ -25,6 +25,7 @@ const Message = {
   AD_NOT_FOUND: "Propaganda não encontrada!",
   SCHOOL_NOT_FOUND: "Escola não encontrada!",
   EMPLOYEE_NOT_FOUND: "Funcionário não encontrado!",
+  PLAN_NOT_FOUND: "Plano não encontrado!",
 
   // REQUIRED_FIELD
   REQUIRED_FIELD: "Campo obrigatório(s) vazio(s)!",
@@ -60,6 +61,7 @@ const Message = {
   USER_ALREADY_IS_STUDENT: "Usuário já é um estudante!",
   USER_ALREADY_IS_SCHOOL_OWNER: "Usuário já está relacionado a alguma escola!",
   EMPLOYEE_ALREADY_EXIST: "Funcionário já cadastrado nessa empresa!",
+  PLAN_ALREADY_EXIST: "Plano já existe!",
 
   //AUTHORIZATION
   UNAUTHORIZED: "Ação não autorizada!",
