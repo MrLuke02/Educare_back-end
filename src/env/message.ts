@@ -26,6 +26,7 @@ const Message = {
   SCHOOL_NOT_FOUND: "Escola não encontrada!",
   EMPLOYEE_NOT_FOUND: "Funcionário não encontrado!",
   PLAN_NOT_FOUND: "Plano não encontrado!",
+  COMPANY_RELATIONS_PLAN_NOT_FOUND: "Relação entre empresa e plano não existe;",
 
   // REQUIRED_FIELD
   REQUIRED_FIELD: "Campo obrigatório(s) vazio(s)!",
@@ -62,6 +63,8 @@ const Message = {
   USER_ALREADY_IS_SCHOOL_OWNER: "Usuário já está relacionado a alguma escola!",
   EMPLOYEE_ALREADY_EXIST: "Funcionário já cadastrado nessa empresa!",
   PLAN_ALREADY_EXIST: "Plano já existe!",
+  COMPANY_RELATIONS_PLAN_ALREADY_EXIST:
+    "Empresa já se encontra cadastrada em um plano!",
 
   //AUTHORIZATION
   UNAUTHORIZED: "Ação não autorizada!",
