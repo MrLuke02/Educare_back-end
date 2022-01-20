@@ -19,6 +19,7 @@ import { routerUserInterestAreaRelationUser } from "./routesUserInterestAreaRela
 import { routerAds } from "./routesAd";
 import { routerEmployee } from "./routesEmployee";
 import { routerPlan } from "./routesPlan";
+import { routerCompanyRelationPlan } from "./routesCompanyRelatioPlan";
 
 // importando e exportando as rotas de usuário
 export {
@@ -43,4 +44,5 @@ export {
   routerAds,
   routerEmployee,
   routerPlan,
+  routerCompanyRelationPlan,
 };

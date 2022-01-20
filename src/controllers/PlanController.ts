@@ -61,6 +61,14 @@ class PlanController {
     return res.status(200).json({ Plan: plan });
   }
 
+  async readFromController(id: string) {
+    const plansRepositories = getCustomRepository(PlansRepository);
+
+    const plan = await plansRepositories.findOne({ id });
+
+    return plan;
+  }
+
   async update(req: Request, res: Response) {
     // capturando e armazenando o id da role do corpo da requisição
     const { id } = req.body;
