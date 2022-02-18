@@ -11,9 +11,10 @@ import { Category } from "./Category";
 import { Document } from "./Document";
 import { User } from "./User";
 import { v4 as uuid } from "uuid";
+import { Company } from "./Company";
 
-@Entity("orders")
-class Order {
+@Entity("employee_orders")
+class EmployeeOrder {
   @PrimaryColumn()
   id: string;
 
@@ -36,6 +37,14 @@ class Order {
   @ManyToOne(() => User)
   @JoinColumn({ name: "userID" })
   user: User;
+
+  @Column()
+  companyID: string;
+
+  // criando o relacionamento de um para um com a tabela Company
+  @ManyToOne(() => Company)
+  @JoinColumn({ name: "companyID" })
+  company: Company;
 
   @Column()
   documentID: string;
@@ -64,4 +73,4 @@ class Order {
 }
 
 // exportando a classe
-export { Order };
+export { EmployeeOrder };

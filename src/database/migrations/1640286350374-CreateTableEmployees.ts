@@ -23,6 +23,11 @@ export class CreateTableEmployees1640286350374 implements MigrationInterface {
             name: "companyID",
             type: "uuid",
           },
+          {
+            name: "createdAt",
+            type: "timestamp",
+            default: "now()",
+          },
         ],
         foreignKeys: [
           {

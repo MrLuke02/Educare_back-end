@@ -6,6 +6,7 @@ import { EmployeesRepository } from "../repositories/UserRepository copy";
 import * as validation from "../util/user/Validations";
 import { RoleController } from "./RoleController";
 import { UserController } from "./UserController";
+import { CompanyController } from "./CompanyController";
 import { UserRoleController } from "./UserRoleController";
 
 class EmployeeController {
@@ -172,6 +173,15 @@ class EmployeeController {
 
     // retornando os usuários encontrados no DB
     return res.status(200).json({ Employees: employees });
+  }
+
+  async readFromUserAndCompany(userID: string, companyID: string) {
+    // pegando o repositorio customizado/personalizado
+    const employeeRepository = getCustomRepository(EmployeesRepository);
+
+    const employee = await employeeRepository.findOne({ userID, companyID });
+
+    return employee;
   }
 }
 

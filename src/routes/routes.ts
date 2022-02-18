@@ -20,6 +20,7 @@ import { routerAds } from "./routesAd";
 import { routerEmployee } from "./routesEmployee";
 import { routerPlan } from "./routesPlan";
 import { routerCompanyRelationPlan } from "./routesCompanyRelatioPlan";
+import { routerEmployeeOrder } from "./routesEmployeeOrders";
 
 // importando e exportando as rotas de usuário
 export {
@@ -45,4 +46,5 @@ export {
   routerEmployee,
   routerPlan,
   routerCompanyRelationPlan,
+  routerEmployeeOrder,
 };
