@@ -40,7 +40,8 @@ app.use(
   routes.routerAds,
   routes.routerEmployee,
   routes.routerPlan,
-  routes.routerCompanyRelationPlan
+  routes.routerCompanyRelationPlan,
+  routes.routerEmployeeOrder
 );
 
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {

@@ -10,14 +10,14 @@ const routerCategory = Router();
 
 // criando a rota de cadastro de Roles
 routerCategory.post(
-  "/plan",
+  "/category",
   verifyTokenUser.verifyTokenADM,
   categoryController.create
 );
 
 // criando a rota de atualização de Roles
 routerCategory.put(
-  "/plan",
+  "/category",
   verifyTokenUser.verifyTokenADM,
   categoryController.update
 );

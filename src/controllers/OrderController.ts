@@ -236,22 +236,6 @@ class OrderController {
 
     return user[0];
   }
-
-  async readOrdersUser(userID: string) {
-    const orderRepository = getCustomRepository(OrdersRepository);
-
-    const orders = await orderRepository.find({ userID });
-
-    let ordersDTO = [];
-
-    if (orders.length > 0) {
-      ordersDTO = orders.map((order) => {
-        return order;
-      });
-    }
-
-    return ordersDTO;
-  }
 }
 
 export { OrderController };
