@@ -32,6 +32,10 @@ export class CreateEmployeeOrders1645216250381 implements MigrationInterface {
             type: "int",
           },
           {
+            name: "isDelivery",
+            type: "boolean",
+          },
+          {
             name: "price",
             type: "real",
           },

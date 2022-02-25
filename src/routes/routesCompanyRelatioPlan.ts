@@ -12,12 +12,6 @@ routerCompanyRelationPlan.post(
   companyRelationPlanController.create
 );
 
-// criando a rota de atualização de Roles
-routerCompanyRelationPlan.put(
-  "/companyRelationPlan",
-  companyRelationPlanController.update
-);
-
 // criando a rota de listagem de todos as Roles
 routerCompanyRelationPlan.get(
   "/showCompanyRelationPlans",

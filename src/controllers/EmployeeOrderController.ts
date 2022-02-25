@@ -10,6 +10,7 @@ import { UserDTO } from "../models/DTOs/UserDTO";
 import { verifyStatus } from "../util/user/StatusValidation";
 import { UserRoleController } from "./UserRoleController";
 import { EmployeeController } from "./EmployeeController";
+import { CompanyRelationPlanController } from "./CompanyRelationPlanController";
 import { EmployeeOrderRepository } from "../repositories/EmployeeOrderRepository";
 
 class EmployeeOrderController {
@@ -38,6 +39,7 @@ class EmployeeOrderController {
     const documentController = new DocumentController();
     const categoryController = new CategoryController();
     const employeeController = new EmployeeController();
+    const companyRelationPlanController = new CompanyRelationPlanController();
 
     const employeeOrderRepository = getCustomRepository(
       EmployeeOrderRepository
@@ -48,10 +50,14 @@ class EmployeeOrderController {
       userID,
       companyID
     );
+    const companyRelationPlan =
+      await companyRelationPlanController.updateByCompanyID(companyID);
 
     if (!category) {
       throw new AppError(Message.USER_NOT_FOUND, 404);
     } else if (!employee) {
+      throw new AppError(Message.UNAUTHORIZED, 403);
+    } else if (!companyRelationPlan) {
       throw new AppError(Message.UNAUTHORIZED, 403);
     }
 

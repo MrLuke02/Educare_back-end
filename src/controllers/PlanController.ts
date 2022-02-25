@@ -6,8 +6,15 @@ import { PlansRepository } from "../repositories/PlanRepository";
 
 class PlanController {
   async create(req: Request, res: Response) {
-    const { name, description, price, colorful, limiteCopies, excessValue } =
-      req.body;
+    const {
+      name,
+      description,
+      price,
+      colorful,
+      limiteCopies,
+      excessValue,
+      durationInDays,
+    } = req.body;
 
     const isNullable = [null, undefined];
 
@@ -16,6 +23,7 @@ class PlanController {
       !description ||
       isNullable.includes(colorful) ||
       (!price && price !== 0) ||
+      (!durationInDays && durationInDays !== 0) ||
       (!limiteCopies && limiteCopies !== 0) ||
       (!excessValue && excessValue !== 0)
     ) {
@@ -38,6 +46,7 @@ class PlanController {
       colorful,
       limiteCopies,
       excessValue,
+      durationInDays,
     });
 
     const planSaved = await plansRepository.save(plan);
@@ -99,6 +108,7 @@ class PlanController {
       colorful = plan.colorful,
       limiteCopies = plan.limiteCopies,
       excessValue = plan.excessValue,
+      durationInDays = plan.durationInDays,
     } = req.body;
 
     if (name !== plan.name) {
@@ -117,6 +127,7 @@ class PlanController {
       price,
       colorful,
       limiteCopies,
+      durationInDays,
       excessValue,
     });
 
@@ -127,6 +138,7 @@ class PlanController {
       colorful,
       limiteCopies,
       excessValue,
+      durationInDays,
     });
 
     // retornando o DTO da role atualizada

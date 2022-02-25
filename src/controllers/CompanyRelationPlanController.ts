@@ -11,7 +11,7 @@ class CompanyRelationPlanController {
   async create(req: Request, res: Response) {
     const { companyID, planID } = req.body;
 
-    if (companyID || planID) {
+    if (!companyID || !planID) {
       throw new AppError(Message.REQUIRED_FIELD, 400);
     }
 
@@ -39,13 +39,18 @@ class CompanyRelationPlanController {
         companyID,
       });
 
-    if (!dayjs().isAfter(dayjs.unix(companyRelationPlanExist?.expiresIn))) {
+    if (
+      companyRelationPlanExist &&
+      !dayjs().isAfter(dayjs.unix(companyRelationPlanExist.expiresIn))
+    ) {
       throw new AppError(Message.COMPANY_RELATIONS_PLAN_ALREADY_EXIST, 409);
     }
 
     const companyRelationPlan = companyRelationPlansRepository.create({
       planID,
       companyID,
+      expiresIn: dayjs().add(planExist.durationInDays, "second").unix(),
+      usedLimit: 0,
     });
 
     const planSaved = await companyRelationPlansRepository.save(
@@ -77,48 +82,45 @@ class CompanyRelationPlanController {
     return res.status(200).json({ CompanyRelationPlan: companyRelationPlan });
   }
 
-  async update(req: Request, res: Response) {
-    // capturando e armazenando o id da role do corpo da requisição
-    const { id } = req.body;
-
-    // verificando se o id da role não foi passada
-    if (!id) {
-      // retornando um json de erro personalizado
-      throw new AppError(Message.ID_NOT_FOUND, 400);
-    }
-
+  async updateByCompanyID(companyID: string) {
     // pegando o repositorio customizado/personalizado
     const companyRelationPlansRepository = getCustomRepository(
       CompanyRelationPlansRepository
     );
 
     // pesquisando uma role pelo id
-    let companyRelationPlanExits = await companyRelationPlansRepository.findOne(
-      id
-    );
+    const companyRelationPlanExits = await companyRelationPlansRepository.find({
+      where: { companyID },
+      order: { createdAt: "DESC" },
+      take: 1,
+    });
 
-    // verificando se a role não existe
-    if (!companyRelationPlanExits) {
-      // retornando uma resposta de erro em json
-      throw new AppError(Message.COMPANY_RELATIONS_PLAN_NOT_FOUND, 404);
+    if (
+      companyRelationPlanExits.length > 0 &&
+      !dayjs().isAfter(dayjs.unix(companyRelationPlanExits[0].expiresIn))
+    ) {
+      const planController = new PlanController();
+
+      const plan = await planController.readFromController(
+        companyRelationPlanExits[0].planID
+      );
+
+      if (plan.limiteCopies > companyRelationPlanExits[0].usedLimit) {
+        // atualizando a role a partir do id
+        await companyRelationPlansRepository.update(
+          companyRelationPlanExits[0].id,
+          {
+            usedLimit: companyRelationPlanExits[0].usedLimit + 1,
+          }
+        );
+
+        Object.assign(companyRelationPlanExits, {
+          usedLimit: companyRelationPlanExits[0].usedLimit + 1,
+        });
+
+        return companyRelationPlanExits;
+      }
     }
-
-    // capturando o tipo de role passado no corpo da requisição, caso não seja passado nada, pega o valor que ja está cadastrado na role
-    const { usedLimit = companyRelationPlanExits.usedLimit } = req.body;
-
-    // atualizando a role a partir do id
-    await companyRelationPlansRepository.update(id, {
-      usedLimit,
-    });
-
-    Object.assign(companyRelationPlanExits, {
-      usedLimit,
-    });
-
-    // retornando o DTO da role atualizada
-    return res
-      .status(200)
-      .json({ CompanyRelationPlan: companyRelationPlanExits });
   }
 
   async delete(req: Request, res: Response) {
