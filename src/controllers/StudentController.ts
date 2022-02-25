@@ -51,8 +51,6 @@ class StudentController {
   async update(req: Request, res: Response) {
     const { id } = req.body;
 
-    console.log(id);
-
     if (!id) {
       throw new AppError(Message.ID_NOT_FOUND, 400);
     }

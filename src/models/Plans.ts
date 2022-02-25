@@ -16,6 +16,9 @@ class Plan {
   price: number;
 
   @Column()
+  durationInDays: number;
+
+  @Column()
   colorful: boolean;
 
   @Column()

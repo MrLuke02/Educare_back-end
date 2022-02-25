@@ -22,7 +22,7 @@ export class CreateTableCompayRelationPlans1642711162172
             type: "uuid",
           },
           {
-            name: "expiresIN",
+            name: "expiresIn",
             type: "int",
           },
           {

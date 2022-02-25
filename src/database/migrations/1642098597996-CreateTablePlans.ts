@@ -28,6 +28,10 @@ export class CreateTablePlans1642098597996 implements MigrationInterface {
             type: "boolean",
           },
           {
+            name: "durationInDays",
+            type: "int",
+          },
+          {
             name: "limiteCopies",
             type: "int",
           },
