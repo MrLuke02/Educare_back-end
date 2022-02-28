@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { CompanyAddressController } from "../../../controllers/CompanyAddressController";
 import { CompanyContactController } from "../../../controllers/CompanyContactController";
 import { CompanyController } from "../../../controllers/CompanyController";
+import { CompanyRelationPlanController } from "../../../controllers/CompanyRelationPlanController";
 import { Message } from "../../../env/message";
 import { AppError } from "../../../errors/AppErrors";
 import { verifyToken } from "../../token/token.auth";
@@ -43,6 +44,44 @@ class VerifyTokenCompany {
       } else {
         // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
         throw new AppError(Message.INVALID_TOKEN, 403);
+      }
+    }
+  }
+
+  async verifyADMCompanyByCompanyRelationPlanID(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const id = req.params.id;
+
+    if (!id) {
+      throw new AppError(Message.ID_NOT_FOUND, 400);
+    }
+
+    const companyRelationPlanController = new CompanyRelationPlanController();
+
+    const company = await companyRelationPlanController.readFromController(id);
+
+    if (!company) {
+      throw new AppError(Message.COMPANY_NOT_FOUND, 404);
+    }
+
+    // armazenando o token retornado da função
+    if (!req.headers.authorization) {
+      throw new AppError(Message.REQUIRED_TOKEN, 401);
+    } else {
+      const token = await verifyToken(req.headers.authorization.split(" ")[1]);
+
+      // verifica se o token enviado pertence ao proprio usuário ou a um administrador
+      if (token.sub === company.userID || token.roles.includes("ADM")) {
+        console.log("aki");
+
+        // avança para o proximo middleware
+        next();
+      } else {
+        throw new AppError(Message.INVALID_TOKEN, 403);
+        // caso o token não seja de um administrador ou do proprio usuário, retorna um json de error
       }
     }
   }

@@ -50,14 +50,11 @@ class EmployeeOrderController {
       userID,
       companyID
     );
-    const companyRelationPlan =
-      await companyRelationPlanController.updateByCompanyID(companyID);
+    await companyRelationPlanController.updateByCompanyID(companyID);
 
     if (!category) {
       throw new AppError(Message.USER_NOT_FOUND, 404);
     } else if (!employee) {
-      throw new AppError(Message.UNAUTHORIZED, 403);
-    } else if (!companyRelationPlan) {
       throw new AppError(Message.UNAUTHORIZED, 403);
     }
 

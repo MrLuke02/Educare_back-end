@@ -49,7 +49,7 @@ class CompanyRelationPlanController {
     const companyRelationPlan = companyRelationPlansRepository.create({
       planID,
       companyID,
-      expiresIn: dayjs().add(planExist.durationInDays, "second").unix(),
+      expiresIn: dayjs().add(planExist.durationInDays, "day").unix(),
       usedLimit: 0,
     });
 
@@ -95,32 +95,52 @@ class CompanyRelationPlanController {
       take: 1,
     });
 
-    if (
-      companyRelationPlanExits.length > 0 &&
-      !dayjs().isAfter(dayjs.unix(companyRelationPlanExits[0].expiresIn))
+    if (companyRelationPlanExits.length === 0) {
+      throw new AppError(Message.COMPANY_RELATIONS_PLAN_NOT_FOUND, 404);
+    } else if (
+      dayjs().isAfter(dayjs.unix(companyRelationPlanExits[0].expiresIn))
     ) {
-      const planController = new PlanController();
-
-      const plan = await planController.readFromController(
-        companyRelationPlanExits[0].planID
-      );
-
-      if (plan.limiteCopies > companyRelationPlanExits[0].usedLimit) {
-        // atualizando a role a partir do id
-        await companyRelationPlansRepository.update(
-          companyRelationPlanExits[0].id,
-          {
-            usedLimit: companyRelationPlanExits[0].usedLimit + 1,
-          }
-        );
-
-        Object.assign(companyRelationPlanExits, {
-          usedLimit: companyRelationPlanExits[0].usedLimit + 1,
-        });
-
-        return companyRelationPlanExits;
-      }
+      throw new AppError(Message.EXPIRED_PLAN, 403);
     }
+
+    const planController = new PlanController();
+
+    const plan = await planController.readFromController(
+      companyRelationPlanExits[0].planID
+    );
+
+    if (plan.limiteCopies <= companyRelationPlanExits[0].usedLimit) {
+      throw new AppError(Message.COPY_LIMIT_REACHED, 403);
+    }
+
+    // atualizando a role a partir do id
+    await companyRelationPlansRepository.update(
+      companyRelationPlanExits[0].id,
+      {
+        usedLimit: companyRelationPlanExits[0].usedLimit + 1,
+      }
+    );
+  }
+
+  async readFromController(id: string) {
+    const companyRelationPlansRepository = getCustomRepository(
+      CompanyRelationPlansRepository
+    );
+
+    const companyRelationPlanExits = await companyRelationPlansRepository.find({
+      // select -> o que quero de retorno
+      // where -> condição
+      // relations -> para trazer também as informações da tabela que se relaciona
+      select: ["id"],
+      where: { id },
+      relations: ["company"],
+    });
+
+    const company = companyRelationPlanExits.map((company) => {
+      return company.company;
+    });
+
+    return company[0];
   }
 
   async delete(req: Request, res: Response) {

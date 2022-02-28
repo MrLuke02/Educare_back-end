@@ -8,7 +8,6 @@ import { UserInterestAreaRepository } from "../repositories/UserInterestAreaRepo
 class UserInterestAreaController {
   async create(req: Request, res: Response) {
     const { userInterestArea } = req.body;
-    console.log(userInterestArea);
 
     if (!userInterestArea) {
       throw new AppError(Message.REQUIRED_FIELD, 400);
