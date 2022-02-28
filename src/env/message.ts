@@ -76,6 +76,9 @@ const Message = {
   // EXPIRED SESSION
   EXPIRED_SESSION: "Sessão expirada!",
 
+  EXPIRED_PLAN: "Plano expirado!",
+  COPY_LIMIT_REACHED: "Limite de copias atingido!",
+
   // SUCCESS
   SUCCESS: "Sucesso!",
 };
