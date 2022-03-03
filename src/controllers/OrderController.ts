@@ -230,11 +230,38 @@ class OrderController {
       relations: ["user"],
     });
 
-    const user = order_user.map((company) => {
-      return company.user;
+    const user = order_user.map((order) => {
+      return UserDTO.convertUserToDTO(order.user);
     });
 
     return user[0];
+  }
+
+  async readOrdersUser(userID: string) {
+    const orderRepository = getCustomRepository(OrdersRepository);
+
+    const order_user = await orderRepository.find({
+      // select -> o que quero de retorno
+      // where -> condição
+      // relations -> para trazer também as informações da tabela que se relaciona
+      where: { userID },
+      relations: ["user"],
+    });
+
+    const order_userDTO = order_user.map((order) => {
+      const { userID, user, ...props } = order;
+
+      let orderDTO = {};
+
+      Object.assign(orderDTO, props);
+
+      return {
+        ...orderDTO,
+        user: UserDTO.convertUserToDTO(user),
+      };
+    });
+
+    return order_userDTO;
   }
 }
 
