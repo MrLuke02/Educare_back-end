@@ -2,12 +2,13 @@ import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Message } from "../env/message";
 import { AppError } from "../errors/AppErrors";
+import { UserDTO } from "../models/DTOs/UserDTO";
 import { EmployeesRepository } from "../repositories/UserRepository copy";
 import * as validation from "../util/user/Validations";
 import { RoleController } from "./RoleController";
 import { UserController } from "./UserController";
-import { CompanyController } from "./CompanyController";
 import { UserRoleController } from "./UserRoleController";
+import { PhoneController } from "./PhoneController";
 
 class EmployeeController {
   // metodo assincrono para o cadastro de usuários
@@ -182,6 +183,42 @@ class EmployeeController {
     const employee = await employeeRepository.findOne({ userID, companyID });
 
     return employee;
+  }
+
+  async readUserFromCompanyID(req: Request, res: Response) {
+    const { companyID } = req.params;
+
+    const employeeRepository = getCustomRepository(EmployeesRepository);
+
+    const employees_user = await employeeRepository.find({
+      // select -> o que quero de retorno
+      // where -> condição
+      // relations -> para trazer também as informações da tabela que se relaciona
+      where: { companyID },
+      relations: ["user"],
+    });
+
+    if (employees_user.length === 0) {
+      throw new AppError(Message.EMPLOYEE_NOT_FOUND, 404);
+    }
+
+    const phoneController = new PhoneController();
+
+    let employees_userDTO = [];
+
+    for (const employee_user of employees_user) {
+      const { occupation, user } = employee_user;
+
+      const phones = await phoneController.readFromUser(user.id);
+
+      employees_userDTO.push({
+        occupation,
+        phones,
+        ...UserDTO.convertUserToDTO(user),
+      });
+    }
+
+    return res.status(200).json({ Employees: employees_userDTO });
   }
 }
 

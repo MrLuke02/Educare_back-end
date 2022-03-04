@@ -40,6 +40,11 @@ routerEmployee.get(
   employeeController.read
 );
 
+routerEmployee.get(
+  "/employees/:companyID",
+  employeeController.readUserFromCompanyID
+);
+
 // criando a rota de deleção de funcionários
 routerEmployee.delete(
   "/employee/:id",
