@@ -80,6 +80,15 @@ class StudentInterestAreaController {
       studentInterestArea = studentInterestAreaExists.studentInterestArea,
     } = req.body;
 
+    if (studentInterestArea !== studentInterestAreaExists.studentInterestArea) {
+      let studentInterestAreaAlreadExists =
+        await studentInterestAreaRepository.findOne({ studentInterestArea });
+
+      if (studentInterestAreaAlreadExists) {
+        throw new AppError(Message.INTEREST_AREA_ALREADY_EXIST, 409);
+      }
+    }
+
     await studentInterestAreaRepository.update(id, { studentInterestArea });
 
     Object.assign(studentInterestAreaExists, {
