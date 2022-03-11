@@ -75,8 +75,15 @@ class EmployeeController {
     // instanciando o UserRoleController
     const userRoleController = new UserRoleController();
 
-    // criando e salvando a userRole
-    await userRoleController.createFromController(user.id, role.id);
+    const userRole = await userRoleController.readFromUserRole(
+      user.id,
+      role.id
+    );
+
+    if (!userRole) {
+      // criando e salvando a userRole
+      await userRoleController.createFromController(user.id, role.id);
+    }
 
     // retornando o DTO do usuario salvo
     return res.status(201).json({ Employee: employeeSaved });
@@ -202,21 +209,15 @@ class EmployeeController {
       throw new AppError(Message.EMPLOYEE_NOT_FOUND, 404);
     }
 
-    const phoneController = new PhoneController();
+    const employees_userDTO = employees_user.map((employee_user) => {
+      const { occupation, user, id } = employee_user;
 
-    let employees_userDTO = [];
-
-    for (const employee_user of employees_user) {
-      const { occupation, user } = employee_user;
-
-      const phones = await phoneController.readFromUser(user.id);
-
-      employees_userDTO.push({
+      return {
+        id,
         occupation,
-        phones,
-        ...UserDTO.convertUserToDTO(user),
-      });
-    }
+        user: UserDTO.convertUserToDTO(user),
+      };
+    });
 
     return res.status(200).json({ Employees: employees_userDTO });
   }
