@@ -56,7 +56,7 @@ class OrderController {
 
     const order = orderRepository.create({
       copyNumber,
-      status: OrderStatus.ORDER_UNDER_ANALYSIS,
+      status: OrderStatus.ORDER_MADE,
       price,
       userID,
       isDelivery,
@@ -94,7 +94,7 @@ class OrderController {
       throw new AppError(Message.ORDER_NOT_FOUND, 404);
     }
 
-    if (order.status !== OrderStatus.ORDER_UNDER_ANALYSIS) {
+    if (order.status !== OrderStatus.ORDER_MADE) {
       throw new AppError(Message.UNAUTHORIZED, 403);
     }
 
@@ -157,8 +157,8 @@ class OrderController {
 
     if (!roles.some((role) => role.type === "ADM")) {
       if (
-        statusKey !== "ORDER_CANCEELD" ||
-        order.status !== OrderStatus.ORDER_UNDER_ANALYSIS
+        statusKey !== "ORDER_CANCELED" ||
+        order.status !== OrderStatus.ORDER_MADE
       ) {
         throw new AppError(Message.UNAUTHORIZED, 403);
       }
@@ -182,7 +182,7 @@ class OrderController {
       throw new AppError(Message.ORDER_NOT_FOUND, 404);
     }
 
-    if (order.status !== OrderStatus.ORDER_UNDER_ANALYSIS) {
+    if (order.status !== OrderStatus.ORDER_MADE) {
       throw new AppError(Message.UNAUTHORIZED, 403);
     }
 
