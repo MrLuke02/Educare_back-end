@@ -17,38 +17,44 @@ routerEmployeeOrder.post(
 
 routerEmployeeOrder.put(
   "/employeeOrder",
-  verifyTokenUser.verifyADMUserByOrderID,
+  verifyTokenUser.verifyTokenAuth,
   employeeOrderController.update
 );
 
 routerEmployeeOrder.put(
   "/employeeOrderStatus",
-  verifyTokenUser.verifyADMUserByOrderID,
+  verifyTokenUser.verifyTokenAuth,
   employeeOrderController.updateStatus
 );
 
 routerEmployeeOrder.get(
   "/employeeOrder/:id",
-  verifyTokenUser.verifyADMUserByOrderID,
+  verifyTokenUser.verifyTokenAuth,
   employeeOrderController.read
 );
 
 routerEmployeeOrder.get(
   "/showEmployeeOrders",
-  verifyTokenUser.verifyTokenADM,
+  verifyTokenUser.verifyTokenAuth,
   employeeOrderController.show
 );
 
 routerEmployeeOrder.delete(
   "/employeeOrder/:id",
-  verifyTokenUser.verifyADMUserByOrderID,
+  verifyTokenUser.verifyTokenAuth,
   employeeOrderController.delete
 );
 
 routerEmployeeOrder.get(
   "/companyHistoric/:companyID",
-  verifyTokenUser.verifyADMUserByOrderID,
+  verifyTokenUser.verifyTokenAuth,
   employeeOrderController.readOrdersCompany
+);
+
+routerEmployeeOrder.get(
+  "/ordersUser/:userID/:companyID",
+  verifyTokenUser.verifyTokenAuth,
+  employeeOrderController.readOrdersByUserID
 );
 
 // exportando o router

@@ -33,15 +33,15 @@ class CompanyRelationPlanController {
       throw new AppError(Message.COMPANY_NOT_FOUND, 404);
     }
 
-    const companyRelationPlanExist =
-      await companyRelationPlansRepository.findOne({
-        planID,
-        companyID,
-      });
+    const companyRelationPlanExist = await companyRelationPlansRepository.find({
+      where: { companyID },
+      order: { createdAt: "DESC" },
+      take: 1,
+    });
 
     if (
-      companyRelationPlanExist &&
-      !dayjs().isAfter(dayjs.unix(companyRelationPlanExist.expiresIn))
+      companyRelationPlanExist.length > 0 &&
+      !dayjs().isAfter(dayjs.unix(companyRelationPlanExist[0].expiresIn))
     ) {
       throw new AppError(Message.COMPANY_RELATIONS_PLAN_ALREADY_EXIST, 409);
     }
@@ -50,7 +50,6 @@ class CompanyRelationPlanController {
       planID,
       companyID,
       expiresIn: dayjs().add(planExist.durationInDays, "day").unix(),
-      usedLimit: 0,
     });
 
     const planSaved = await companyRelationPlansRepository.save(
@@ -82,46 +81,6 @@ class CompanyRelationPlanController {
     return res.status(200).json({ CompanyRelationPlan: companyRelationPlan });
   }
 
-  async updateByCompanyID(companyID: string) {
-    // pegando o repositorio customizado/personalizado
-    const companyRelationPlansRepository = getCustomRepository(
-      CompanyRelationPlansRepository
-    );
-
-    // pesquisando uma role pelo id
-    const companyRelationPlanExits = await companyRelationPlansRepository.find({
-      where: { companyID },
-      order: { createdAt: "DESC" },
-      take: 1,
-    });
-
-    if (companyRelationPlanExits.length === 0) {
-      throw new AppError(Message.COMPANY_RELATIONS_PLAN_NOT_FOUND, 404);
-    } else if (
-      dayjs().isAfter(dayjs.unix(companyRelationPlanExits[0].expiresIn))
-    ) {
-      throw new AppError(Message.EXPIRED_PLAN, 403);
-    }
-
-    const planController = new PlanController();
-
-    const plan = await planController.readFromController(
-      companyRelationPlanExits[0].planID
-    );
-
-    if (plan.limiteCopies <= companyRelationPlanExits[0].usedLimit) {
-      throw new AppError(Message.COPY_LIMIT_REACHED, 403);
-    }
-
-    // atualizando a role a partir do id
-    await companyRelationPlansRepository.update(
-      companyRelationPlanExits[0].id,
-      {
-        usedLimit: companyRelationPlanExits[0].usedLimit + 1,
-      }
-    );
-  }
-
   async readFromController(id: string) {
     const companyRelationPlansRepository = getCustomRepository(
       CompanyRelationPlansRepository
@@ -141,6 +100,28 @@ class CompanyRelationPlanController {
     });
 
     return company[0];
+  }
+
+  async readCompanyID(companyID: string) {
+    const companyRelationPlansRepository = getCustomRepository(
+      CompanyRelationPlansRepository
+    );
+
+    const companyRelationPlanExits = await companyRelationPlansRepository.find({
+      where: { companyID },
+      order: { createdAt: "DESC" },
+      take: 1,
+    });
+
+    if (companyRelationPlanExits.length === 0) {
+      throw new AppError(Message.COMPANY_RELATIONS_PLAN_NOT_FOUND, 404);
+    } else if (
+      dayjs().isAfter(dayjs.unix(companyRelationPlanExits[0].expiresIn))
+    ) {
+      throw new AppError(Message.UNAUTHORIZED, 403);
+    }
+
+    return companyRelationPlanExits[0];
   }
 
   async delete(req: Request, res: Response) {

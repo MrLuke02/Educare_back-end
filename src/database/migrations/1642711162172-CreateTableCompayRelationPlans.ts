@@ -26,10 +26,6 @@ export class CreateTableCompayRelationPlans1642711162172
             type: "int",
           },
           {
-            name: "usedLimit",
-            type: "int",
-          },
-          {
             name: "createdAt",
             type: "timestamp",
             default: "now()",

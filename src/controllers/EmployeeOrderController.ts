@@ -4,20 +4,19 @@ import { getCustomRepository } from "typeorm";
 import { Message } from "../env/message";
 import { OrderStatus } from "../env/orderStaus";
 import { AppError } from "../errors/AppErrors";
-import { CategoryController } from "./CategoryController";
 import { DocumentController } from "./DocumentController";
 import { UserDTO } from "../models/DTOs/UserDTO";
 import { verifyStatus } from "../util/user/StatusValidation";
 import { UserRoleController } from "./UserRoleController";
 import { EmployeeController } from "./EmployeeController";
-import { CompanyRelationPlanController } from "./CompanyRelationPlanController";
 import { EmployeeOrderRepository } from "../repositories/EmployeeOrderRepository";
+import { CompanyController } from "./CompanyController";
+import { CompanyRelationPlanController } from "./CompanyRelationPlanController";
 
 class EmployeeOrderController {
   async create(req: Request, res: Response) {
     const docs = req.file;
-    const { userID, categoryID, copyNumber, price, pageNumber, companyID } =
-      req.body;
+    const { userID, copyNumber, pageNumber, companyID } = req.body;
     let { isDelivery } = req.body;
 
     isDelivery = isDelivery === "true";
@@ -26,10 +25,8 @@ class EmployeeOrderController {
 
     if (
       !userID ||
-      !categoryID ||
       !companyID ||
       (!copyNumber && copyNumber !== 0) ||
-      (!price && price !== 0) ||
       (!pageNumber && pageNumber !== 0) ||
       isEmpty.includes(isDelivery)
     ) {
@@ -37,40 +34,36 @@ class EmployeeOrderController {
     }
 
     const documentController = new DocumentController();
-    const categoryController = new CategoryController();
     const employeeController = new EmployeeController();
+    const companyController = new CompanyController();
     const companyRelationPlanController = new CompanyRelationPlanController();
 
     const employeeOrderRepository = getCustomRepository(
       EmployeeOrderRepository
     );
 
-    const category = await categoryController.readFromController(categoryID);
     const employee = await employeeController.readFromUserAndCompany(
       userID,
       companyID
     );
-    await companyRelationPlanController.updateByCompanyID(companyID);
+    const company = await companyController.readCompanyFromID(companyID);
 
-    if (!category) {
-      throw new AppError(Message.USER_NOT_FOUND, 404);
-    } else if (!employee) {
+    if (!employee && company.userID !== userID) {
       throw new AppError(Message.UNAUTHORIZED, 403);
     }
 
-    const document = await documentController.createFromController(
+    await companyRelationPlanController.readCompanyID(companyID);
+
+    const document = await documentController.createFromOrderEmployee(
       docs,
-      pageNumber,
-      category.id
+      pageNumber
     );
 
     const employeeOrder = employeeOrderRepository.create({
       copyNumber,
-      status: OrderStatus.ORDER_UNDER_ANALYSIS,
-      price,
+      status: OrderStatus.ORDER_MADE,
       userID,
       isDelivery,
-      categoryID,
       documentID: document.id,
       companyID,
     });
@@ -95,7 +88,7 @@ class EmployeeOrderController {
       throw new AppError(Message.ORDER_NOT_FOUND, 404);
     }
 
-    return res.status(200).json({ EmployeeOrder: employeeOrder });
+    return res.status(200).json({ Order: employeeOrder });
   }
 
   async update(req: Request, res: Response) {
@@ -111,32 +104,21 @@ class EmployeeOrderController {
       throw new AppError(Message.ORDER_NOT_FOUND, 404);
     }
 
-    if (employeeOrder.status !== OrderStatus.ORDER_UNDER_ANALYSIS) {
+    if (employeeOrder.status !== OrderStatus.ORDER_MADE) {
       throw new AppError(Message.UNAUTHORIZED, 403);
     }
 
     const {
-      categoryID = employeeOrder.categoryID,
       copyNumber = employeeOrder.copyNumber,
-      price = employeeOrder.price,
       isDelivery = employeeOrder.isDelivery,
     } = req.body;
 
-    const categoryController = new CategoryController();
-    const category = await categoryController.readFromController(categoryID);
-
-    if (!category) {
-      throw new AppError(Message.CATEGORY_NOT_FOUND, 404);
-    }
-
     await employeeOrderRepository.update(id, {
-      categoryID,
       copyNumber,
-      price,
       isDelivery,
     });
 
-    Object.assign(employeeOrder, { categoryID, copyNumber, price, isDelivery });
+    Object.assign(employeeOrder, { copyNumber, isDelivery });
 
     return res.status(200).json({ EmployeeOrder: employeeOrder });
   }
@@ -177,7 +159,7 @@ class EmployeeOrderController {
     if (!roles.some((role) => role.type === "ADM")) {
       if (
         statusKey !== "ORDER_CANCEELD" ||
-        employeeOrder.status !== OrderStatus.ORDER_UNDER_ANALYSIS
+        employeeOrder.status !== OrderStatus.ORDER_MADE
       ) {
         throw new AppError(Message.UNAUTHORIZED, 403);
       }
@@ -205,7 +187,7 @@ class EmployeeOrderController {
       throw new AppError(Message.ORDER_NOT_FOUND, 404);
     }
 
-    if (employeeOrder.status !== OrderStatus.ORDER_UNDER_ANALYSIS) {
+    if (employeeOrder.status !== OrderStatus.ORDER_MADE) {
       throw new AppError(Message.UNAUTHORIZED, 403);
     }
 
@@ -254,8 +236,7 @@ class EmployeeOrderController {
       // select -> o que quero de retorno
       // where -> condição
       // relations -> para trazer também as informações da tabela que se relaciona
-      select: ["companyID"],
-      where: { companyID: companyID },
+      where: { companyID },
       relations: ["user"],
     });
 
@@ -277,6 +258,41 @@ class EmployeeOrderController {
     });
 
     return res.status(200).json({ CompanyHistoric: ordersDTO });
+  }
+
+  async readOrdersByUserID(req: Request, res: Response) {
+    const { userID, companyID } = req.params;
+
+    const employeeOrderRepository = getCustomRepository(
+      EmployeeOrderRepository
+    );
+
+    const order_user = await employeeOrderRepository.find({
+      // select -> o que quero de retorno
+      // where -> condição
+      // relations -> para trazer também as informações da tabela que se relaciona
+      where: { userID, companyID },
+      relations: ["user"],
+    });
+
+    if (order_user.length === 0) {
+      throw new AppError(Message.NOT_FOUND, 404);
+    }
+
+    const ordersDTO = order_user.map((order) => {
+      const { userID, user, ...props } = order;
+
+      let orderDTO = {};
+
+      Object.assign(orderDTO, props);
+
+      return {
+        ...orderDTO,
+        user: UserDTO.convertUserToDTO(user),
+      };
+    });
+
+    return res.status(200).json({ Orders: ordersDTO });
   }
 }
 

@@ -42,7 +42,14 @@ routerEmployee.get(
 
 routerEmployee.get(
   "/employees/:companyID",
+  verifyTokenUser.verifyTokenAuth,
   employeeController.readUserFromCompanyID
+);
+
+routerEmployee.get(
+  "/employeesCompanies/:userID",
+  verifyTokenUser.verifyTokenAuth,
+  employeeController.readCompaniesFromUserID
 );
 
 // criando a rota de deleção de funcionários
