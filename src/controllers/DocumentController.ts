@@ -86,7 +86,6 @@ class DocumentController {
       !type ||
       !file ||
       !categoryID ||
-      !categoryID ||
       (!pageNumber && pageNumber !== 0)
     ) {
       throw new AppError(Message.REQUIRED_FIELD, 400);
@@ -109,6 +108,40 @@ class DocumentController {
       (category.qtdMaxPage && category.qtdMaxPage < pageNumber)
     ) {
       throw new AppError(Message.INVALID_PAGE_COUNT, 404);
+    }
+
+    const documentRepository = getCustomRepository(DocumentsRepository);
+
+    const document = documentRepository.create({
+      name,
+      size,
+      type,
+      file,
+      pageNumber,
+    });
+
+    const documentSaved = await documentRepository.save(document);
+
+    return DocumentDTO.convertDocumentToDTO(documentSaved);
+  }
+
+  async createFromOrderEmployee(docs: FileType, pageNumber: number) {
+    const { originalname: name, size, mimetype: type, buffer: file } = docs;
+
+    const mimetypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+
+    if (!name || !size || !type || !file || (!pageNumber && pageNumber !== 0)) {
+      throw new AppError(Message.REQUIRED_FIELD, 400);
+    }
+
+    if (size > 10 * 1024 * 1024) {
+      throw new AppError(Message.FILE_TOO_LARGE, 400);
+    } else if (!mimetypes.includes(type)) {
+      throw new AppError(Message.INVALID_DATA, 400);
     }
 
     const documentRepository = getCustomRepository(DocumentsRepository);

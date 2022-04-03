@@ -20,10 +20,6 @@ export class CreateEmployeeOrders1645216250381 implements MigrationInterface {
             type: "uuid",
           },
           {
-            name: "categoryID",
-            type: "uuid",
-          },
-          {
             name: "companyID",
             type: "uuid",
           },
@@ -34,10 +30,6 @@ export class CreateEmployeeOrders1645216250381 implements MigrationInterface {
           {
             name: "isDelivery",
             type: "boolean",
-          },
-          {
-            name: "price",
-            type: "real",
           },
           {
             name: "status",
@@ -63,14 +55,6 @@ export class CreateEmployeeOrders1645216250381 implements MigrationInterface {
             referencedTableName: "documents",
             referencedColumnNames: ["id"],
             columnNames: ["documentID"],
-            onDelete: "CASCADE",
-            onUpdate: "CASCADE",
-          },
-          {
-            name: "FKEoCategory",
-            referencedTableName: "categories",
-            referencedColumnNames: ["id"],
-            columnNames: ["categoryID"],
             onDelete: "CASCADE",
             onUpdate: "CASCADE",
           },

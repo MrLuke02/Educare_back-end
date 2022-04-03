@@ -9,6 +9,7 @@ import { RoleController } from "./RoleController";
 import { UserController } from "./UserController";
 import { UserRoleController } from "./UserRoleController";
 import { PhoneController } from "./PhoneController";
+import { CompanyDTO } from "../models/DTOs/CompanyDTO";
 
 class EmployeeController {
   // metodo assincrono para o cadastro de usuários
@@ -220,6 +221,31 @@ class EmployeeController {
     });
 
     return res.status(200).json({ Employees: employees_userDTO });
+  }
+
+  async readCompaniesFromUserID(req: Request, res: Response) {
+    const { userID } = req.params;
+
+    const employeeRepository = getCustomRepository(EmployeesRepository);
+
+    const employees_companies = await employeeRepository.find({
+      // select -> o que quero de retorno
+      // where -> condição
+      // relations -> para trazer também as informações da tabela que se relaciona
+      select: ["id"],
+      where: { userID },
+      relations: ["company"],
+    });
+
+    if (employees_companies.length === 0) {
+      throw new AppError(Message.COMPANY_NOT_FOUND, 404);
+    }
+
+    const employees_companyDTO = employees_companies.map((employee_company) => {
+      return CompanyDTO.convertCompanyToDTO(employee_company.company);
+    });
+
+    return res.status(200).json({ Companies: employees_companyDTO });
   }
 }
 

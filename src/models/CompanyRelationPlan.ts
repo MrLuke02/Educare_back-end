@@ -35,9 +35,6 @@ class CompanyRelationPlan {
   @Column()
   expiresIn: number;
 
-  @Column()
-  usedLimit: number;
-
   @CreateDateColumn()
   createdAt: Date;
 

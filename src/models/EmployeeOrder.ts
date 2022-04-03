@@ -7,7 +7,6 @@ import {
   PrimaryColumn,
   ManyToOne,
 } from "typeorm";
-import { Category } from "./Category";
 import { Document } from "./Document";
 import { User } from "./User";
 import { v4 as uuid } from "uuid";
@@ -20,9 +19,6 @@ class EmployeeOrder {
 
   @Column()
   copyNumber: number;
-
-  @Column()
-  price: number;
 
   @Column()
   status: string;
@@ -53,14 +49,6 @@ class EmployeeOrder {
   @OneToOne(() => Document)
   @JoinColumn({ name: "documentID" })
   document: Document;
-
-  @Column()
-  categoryID: string;
-
-  // criando o relacionamento de um para um com a tabela User
-  @ManyToOne(() => Category)
-  @JoinColumn({ name: "categoryID" })
-  category: Category;
 
   @CreateDateColumn()
   createdAt: Date;
