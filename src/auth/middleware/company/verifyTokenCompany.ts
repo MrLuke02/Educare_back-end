@@ -75,8 +75,6 @@ class VerifyTokenCompany {
 
       // verifica se o token enviado pertence ao proprio usuário ou a um administrador
       if (token.sub === company.userID || token.roles.includes("ADM")) {
-        console.log("aki");
-
         // avança para o proximo middleware
         next();
       } else {

@@ -74,11 +74,37 @@ class CompanyRelationPlanController {
       take: 1,
     });
 
-    if (!companyRelationPlan) {
+    if (companyRelationPlan.length === 0) {
       throw new AppError(Message.COMPANY_RELATIONS_PLAN_NOT_FOUND, 404);
     }
 
     return res.status(200).json({ CompanyRelationPlan: companyRelationPlan });
+  }
+
+  async readFromCompanyID(req: Request, res: Response) {
+    const { companyID } = req.params;
+
+    const companyRelationPlansRepository = getCustomRepository(
+      CompanyRelationPlansRepository
+    );
+
+    const companyRelationPlan = await companyRelationPlansRepository.find({
+      select: ["planID"],
+      where: { companyID },
+      order: { createdAt: "DESC" },
+      take: 1,
+    });
+
+    if (
+      companyRelationPlan.length === 0 ||
+      dayjs().isAfter(dayjs.unix(companyRelationPlan[0].expiresIn))
+    ) {
+      throw new AppError(Message.COMPANY_RELATIONS_PLAN_NOT_FOUND, 404);
+    }
+
+    return res
+      .status(200)
+      .json({ CompanyRelationPlan: companyRelationPlan[0] });
   }
 
   async readFromController(id: string) {

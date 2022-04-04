@@ -46,6 +46,7 @@ class EmployeeOrderController {
       userID,
       companyID
     );
+
     const company = await companyController.readCompanyFromID(companyID);
 
     if (!employee && company.userID !== userID) {
@@ -223,6 +224,31 @@ class EmployeeOrderController {
     });
 
     return res.status(200).json({ EmployeeOrders: ordersDTO });
+  }
+
+  async showFromController() {
+    const employeeOrderRepository = getCustomRepository(
+      EmployeeOrderRepository
+    );
+
+    const employeeOrder = await employeeOrderRepository.find({
+      relations: ["user"],
+    });
+
+    const ordersDTO = employeeOrder.map((order) => {
+      const { userID, user, ...props } = order;
+
+      let orderDTO = {};
+
+      Object.assign(orderDTO, props);
+
+      return {
+        ...orderDTO,
+        user: UserDTO.convertUserToDTO(user),
+      };
+    });
+
+    return ordersDTO;
   }
 
   async readOrdersCompany(req: Request, res: Response) {

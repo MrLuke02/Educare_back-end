@@ -11,6 +11,7 @@ import { UserController } from "./UserController";
 import { UserDTO } from "../models/DTOs/UserDTO";
 import { verifyStatus } from "../util/user/StatusValidation";
 import { UserRoleController } from "./UserRoleController";
+import { EmployeeOrderController } from "./EmployeeOrderController";
 
 class OrderController {
   async create(req: Request, res: Response) {
@@ -198,7 +199,11 @@ class OrderController {
       relations: ["user"],
     });
 
-    if (orders.length === 0) {
+    const employeeOrderController = new EmployeeOrderController();
+
+    const employeeOrders = await employeeOrderController.showFromController();
+
+    if (orders.length === 0 && employeeOrders.length === 0) {
       throw new AppError(Message.NOT_FOUND, 404);
     }
 
@@ -215,7 +220,9 @@ class OrderController {
       };
     });
 
-    return res.status(200).json({ Orders: ordersDTO });
+    const ordersAllDTO = [...ordersDTO, ...employeeOrders];
+
+    return res.status(200).json({ Orders: ordersAllDTO });
   }
 
   async readFromOrder(orderID: string) {

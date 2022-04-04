@@ -23,6 +23,7 @@ routerCompanyRelationPlan.get(
   verifyTokenUser.verifyTokenADM,
   companyRelationPlanController.show
 );
+
 // criando a rota de pesquisa da Role pelo id
 routerCompanyRelationPlan.get(
   "/companyRelationPlan/:id",
@@ -30,10 +31,17 @@ routerCompanyRelationPlan.get(
   companyRelationPlanController.read
 );
 
+// criando a rota de pesquisa da Role pelo id
+routerCompanyRelationPlan.get(
+  "/companyRelationPlanByCompany/:companyID",
+  verifyTokenUser.verifyTokenAuth,
+  companyRelationPlanController.readFromCompanyID
+);
+
 // criando a rota de deleção de Roles
 routerCompanyRelationPlan.delete(
   "/companyRelationPlan/:id",
-  verifyTokenCompany.verifyADMCompanyByCompanyRelationPlanID,
+  verifyTokenUser.verifyTokenADM,
   companyRelationPlanController.delete
 );
 
