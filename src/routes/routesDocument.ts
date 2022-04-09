@@ -30,7 +30,7 @@ routerDocument.get(
 
 routerDocument.get(
   "/downloadFile/:id",
-  // verifyTokenUser.verifyTokenADM,
+  verifyTokenUser.verifyTokenADM,
   documentController.downloadFile
 );
 

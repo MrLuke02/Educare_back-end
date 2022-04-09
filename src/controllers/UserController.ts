@@ -172,15 +172,9 @@ class UserController {
       expiresIn
     );
 
-    const userRole = {
-      ...UserDTO.convertUserToDTO(user),
-      Roles: rolesDTO,
-    } as Object;
-
     // retornando o token criado
     return res.status(200).json({
       Token: token,
-      User: userRole,
       TokenRefreshID: tokenRefresh.id,
     });
   }
