@@ -9,16 +9,16 @@ import { CategoryController } from "./CategoryController";
 
 type FileType = Express.Multer.File;
 
+const mimetypes = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
+
 class DocumentController {
   async create(req: Request, res: Response) {
     const { originalname: name, size, mimetype: type, buffer: file } = req.file;
     let { pageNumber, categoryID } = req.body;
-
-    const mimetypes = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
 
     if (
       !name ||
@@ -74,12 +74,6 @@ class DocumentController {
   ) {
     const { originalname: name, size, mimetype: type, buffer: file } = docs;
 
-    const mimetypes = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-
     if (
       !name ||
       !size ||
@@ -128,12 +122,6 @@ class DocumentController {
   async createFromOrderEmployee(docs: FileType, pageNumber: number) {
     const { originalname: name, size, mimetype: type, buffer: file } = docs;
 
-    const mimetypes = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-
     if (!name || !size || !type || !file || (!pageNumber && pageNumber !== 0)) {
       throw new AppError(Message.REQUIRED_FIELD, 400);
     }
@@ -173,6 +161,26 @@ class DocumentController {
     return res
       .status(200)
       .json({ Document: DocumentDTO.convertDocumentToDTO(document) });
+  }
+
+  async downloadFile(req: Request, res: Response) {
+    const { id } = req.params;
+
+    const documentRepository = getCustomRepository(DocumentsRepository);
+
+    const document = await documentRepository.findOne({ id });
+
+    if (!document) {
+      throw new AppError(Message.DOCUMENT_NOT_FOUND, 404);
+    }
+
+    res.setHeader("Content-Type", "octet/stream");
+    res.setHeader(
+      "Content-disposition",
+      `attachment; filename=${document.name}`
+    );
+
+    return res.send(document.file);
   }
 
   async update(req: Request, res: Response) {
