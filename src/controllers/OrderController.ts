@@ -75,13 +75,39 @@ class OrderController {
 
     const orderRepository = getCustomRepository(OrdersRepository);
 
-    const order = await orderRepository.findOne({ id });
+    const order_document_category = await orderRepository.find({
+      where: { id },
+      relations: ["category", "document"],
+    });
 
-    if (!order) {
+    if (order_document_category.length === 0) {
       throw new AppError(Message.ORDER_NOT_FOUND, 404);
     }
 
-    return res.status(200).json({ Order: order });
+    const order_document_categoryDTO = order_document_category.map(
+      (order_document_category) => {
+        const category = {
+          id: order_document_category.category.id,
+          name: order_document_category.category.name,
+          colorful: order_document_category.category.colorful,
+          price: order_document_category.category.price,
+          description: order_document_category.category.description,
+        };
+        const document = {
+          id: order_document_category.document.id,
+          name: order_document_category.document.name,
+          file: order_document_category.document.file,
+        };
+
+        return {
+          ...order_document_category,
+          category,
+          document,
+        };
+      }
+    );
+
+    return res.status(200).json({ Order: order_document_categoryDTO[0] });
   }
 
   async update(req: Request, res: Response) {

@@ -79,17 +79,31 @@ class EmployeeOrderController {
   async read(req: Request, res: Response) {
     const { id } = req.params;
 
-    const employeeOrderRepository = getCustomRepository(
-      EmployeeOrderRepository
-    );
+    const orderRepository = getCustomRepository(EmployeeOrderRepository);
 
-    const employeeOrder = await employeeOrderRepository.findOne({ id });
+    const order_document = await orderRepository.find({
+      where: { id },
+      relations: ["document"],
+    });
 
-    if (!employeeOrder) {
+    if (order_document.length === 0) {
       throw new AppError(Message.ORDER_NOT_FOUND, 404);
     }
 
-    return res.status(200).json({ Order: employeeOrder });
+    const order_documentDTO = order_document.map((order_document) => {
+      const document = {
+        id: order_document.document.id,
+        name: order_document.document.name,
+        file: order_document.document.file,
+      };
+
+      return {
+        ...order_document,
+        document,
+      };
+    });
+
+    return res.status(200).json({ Order: order_documentDTO[0] });
   }
 
   async update(req: Request, res: Response) {
