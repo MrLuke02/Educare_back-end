@@ -29,6 +29,12 @@ routerDocument.get(
 );
 
 routerDocument.get(
+  "/downloadFile/:id",
+  verifyTokenUser.verifyTokenADM,
+  documentController.downloadFile
+);
+
+routerDocument.get(
   "/showDocuments",
   verifyTokenUser.verifyTokenADM,
   documentController.show
