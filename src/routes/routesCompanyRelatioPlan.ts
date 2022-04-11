@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { CompanyRelationPlanController } from "../controllers/CompanyRelationPlanController";
-import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
 import { VerifyTokenCompany } from "../auth/middleware/company/verifyTokenCompany";
+import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
+import { CompanyRelationPlanController } from "../controllers/CompanyRelationPlanController";
 
 // criando um objeto de RoleController
 const companyRelationPlanController = new CompanyRelationPlanController();

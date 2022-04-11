@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-
 import { Message } from "../env/message";
 import { AppError } from "../errors/AppErrors";
 import { DocumentDTO } from "../models/DTOs/DocumentDTO";
 import { DocumentsRepository } from "../repositories/DocumentRepository";
+import { fileNameValidation } from "../util/user/Validations";
 import { CategoryController } from "./CategoryController";
 
 type FileType = Express.Multer.File;
@@ -174,10 +174,12 @@ class DocumentController {
       throw new AppError(Message.DOCUMENT_NOT_FOUND, 404);
     }
 
-    res.setHeader("Content-Type", "octet/stream");
+    document.name = fileNameValidation(document.name);
+
+    res.setHeader("Content-Type", document.type);
     res.setHeader(
       "Content-disposition",
-      `attachment; filename=${document.name}`
+      `attachment; filename*=UTF-8''${document.name}`
     );
 
     return res.send(document.file);

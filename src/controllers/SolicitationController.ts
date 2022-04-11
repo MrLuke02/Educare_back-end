@@ -1,17 +1,16 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-
 import { Message } from "../env/message";
 import { SolicitationStatus } from "../env/solicitationStatus";
 import { AppError } from "../errors/AppErrors";
 import { SolicitationsRepository } from "../repositories/SolicitationRepository";
+import { verifyExpiredStudent } from "../services/verifyExpiredStudent";
 import * as validation from "../util/user/Validations";
+import { RoleController } from "./RoleController";
+import { StudentController } from "./StudentController";
+import { StudentInterestAreaController } from "./StudentInterestAreaController";
 import { UserController } from "./UserController";
 import { UserRoleController } from "./UserRoleController";
-import { StudentController } from "./StudentController";
-import { RoleController } from "./RoleController";
-import { verifyExpiredStudent } from "../services/verifyExpiredStudent";
-import { StudentInterestAreaController } from "./StudentInterestAreaController";
 
 class SolicitationController {
   // metodo assincrono para o cadastro de phones

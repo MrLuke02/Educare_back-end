@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-
 import { Message } from "../env/message";
 import { AppError } from "../errors/AppErrors";
 import { UserInterestAreaRepository } from "../repositories/UserInterestAreaRepository";

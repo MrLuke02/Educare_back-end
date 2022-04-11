@@ -1,6 +1,5 @@
 import { Router } from "express";
 import multer from "multer";
-
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
 import { UserController } from "../controllers/UserController";
 

@@ -1,5 +1,4 @@
 import { Router } from "express";
-
 import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
 import { UserInterestAreaRelationUserController } from "../controllers/UserInterestAreaRelationUserController";
 

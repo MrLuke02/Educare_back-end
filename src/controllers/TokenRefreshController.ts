@@ -2,10 +2,8 @@ import dayjs from "dayjs";
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { createToken, verifyToken } from "../auth/token/token.auth";
-
 import { Message } from "../env/message";
 import { AppError } from "../errors/AppErrors";
-
 import { TokenRefreshRepository } from "../repositories/TokenRefreshRepository";
 import { UserController } from "./UserController";
 import { UserRoleController } from "./UserRoleController";

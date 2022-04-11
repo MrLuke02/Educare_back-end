@@ -1,8 +1,7 @@
 import { Router } from "express";
-
-import { EmployeeController } from "../controllers/EmployeeController";
-import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
 import { VerifyTokenCompany } from "../auth/middleware/company/verifyTokenCompany";
+import { VerifyTokenUser } from "../auth/middleware/user/verifyTokenUser";
+import { EmployeeController } from "../controllers/EmployeeController";
 
 // criando um objeto de UserController
 const employeeController = new EmployeeController();

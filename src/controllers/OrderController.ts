@@ -1,17 +1,16 @@
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-
 import { Message } from "../env/message";
 import { OrderStatus } from "../env/orderStaus";
 import { AppError } from "../errors/AppErrors";
+import { UserDTO } from "../models/DTOs/UserDTO";
 import { OrdersRepository } from "../repositories/OrderRepository";
+import { verifyStatus } from "../util/user/StatusValidation";
 import { CategoryController } from "./CategoryController";
 import { DocumentController } from "./DocumentController";
-import { UserController } from "./UserController";
-import { UserDTO } from "../models/DTOs/UserDTO";
-import { verifyStatus } from "../util/user/StatusValidation";
-import { UserRoleController } from "./UserRoleController";
 import { EmployeeOrderController } from "./EmployeeOrderController";
+import { UserController } from "./UserController";
+import { UserRoleController } from "./UserRoleController";
 
 class OrderController {
   async create(req: Request, res: Response) {
