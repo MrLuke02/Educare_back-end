@@ -1,13 +1,11 @@
+import dayjs from "dayjs";
 import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
-
 import { Message } from "../env/message";
 import { AppError } from "../errors/AppErrors";
 import { StudentsRepository } from "../repositories/StudentRepository";
-import { UserController } from "./UserController";
 import { StudentInterestAreaController } from "./StudentInterestAreaController";
-
-import dayjs from "dayjs";
+import { UserController } from "./UserController";
 
 class StudentController {
   // metodo assincrono para o cadastro de phones

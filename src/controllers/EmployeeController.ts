@@ -2,14 +2,13 @@ import { Request, Response } from "express";
 import { getCustomRepository } from "typeorm";
 import { Message } from "../env/message";
 import { AppError } from "../errors/AppErrors";
+import { CompanyDTO } from "../models/DTOs/CompanyDTO";
 import { UserDTO } from "../models/DTOs/UserDTO";
 import { EmployeesRepository } from "../repositories/UserRepository copy";
 import * as validation from "../util/user/Validations";
 import { RoleController } from "./RoleController";
 import { UserController } from "./UserController";
 import { UserRoleController } from "./UserRoleController";
-import { PhoneController } from "./PhoneController";
-import { CompanyDTO } from "../models/DTOs/CompanyDTO";
 
 class EmployeeController {
   // metodo assincrono para o cadastro de usuários

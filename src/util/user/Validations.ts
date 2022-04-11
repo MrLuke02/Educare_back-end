@@ -1,7 +1,8 @@
-import { validationPassword } from "./PasswordValidation";
-import { validationEmail } from "./EmailValidation";
-import { validationPhone } from "./PhoneValidation";
 import { validationCnpj } from "./CnpjValidation";
+import { validationEmail } from "./EmailValidation";
+import { fileNameValidation } from "./FileNameValidation";
+import { validationPassword } from "./PasswordValidation";
+import { validationPhone } from "./PhoneValidation";
 import { verifyStatus } from "./StatusValidation";
 
 export {
@@ -10,4 +11,5 @@ export {
   validationPhone,
   validationCnpj,
   verifyStatus,
+  fileNameValidation,
 };
