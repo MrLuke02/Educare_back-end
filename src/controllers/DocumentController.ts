@@ -176,7 +176,7 @@ class DocumentController {
 
     document.name = fileNameValidation(document.name);
 
-    res.setHeader("Content-Type", "application/octet-stream");
+    res.setHeader("Content-Type", document.type);
     res.setHeader(
       "Content-disposition",
       `attachment; filename*=UTF-8''${document.name}`
