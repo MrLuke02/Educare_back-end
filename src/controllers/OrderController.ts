@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getCustomRepository } from "typeorm";
+import { getCustomRepository, IsNull, Not } from "typeorm";
 import { Message } from "../env/message";
 import { OrderStatus } from "../env/orderStaus";
 import { AppError } from "../errors/AppErrors";
@@ -218,10 +218,14 @@ class OrderController {
   }
 
   async show(req: Request, res: Response) {
+    const { name, status } = req.query;
     const orderRepository = getCustomRepository(OrdersRepository);
+
+    console.log(status);
 
     const orders = await orderRepository.find({
       relations: ["user"],
+      where: { status: "Pedido realizado!" || Not(IsNull()) },
     });
 
     const employeeOrderController = new EmployeeOrderController();
@@ -245,7 +249,20 @@ class OrderController {
       };
     });
 
-    const ordersAllDTO = [...ordersDTO, ...employeeOrders];
+    let ordersAllDTO = [...ordersDTO, ...employeeOrders];
+    console.log(ordersAllDTO);
+
+    if (name) {
+      ordersAllDTO = ordersAllDTO.filter((order) =>
+        order.user.name.includes(name as string)
+      );
+
+      if (ordersAllDTO.length === 0) {
+        throw new AppError(Message.NOT_FOUND, 404);
+      }
+    }
+
+    console.log(ordersAllDTO);
 
     return res.status(200).json({ Orders: ordersAllDTO });
   }
