@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getCustomRepository } from "typeorm";
+import { getCustomRepository, IsNull, Not } from "typeorm";
 import { Message } from "../env/message";
 import { OrderStatus } from "../env/orderStaus";
 import { AppError } from "../errors/AppErrors";
@@ -246,6 +246,7 @@ class EmployeeOrderController {
 
     const employeeOrder = await employeeOrderRepository.find({
       relations: ["user"],
+      where: { status: "Pedido realizado!" || Not(IsNull()) },
     });
 
     const ordersDTO = employeeOrder.map((order) => {
