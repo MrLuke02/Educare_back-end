@@ -172,7 +172,7 @@ class EmployeeOrderController {
 
     if (!roles.some((role) => role.type === "ADM")) {
       if (
-        statusKey !== "ORDER_CANCEELD" ||
+        statusKey !== "ORDER_CANCELED" ||
         employeeOrder.status !== OrderStatus.ORDER_MADE
       ) {
         throw new AppError(Message.UNAUTHORIZED, 403);
@@ -239,14 +239,14 @@ class EmployeeOrderController {
     return res.status(200).json({ EmployeeOrders: ordersDTO });
   }
 
-  async showFromController() {
+  async showFromController(status?: string) {
     const employeeOrderRepository = getCustomRepository(
       EmployeeOrderRepository
     );
 
     const employeeOrder = await employeeOrderRepository.find({
       relations: ["user"],
-      where: { status: "Pedido realizado!" || Not(IsNull()) },
+      where: { status: status || Not(IsNull()) },
     });
 
     const ordersDTO = employeeOrder.map((order) => {
