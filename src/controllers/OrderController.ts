@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getCustomRepository, IsNull, Not } from "typeorm";
+import { getCustomRepository } from "typeorm";
 import { Message } from "../env/message";
 import { OrderStatus } from "../env/orderStaus";
 import { AppError } from "../errors/AppErrors";
@@ -218,19 +218,38 @@ class OrderController {
   }
 
   async show(req: Request, res: Response) {
-    const { name, status } = req.query;
+    const { name, status, email } = req.query;
+
     const orderRepository = getCustomRepository(OrdersRepository);
 
-    console.log(status);
+    let query = "";
+
+    if (name) {
+      query = `"Order__user"."name" = '${name}'`;
+    }
+
+    if (email) {
+      query += `${
+        query === "" ? "" : " AND "
+      }"Order__user"."email" = '${email}'`;
+    }
+
+    if (status) {
+      query += `${query === "" ? "" : " AND "}"Order"."status" = '${status}'`;
+    }
 
     const orders = await orderRepository.find({
+      where: query,
       relations: ["user"],
-      where: { status: "Pedido realizado!" || Not(IsNull()) },
     });
 
     const employeeOrderController = new EmployeeOrderController();
 
-    const employeeOrders = await employeeOrderController.showFromController();
+    const employeeOrders = await employeeOrderController.showFromController(
+      name as string,
+      status as string,
+      email as string
+    );
 
     if (orders.length === 0 && employeeOrders.length === 0) {
       throw new AppError(Message.NOT_FOUND, 404);
@@ -249,20 +268,7 @@ class OrderController {
       };
     });
 
-    let ordersAllDTO = [...ordersDTO, ...employeeOrders];
-    console.log(ordersAllDTO);
-
-    if (name) {
-      ordersAllDTO = ordersAllDTO.filter((order) =>
-        order.user.name.includes(name as string)
-      );
-
-      if (ordersAllDTO.length === 0) {
-        throw new AppError(Message.NOT_FOUND, 404);
-      }
-    }
-
-    console.log(ordersAllDTO);
+    const ordersAllDTO = [...ordersDTO, ...employeeOrders];
 
     return res.status(200).json({ Orders: ordersAllDTO });
   }

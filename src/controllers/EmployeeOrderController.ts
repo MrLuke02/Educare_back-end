@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getCustomRepository, IsNull, Not } from "typeorm";
+import { getCustomRepository } from "typeorm";
 import { Message } from "../env/message";
 import { OrderStatus } from "../env/orderStaus";
 import { AppError } from "../errors/AppErrors";
@@ -172,7 +172,7 @@ class EmployeeOrderController {
 
     if (!roles.some((role) => role.type === "ADM")) {
       if (
-        statusKey !== "ORDER_CANCEELD" ||
+        statusKey !== "ORDER_CANCELED" ||
         employeeOrder.status !== OrderStatus.ORDER_MADE
       ) {
         throw new AppError(Message.UNAUTHORIZED, 403);
@@ -239,14 +239,32 @@ class EmployeeOrderController {
     return res.status(200).json({ EmployeeOrders: ordersDTO });
   }
 
-  async showFromController() {
+  async showFromController(name?: string, status?: string, email?: string) {
     const employeeOrderRepository = getCustomRepository(
       EmployeeOrderRepository
     );
 
+    let query = "";
+
+    if (name) {
+      query = `"EmployeeOrder__user"."name" = '${name}'`;
+    }
+
+    if (email) {
+      query += `${
+        query === "" ? "" : " AND "
+      }"EmployeeOrder__user"."email" = '${email}'`;
+    }
+
+    if (status) {
+      query += `${
+        query === "" ? "" : " AND "
+      }"EmployeeOrder"."status" = '${status}'`;
+    }
+
     const employeeOrder = await employeeOrderRepository.find({
+      where: query,
       relations: ["user"],
-      where: { status: "Pedido realizado!" || Not(IsNull()) },
     });
 
     const ordersDTO = employeeOrder.map((order) => {
