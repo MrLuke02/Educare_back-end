@@ -2,15 +2,15 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToOne,
   JoinColumn,
-  PrimaryColumn,
   ManyToOne,
+  OneToOne,
+  PrimaryColumn,
 } from "typeorm";
-import { Document } from "./Document";
-import { User } from "./User";
 import { v4 as uuid } from "uuid";
 import { Company } from "./Company";
+import { Document } from "./Document";
+import { User } from "./User";
 
 @Entity("employee_orders")
 class EmployeeOrder {

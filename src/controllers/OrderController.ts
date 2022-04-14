@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getCustomRepository, IsNull, Not } from "typeorm";
+import { getCustomRepository } from "typeorm";
 import { Message } from "../env/message";
 import { OrderStatus } from "../env/orderStaus";
 import { AppError } from "../errors/AppErrors";
@@ -219,17 +219,36 @@ class OrderController {
 
   async show(req: Request, res: Response) {
     const { name, status, email } = req.query;
+
     const orderRepository = getCustomRepository(OrdersRepository);
 
+    let query = "";
+
+    if (name) {
+      query = `"Order__user"."name" = '${name}'`;
+    }
+
+    if (email) {
+      query += `${
+        query === "" ? "" : " AND "
+      }"Order__user"."email" = '${email}'`;
+    }
+
+    if (status) {
+      query += `${query === "" ? "" : " AND "}"Order"."status" = '${status}'`;
+    }
+
     const orders = await orderRepository.find({
+      where: query,
       relations: ["user"],
-      where: { status: status || Not(IsNull()) },
     });
 
     const employeeOrderController = new EmployeeOrderController();
 
     const employeeOrders = await employeeOrderController.showFromController(
-      status as string
+      name as string,
+      status as string,
+      email as string
     );
 
     if (orders.length === 0 && employeeOrders.length === 0) {
@@ -249,25 +268,7 @@ class OrderController {
       };
     });
 
-    let ordersAllDTO = [...ordersDTO, ...employeeOrders];
-
-    if (name) {
-      ordersAllDTO = ordersAllDTO.filter((order) =>
-        order.user.name.includes(name as string)
-      );
-
-      if (ordersAllDTO.length === 0) {
-        throw new AppError(Message.NOT_FOUND, 404);
-      }
-    } else if (email) {
-      ordersAllDTO = ordersAllDTO.filter((order) =>
-        order.user.email.includes(email as string)
-      );
-
-      if (ordersAllDTO.length === 0) {
-        throw new AppError(Message.NOT_FOUND, 404);
-      }
-    }
+    const ordersAllDTO = [...ordersDTO, ...employeeOrders];
 
     return res.status(200).json({ Orders: ordersAllDTO });
   }
