@@ -2,14 +2,15 @@ import cors from "cors";
 import express, {
   NextFunction,
   Request,
-  Response,
   RequestHandler,
+  Response,
 } from "express";
 import "express-async-errors";
 import "reflect-metadata";
 import "./database";
 import { AppError } from "./errors/AppErrors";
 import * as routes from "./routes/routes";
+import { routerMP } from "./routes/routesMP";
 
 // Inicia uma aplicação express
 const app = express();
@@ -41,13 +42,15 @@ app.use(
   routes.routerEmployee,
   routes.routerPlan,
   routes.routerCompanyRelationPlan,
-  routes.routerEmployeeOrder
+  routes.routerEmployeeOrder,
+  routerMP
 );
 
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   if (error instanceof AppError) {
     return res.status(error.statusCode).json({ Message: error.message });
   }
+  console.log(error);
 
   return res.status(500).json({ Message: error.message });
 });
